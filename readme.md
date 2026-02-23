@@ -8,6 +8,10 @@ Full-stack monorepo built with a minimal React (Vite) frontend and an Express (N
 - Full JWT authentication flow (Login & Register).
 - Backend structured with MVC pattern (models, controllers, routes).
 - MongoDB integration with Mongoose.
+- **Projects Module**: Create and manage isolated SaaS projects.
+- **Requirements Module**: User stories, priority tracking.
+- **Test Cases Module**: Status tracking (Pass/Fail) mapped to Requirements.
+- **RTM (Requirements Traceability Matrix)**: Aggregated live test coverage calculations.
 
 ## Project Structure
 
