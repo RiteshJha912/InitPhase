@@ -9,10 +9,30 @@ Full-stack monorepo built with a minimal React (Vite) frontend and an Express (N
 - Backend structured with MVC pattern (models, controllers, routes).
 - MongoDB integration with Mongoose.
 
-## Structure
+## Project Structure
 
-- `client` → React + Vite frontend
-- `server` → Node.js + Express backend
+```text
+InitPhase/
+├── client/                 # React + Vite frontend
+│   ├── src/
+│   │   ├── pages/          # React components (Login, Register, Dashboard, Landing)
+│   │   ├── App.jsx         # Main router setup
+│   │   ├── index.css       # Global, minimal styling
+│   │   └── main.jsx        # App entry point
+│   ├── package.json        
+│   └── vite.config.js
+├── server/                 # Node.js + Express backend
+│   ├── config/             # Database connection logic
+│   ├── controllers/        # Route logic and controllers (Auth)
+│   ├── middleware/         # Custom middlewares
+│   ├── models/             # Mongoose schemas (User.js)
+│   ├── routes/             # Express routes (authRoutes.js)
+│   ├── server.js           # Server entry point
+│   ├── package.json
+│   └── .env                # Environment variables (ignored in Git)
+├── .gitignore
+└── README.md
+```
 
 ## Environment Setup
 
