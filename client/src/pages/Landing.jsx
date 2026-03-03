@@ -120,7 +120,7 @@ export default function Landing() {
     @media (max-width: 968px) {
       .landing-hero-grid {
         grid-template-columns: 1fr !important;
-        gap: 40px !important;
+        gap: 32px !important;
         text-align: center;
       }
       .hero-title {
@@ -137,13 +137,69 @@ export default function Landing() {
         max-width: 100% !important;
       }
       .hero-cta {
+        flex-direction: column !important;
+        align-items: center !important;
+        width: 100% !important;
+      }
+      .hero-cta button, .hero-cta a {
+        width: 100% !important;
         justify-content: center !important;
       }
       .hero-glow {
         left: 50% !important;
-        top: -150px !important;
-        width: 600px !important;
-        height: 600px !important;
+        top: -100px !important;
+        width: 400px !important;
+        height: 400px !important;
+      }
+    }
+    @media (max-width: 640px) {
+      .responsive-nav {
+        padding: 12px 16px !important;
+      }
+      .hide-mobile {
+        display: none !important;
+      }
+      .section-padding {
+        padding: 48px 20px !important;
+      }
+      .hero-section {
+        padding-top: 40px !important;
+        padding-bottom: 40px !important;
+      }
+      .how-it-works-content {
+        gap: 24px !important;
+        padding-top: 10px !important;
+      }
+      .how-it-works-content::before {
+        display: none !important;
+      }
+      .timeline-line {
+        display: none !important;
+      }
+      .how-it-works-item {
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center !important;
+        gap: 12px !important;
+        padding: 20px 0 !important;
+      }
+      /* Centering content for mobile step details */
+      .how-it-works-item > div {
+        align-items: center !important;
+        display: flex !important;
+        flex-direction: column !important;
+      }
+      h2 {
+        font-size: 1.8rem !important;
+      }
+      .landing-footer {
+        flex-direction: column !important;
+        text-align: center !important;
+        gap: 24px !important;
+      }
+      .footer-links {
+        flex-direction: column !important;
+        width: 100% !important;
       }
     }
   `;
@@ -160,8 +216,8 @@ export default function Landing() {
         backgroundColor: 'rgba(9, 9, 11, 0.85)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)'
       }}>
         <InitPhaseLogo />
-        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-          <a href="https://github.com/RiteshJha912/InitPhase" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <a href="https://github.com/RiteshJha912/InitPhase" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }} className="hide-mobile">
             <button style={{ 
               padding: '7px 14px', backgroundColor: 'transparent', color: '#a1a1aa', 
               border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '6px',
@@ -172,7 +228,7 @@ export default function Landing() {
               <Github size={14} /> <Star size={12} /> Star
             </button>
           </a>
-          <Link to="/login" style={{ textDecoration: 'none' }}>
+          <Link to="/login" style={{ textDecoration: 'none' }} className="hide-mobile">
             <button style={{ 
               padding: '7px 16px', backgroundColor: 'transparent', color: '#a1a1aa', 
               border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', 
@@ -198,9 +254,9 @@ export default function Landing() {
       </nav>
 
       {/* ═══════════════ HERO SECTION ═══════════════ */}
-      <section style={{ 
+      <section className="hero-section" style={{ 
         position: 'relative', overflow: 'hidden',
-        padding: 'clamp(60px, 10vw, 110px) 24px clamp(50px, 8vw, 90px)',
+        padding: 'clamp(40px, 6vw, 80px) 24px clamp(50px, 8vw, 90px)',
       }}>
         {/* Subtle radial glow */}
         <div className="hero-glow" style={{ 
@@ -409,7 +465,7 @@ export default function Landing() {
       </section>
 
       {/* ═══════════════ PROBLEM SECTION ═══════════════ */}
-      <section style={{ padding: 'clamp(60px, 10vw, 100px) 24px' }}>
+      <section className="section-padding" style={{ padding: 'clamp(60px, 10vw, 100px) 24px' }}>
         <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
           <AnimatedSection>
             <div style={{ fontSize: '0.8rem', fontWeight: '700', color: '#ef4444', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: '16px' }}>
@@ -449,7 +505,7 @@ export default function Landing() {
       </section>
 
       {/* ═══════════════ HOW IT WORKS ═══════════════ */}
-      <section id="how-it-works" style={{ 
+      <section id="how-it-works" className="section-padding" style={{ 
         padding: 'clamp(60px, 10vw, 100px) 24px',
         borderTop: '1px solid rgba(255,255,255,0.04)'
       }}>
@@ -469,9 +525,9 @@ export default function Landing() {
           </AnimatedSection>
 
           {/* Vertical timeline layout */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0', position: 'relative' }}>
-            {/* Vertical line */}
-            <div style={{ 
+          <div className="how-it-works-content" style={{ display: 'flex', flexDirection: 'column', gap: '0', position: 'relative' }}>
+            {/* Vertical line - hidden on mobile via CSS class or handled via before */}
+            <div className="timeline-line" style={{ 
               position: 'absolute', left: '23px', top: '36px', bottom: '36px', width: '1px', 
               background: 'linear-gradient(to bottom, rgba(255,255,255,0.1), rgba(255,255,255,0.04))'
             }} />
@@ -497,7 +553,7 @@ export default function Landing() {
               }
             ].map((step, i) => (
               <AnimatedSection key={i} delay={i * 0.12}>
-                <div style={{ 
+                <div className="how-it-works-item" style={{ 
                   display: 'flex', gap: '24px', padding: '28px 0', alignItems: 'flex-start'
                 }}>
                   {/* Step circle on timeline */}
@@ -533,8 +589,8 @@ export default function Landing() {
       </section>
 
       {/* ═══════════════ FEATURES SECTION ═══════════════ */}
-      <section style={{ 
-        padding: 'clamp(60px, 10vw, 100px) 24px',
+      <section className="section-padding" style={{ 
+        padding: 'clamp(48px, 8vw, 100px) 24px',
         borderTop: '1px solid rgba(255,255,255,0.04)',
         backgroundColor: '#0c0c0e'
       }}>
@@ -577,7 +633,7 @@ export default function Landing() {
       </section>
 
       {/* ═══════════════ FAQ SECTION ═══════════════ */}
-      <section style={{ 
+      <section className="section-padding" style={{ 
         padding: 'clamp(60px, 10vw, 100px) 24px',
         borderTop: '1px solid rgba(255,255,255,0.04)'
       }}>
@@ -673,7 +729,7 @@ export default function Landing() {
       </section>
 
       {/* ═══════════════ FOOTER ═══════════════ */}
-      <footer style={{ 
+      <footer className="landing-footer" style={{ 
         padding: '24px 32px', borderTop: '1px solid rgba(255,255,255,0.06)', 
         display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px'
       }}>
@@ -684,7 +740,7 @@ export default function Landing() {
           </div>
         </div>
         
-        <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flexWrap: 'wrap' }}>
+        <div className="footer-links" style={{ display: 'flex', alignItems: 'center', gap: '20px', flexWrap: 'wrap' }}>
           <span style={{ color: '#71717a', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '5px' }}>
             Made with <Heart size={14} color="#ef4444" fill="#ef4444" /> by{' '}
             <a href="https://github.com/RiteshJha912" target="_blank" rel="noopener noreferrer" 
