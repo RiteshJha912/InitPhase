@@ -3,7 +3,7 @@ const Requirement = require('../models/Requirement');
 const Project = require('../models/Project');
 
 const createTestCase = async (req, res) => {
-  const { name, steps, expectedResult } = req.body;
+  const { name, steps, expectedResult, status } = req.body;
   const { projectId, requirementId } = req.params;
 
   if (!name || !steps || !expectedResult) {
@@ -33,7 +33,7 @@ const createTestCase = async (req, res) => {
       name,
       steps,
       expectedResult,
-      status: 'Pending',
+      status: status || 'Pending',
     });
 
     res.status(201).json(testCase);
