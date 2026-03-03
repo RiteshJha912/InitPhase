@@ -11,9 +11,14 @@ export default function ProjectWorkspace() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
 
-  // Close mobile menu on route change
+  // Close mobile menu and scroll content to top on route change
   useEffect(() => {
     setIsMobileMenuOpen(false);
+    // Specifically target the main content area in this layout
+    const mainContent = document.querySelector('main');
+    if (mainContent) {
+      mainContent.scrollTo({ top: 0, behavior: 'instant' });
+    }
   }, [location.pathname]);
   
   // Data states

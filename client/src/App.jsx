@@ -3,9 +3,9 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-route
 import { useEffect } from 'react';
 import Landing from './pages/Landing';
 
-// Regular imports for standard auth
 import Login from './pages/Login';
 import Register from './pages/Register';
+import registerBg from './assets/register-bg-2.jpg';
 
 // Lazy load enterprise modules for performance
 const Dashboard = lazy(() => import('./pages/Dashboard'));
@@ -33,9 +33,26 @@ function ScrollToTop() {
   const { pathname } = useLocation();
 
   useEffect(() => {
+    // 1. Scroll the window to top (standard)
     window.scrollTo(0, 0);
+    
+    // 2. Proactively find any 'main' content areas or scrollable containers and reset them
+    // This handles layouts with fixed sidebars and scrollable main areas
+    const scrollContainers = document.querySelectorAll('main, [style*="overflow-y: auto"], [style*="overflowY: auto"]');
+    scrollContainers.forEach(container => {
+      container.scrollTo({ top: 0, behavior: 'instant' });
+    });
   }, [pathname]);
 
+  return null;
+}
+
+// Preloader for heavy assets to ensure they are ready when navigating
+function ImagePreloader() {
+  useEffect(() => {
+    const img = new Image();
+    img.src = registerBg;
+  }, []);
   return null;
 }
 
@@ -43,6 +60,7 @@ function App() {
   return (
     <BrowserRouter>
       <ScrollToTop />
+      <ImagePreloader />
       <Routes>
         <Route path="/" element={<div className="enterprise-app"><Landing /></div>} />
         <Route path="/login" element={<div className="enterprise-app"><Login /></div>} />

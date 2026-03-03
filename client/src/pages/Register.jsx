@@ -74,7 +74,7 @@ export default function Register() {
         overflow: 'hidden',
         padding: '40px'
       }}>
-        <div style={{
+        <div className="bg-fade-in" style={{
           position: 'absolute',
           top: 0, left: 0, right: 0, bottom: 0,
           backgroundImage: `url(${registerBg})`,
@@ -229,6 +229,13 @@ export default function Register() {
           #left-panel { display: none !important; }
         }
         input::placeholder { color: rgba(255, 255, 255, 0.3); }
+        .bg-fade-in {
+          animation: bgFade 0.8s ease-out forwards;
+        }
+        @keyframes bgFade {
+          from { opacity: 0; filter: blur(10px); }
+          to { opacity: 0.8; filter: blur(0); }
+        }
       `}} />
     </div>
   );
