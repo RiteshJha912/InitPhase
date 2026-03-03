@@ -27,10 +27,10 @@
   --text-tertiary: #71717a;
   /* Deeper muted */
 
-  --accent-color: #6366f1;
-  /* Professional Indigo */
-  --accent-hover: #4f46e5;
-  --accent-muted: rgba(99, 102, 241, 0.15);
+  --accent-color: #e4e4e7;
+  /* Clean monochrome white */
+  --accent-hover: #ffffff;
+  --accent-muted: rgba(255, 255, 255, 0.08);
 
   --success: #10b981;
   --success-bg: rgba(16, 185, 129, 0.1);
@@ -63,6 +63,7 @@ body {
   background-color: var(--bg-color);
   color: var(--text-color);
   line-height: 1.6;
+  overflow-x: hidden;
 }
 
 h1,
@@ -121,4 +122,209 @@ textarea {
 
 .animate-fade-in {
   animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* --- Responsive Utilities --- */
+@media (max-width: 768px) {
+
+  /* Prevent horizontal overflow globally and scale base unit */
+  html {
+    font-size: 13px !important;
+  }
+
+  body,
+  .enterprise-app {
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100vw;
+  }
+
+  .responsive-nav {
+    padding: 8px 12px !important;
+    height: auto !important;
+    min-height: 54px;
+  }
+
+  .responsive-nav .hide-on-mobile {
+    display: none !important;
+  }
+
+  .workspace-layout {
+    flex-direction: column !important;
+  }
+
+  .workspace-sidebar {
+    position: fixed;
+    top: 54px;
+    left: 0;
+    width: 250px !important;
+    height: calc(100vh - 54px) !important;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+    border-right: 1px solid var(--border-color) !important;
+    border-bottom: none !important;
+    padding: 16px 12px !important;
+    flex-direction: column !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    align-items: flex-start !important;
+    background-color: var(--bg-surface);
+    z-index: 50;
+  }
+
+  .workspace-sidebar.mobile-open {
+    transform: translateX(0);
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.5);
+  }
+
+  .mobile-overlay {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 40;
+  }
+
+  .hamburger-btn {
+    display: flex !important;
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    cursor: pointer;
+    padding: 8px;
+    margin-right: 8px;
+  }
+
+  .workspace-sidebar::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  .sidebar-header {
+    display: none !important;
+  }
+
+  /* Overrides for dynamic NavLink inline styles */
+  .nav-link-item {
+    width: 100% !important;
+    margin: 0 0 8px 0 !important;
+    padding: 10px 12px !important;
+    border-left: 4px solid transparent !important;
+    border-bottom: none !important;
+    border-radius: var(--radius-sm) !important;
+    white-space: nowrap !important;
+    font-size: 0.95rem !important;
+  }
+
+  .nav-link-item.active {
+    border-left: 4px solid var(--accent-color) !important;
+    border-bottom: none !important;
+    background-color: var(--bg-card-hover) !important;
+  }
+
+  .module-padding {
+    padding: 0 12px !important;
+    gap: 16px !important;
+  }
+
+  .module-header-padding {
+    padding: 16px 12px !important;
+  }
+
+  .form-container,
+  .dashboard-grid {
+    padding: 12px !important;
+  }
+
+  /* Structural paddings */
+  .module-container {
+    padding: 12px !important;
+    gap: 16px !important;
+  }
+
+  .mobile-flex-col {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .mobile-grid-1 {
+    grid-template-columns: 1fr !important;
+  }
+
+  .dashboard-header-flex {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 16px !important;
+    margin-bottom: 24px !important;
+  }
+
+  .stat-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  .section-card-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+    margin-bottom: 16px !important;
+  }
+
+  h1 {
+    font-size: 1.6rem !important;
+    margin-bottom: 8px !important;
+  }
+
+  h2 {
+    font-size: 1.3rem !important;
+  }
+
+  h3 {
+    font-size: 1.1rem !important;
+  }
+
+  /* Input sizing on mobile to provide proper touch targets and scale */
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+    padding: 14px 16px !important;
+    min-height: 48px !important;
+    border-radius: 8px !important;
+    max-width: 100% !important;
+  }
+
+  select {
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  button {
+    padding: 14px 16px !important;
+    font-size: 1rem !important;
+    min-height: 48px !important;
+  }
+
+  /* Data Table improvements for mobile */
+  .table-responsive-wrapper {
+    margin: -16px !important;
+    padding: 0 !important;
+  }
+
+  table {
+    min-width: 400px !important;
+    /* reduced to minimize scroll on typical phones */
+  }
+
+  th,
+  td {
+    padding: 10px 12px !important;
+    font-size: 0.8rem !important;
+  }
+}
+
+.hamburger-btn {
+  display: none;
 }

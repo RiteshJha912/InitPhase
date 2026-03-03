@@ -71,7 +71,7 @@ export default function Dashboard() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: 'var(--bg-base)' }}>
-      <nav style={{ 
+      <nav className="responsive-nav" style={{ 
         display: 'flex', 
         justifyContent: 'space-between', 
         alignItems: 'center', 
@@ -83,41 +83,41 @@ export default function Dashboard() {
         zIndex: 10
       }}>
         <div style={{ fontSize: '1.25rem', fontWeight: '800', letterSpacing: '-0.025em', fontFamily: 'var(--font-heading)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <div style={{ width: '24px', height: '24px', backgroundColor: 'var(--accent-color)', borderRadius: '4px' }}></div>
-          InitPhase Enterprise Hub
+          <div style={{ width: '24px', height: '24px', backgroundColor: 'var(--accent-color)', borderRadius: '5px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><svg width={14} height={14} viewBox="0 0 24 24" fill="none"><path d="M4 6L11 12L4 18" stroke="#0f1115" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" /><path d="M13 18H20" stroke="#0f1115" strokeWidth="2.8" strokeLinecap="round" /></svg></div>
+          <span className="hide-on-mobile">InitPhase</span>
         </div>
         <div>
           <Button variant="danger" size="sm" onClick={handleLogout}>
-            Terminate Session
+            Log Out
           </Button>
         </div>
       </nav>
 
-      <div className="animate-fade-in" style={{ padding: '40px', maxWidth: '1200px', margin: '0 auto', width: '100%', boxSizing: 'border-box' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '40px' }}>
+      <div className="animate-fade-in module-padding" style={{ padding: '40px', maxWidth: '1200px', margin: '0 auto', width: '100%', boxSizing: 'border-box' }}>
+        <div className="dashboard-header-flex" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '40px' }}>
           <div>
-            <h1 style={{ margin: '0 0 12px 0', fontSize: '2.5rem', color: 'var(--text-primary)', fontWeight: '800', letterSpacing: '-0.025em', fontFamily: 'var(--font-heading)' }}>Directory Protocol</h1>
+            <h1 style={{ margin: '0 0 12px 0', fontSize: '2.5rem', color: 'var(--text-primary)', fontWeight: '800', letterSpacing: '-0.025em', fontFamily: 'var(--font-heading)' }}>Your Projects</h1>
             <p style={{ margin: 0, fontSize: '1.15rem', color: 'var(--text-secondary)', maxWidth: '800px', lineHeight: '1.6' }}>
-              Select an active structural workspace to begin authoring requirements, tracing compliance matrices, and executing validation tests.
+              Select a project to manage its requirements, test cases, and traceability matrix.
             </p>
           </div>
           <Button 
             variant={showForm ? 'secondary' : 'primary'}
             onClick={() => { setShowForm(!showForm); setError(''); setName(''); setDescription(''); }}
           >
-            {showForm ? 'Cancel Creation' : <><PlusCircle size={18} /> Initialize Segment</>}
+            {showForm ? 'Cancel' : <><PlusCircle size={18} /> New Project</>}
           </Button>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px', marginBottom: '40px' }}>
-          <StatCard title="Active Segments" value={projects.length} color="var(--accent-color)" icon={Target} />
-          <StatCard title="System Node" value="Operational" color="var(--success)" icon={Server} />
-          <StatCard title="Access Tier" value="Enterprise" color="#a855f7" icon={Shield} />
+        <div className="stat-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px', marginBottom: '40px' }}>
+          <StatCard title="Total Projects" value={projects.length} color="var(--accent-color)" icon={Target} />
+          <StatCard title="Status" value="Online" color="var(--success)" icon={Server} />
+          <StatCard title="Plan" value="Free" color="#a855f7" icon={Shield} />
         </div>
 
         {showForm && (
           <div style={{ marginBottom: '40px' }}>
-            <SectionCard title="Initialize New Node Parameter">
+            <SectionCard title="Create a New Project">
               {error && (
                 <div style={{ padding: '12px', backgroundColor: 'var(--danger-bg)', color: 'var(--danger)', borderRadius: 'var(--radius-sm)', marginBottom: '16px', fontWeight: '500', border: '1px solid rgba(239, 68, 68, 0.4)' }}>
                   {error}
@@ -125,29 +125,29 @@ export default function Dashboard() {
               )}
               <form onSubmit={handleCreateProject} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 <div>
-                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: 'var(--text-secondary)', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Node Nomenclature</label>
+                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: 'var(--text-secondary)', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Project Name</label>
                   <input 
                     type="text" 
                     value={name} 
                     onChange={e => setName(e.target.value)} 
                     required 
-                    placeholder="e.g., Nexus Payment Gateway Module"
+                    placeholder="e.g., E-Commerce Platform"
                     style={{ width: '100%', padding: '12px 16px', backgroundColor: 'var(--bg-base)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-sm)', color: 'var(--text-primary)', fontSize: '1rem', boxSizing: 'border-box' }}
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: 'var(--text-secondary)', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Executive Summary Envelope</label>
+                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: 'var(--text-secondary)', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Description (optional)</label>
                   <input 
                     type="text" 
                     value={description} 
                     onChange={e => setDescription(e.target.value)} 
-                    placeholder="A brief academic overview of the segment's structural goals."
+                    placeholder="A short description of what this project is about."
                     style={{ width: '100%', padding: '12px 16px', backgroundColor: 'var(--bg-base)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-sm)', color: 'var(--text-primary)', fontSize: '1rem', boxSizing: 'border-box' }}
                   />
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '8px' }}>
                   <Button type="submit" variant="primary">
-                    <Server size={18} /> Deploy Segment Container
+                    <Server size={18} /> Create Project
                   </Button>
                 </div>
               </form>
@@ -159,7 +159,7 @@ export default function Dashboard() {
           {projects.length === 0 && !showForm ? (
             <div style={{ gridColumn: '1 / -1' }}>
               <EmptyState 
-                message="No nodes initialized yet. Click 'Initialize Segment' to build your first enterprise workspace." 
+                message="No projects yet. Click 'New Project' above to create your first one." 
                 iconName="layers" 
               />
             </div>
@@ -188,7 +188,7 @@ export default function Dashboard() {
                     <h3 style={{ margin: 0, fontSize: '1.5rem', color: 'var(--text-primary)', fontWeight: '700', fontFamily: 'var(--font-heading)', lineHeight: 1 }}>{project.name}</h3>
                   </div>
                   <p style={{ margin: '0 0 24px 0', color: 'var(--text-secondary)', lineHeight: '1.6', fontSize: '1rem', paddingLeft: '44px' }}>
-                    {project.description || 'No descriptive summary provided for this logical module.'}
+                    {project.description || 'No description provided.'}
                   </p>
                 </div>
                 <Link to={`/projects/${project._id}`} style={{ textDecoration: 'none' }}>
@@ -208,7 +208,7 @@ export default function Dashboard() {
                   onMouseOver={e => { e.currentTarget.style.backgroundColor = 'var(--accent-muted)'; e.currentTarget.style.borderColor = 'var(--accent-hover)'; }}
                   onMouseOut={e => { e.currentTarget.style.backgroundColor = 'var(--bg-surface)'; e.currentTarget.style.borderColor = 'var(--border-color)'; }}
                   >
-                    Enter Segment &rarr;
+                    Open Project &rarr;
                   </button>
                 </Link>
               </div>

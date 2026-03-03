@@ -1,6 +1,6 @@
 export default function DataTable({ columns, data, renderRow, emptyMessage }) {
   return (
-    <div style={{ overflowX: 'auto', margin: '-24px', borderRadius: '0 0 var(--radius-md) var(--radius-md)' }}>
+    <div className="table-responsive-wrapper" style={{ overflowX: 'auto', margin: '-24px', borderRadius: '0 0 var(--radius-md) var(--radius-md)' }}>
       <table style={{ 
         width: '100%', 
         borderCollapse: 'collapse', 

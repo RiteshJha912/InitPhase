@@ -7,7 +7,7 @@ export default function ModuleLayout({ title, description, connectionText, stats
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', flex: 1, minHeight: '100vh', padding: '0 0 40px 0', backgroundColor: 'var(--bg-base)' }}>
       {/* Heavy Enterprise Dark Header Component */}
-      <div style={{ 
+      <div className="module-header-padding" style={{ 
         padding: '32px 40px', 
         backgroundColor: 'var(--bg-surface)', 
         borderBottom: '1px solid var(--border-color)', 
@@ -45,13 +45,13 @@ export default function ModuleLayout({ title, description, connectionText, stats
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Info size={18} color="var(--accent-color)" />
-                Module Architectural Overview
+                How does this module work?
               </div>
               {isOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
             </button>
             
             {isOpen && (
-              <div className="animate-fade-in" style={{ padding: '24px', borderTop: '1px solid var(--border-color)', color: 'var(--text-secondary)', lineHeight: '1.6' }}>
+              <div className="animate-fade-in" style={{ padding: '24px', borderTop: '1px solid var(--border-color)', color: 'var(--text-secondary)', lineHeight: '1.8', whiteSpace: 'pre-line' }}>
                 {connectionText}
               </div>
             )}
@@ -59,7 +59,7 @@ export default function ModuleLayout({ title, description, connectionText, stats
         )}
         
         {stats && (
-          <div style={{ 
+          <div className="stat-grid" style={{ 
             display: 'grid', 
             gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', 
             gap: '24px', 
@@ -70,7 +70,7 @@ export default function ModuleLayout({ title, description, connectionText, stats
         )}
       </div>
 
-      <div style={{ padding: '0 40px', display: 'flex', flexDirection: 'column', gap: '32px' }}>
+      <div className="module-padding" style={{ padding: '0 40px', display: 'flex', flexDirection: 'column', gap: '32px' }}>
         {children}
       </div>
     </div>

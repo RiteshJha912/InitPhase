@@ -6,6 +6,7 @@ export default function Button({
   variant = 'primary', 
   size = 'md', 
   className = '', 
+  style: customStyle = {},
   ...props 
 }) {
   const baseStyle = {
@@ -31,7 +32,7 @@ export default function Button({
   const variants = {
     primary: {
       backgroundColor: 'var(--accent-color)',
-      color: '#fff',
+      color: '#0f1115',
       boxShadow: 'var(--shadow-sm)',
     },
     secondary: {
@@ -50,7 +51,7 @@ export default function Button({
     }
   };
 
-  const style = { ...baseStyle, ...sizes[size], ...variants[variant] };
+  const style = { ...baseStyle, ...sizes[size], ...variants[variant], ...customStyle };
 
   return (
     <button 

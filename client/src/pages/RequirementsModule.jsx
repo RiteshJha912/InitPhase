@@ -63,16 +63,16 @@ export default function RequirementsModule() {
     : requirements.filter(r => r.priority === filterPriority);
 
   const columns = [
-    { label: 'System Need Document (User Story)', width: 'auto' },
-    { label: 'Priority Escalation', width: '200px' },
-    { label: 'Administrative Action', width: '150px' }
+    { label: 'Requirement (What your system should do)', width: 'auto' },
+    { label: 'Priority', width: '200px' },
+    { label: 'Action', width: '150px' }
   ];
 
   return (
     <ModuleLayout
-      title="Requirements Engine"
-      description="Centralized repository for eliciting, analyzing, and structuring exact system bounds. Isolate stakeholder needs cleanly before functional deployment."
-      connectionText="This module dictates foundational validation boundaries. The objects generated here act as the authoritative baseline when mapped within the Test Execution Module. Structural dependencies rely solely on objects surviving this tier."
+      title="Requirements"
+      description="Define what your software needs to do before you start building. List every feature, rule, or behavior your system must support."
+      connectionText={"• Requirements are the foundation of your project - they describe WHAT your system should do.\n• Each requirement can be prioritized: Must-Have (essential), Should-Have (important), or Nice-to-Have (bonus).\n• Once you add requirements here, you can create test cases for them in the Test Cases module.\n• The Traceability Matrix will then show you which requirements have been tested and which haven't.\n• Think of requirements as a checklist of promises your software must keep."}
       stats={
         <>
           <StatCard title="Total Needs" value={totalReqs} color="var(--accent-color)" icon={Layers} />
@@ -82,13 +82,13 @@ export default function RequirementsModule() {
         </>
       }
     >
-      <SectionCard title="Requirement Generation Console">
-        <form onSubmit={handleAddRequirement} style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
+      <SectionCard title="Add a New Requirement">
+        <form onSubmit={handleAddRequirement} className="mobile-flex-col" style={{ display: 'flex', gap: '16px', alignItems: 'stretch', flexWrap: 'wrap' }}>
           <input 
             type="text" 
             value={reqTitle} 
             onChange={(e) => setReqTitle(e.target.value)} 
-            placeholder="Define strict systemic requirement..." 
+            placeholder="e.g., User must be able to log in with email and password" 
             required 
             style={{ 
               flex: 1, 
@@ -99,7 +99,8 @@ export default function RequirementsModule() {
               color: 'var(--text-primary)',
               fontSize: '1rem',
               margin: 0,
-              minWidth: '250px'
+              minWidth: 0,
+              width: '100%'
             }}
           />
           <select 
@@ -112,7 +113,8 @@ export default function RequirementsModule() {
               color: 'var(--text-primary)',
               borderRadius: 'var(--radius-sm)',
               fontSize: '1rem',
-              minWidth: '150px'
+              minWidth: 0,
+              width: '100%'
             }}
           >
             <option value="Must-Have">Must-Have (Critical)</option>
@@ -120,13 +122,13 @@ export default function RequirementsModule() {
             <option value="Nice-to-Have">Nice-to-Have (Low)</option>
           </select>
           <Button type="submit" variant="primary">
-            <Plus size={18} /> Process Requirement
+            <Plus size={18} /> Add Requirement
           </Button>
         </form>
       </SectionCard>
 
       <SectionCard 
-        title="Authoritative Baseline Repository"
+        title="Your Requirements"
         actions={
           <select 
             value={filterPriority} 
@@ -142,17 +144,17 @@ export default function RequirementsModule() {
               outline: 'none'
             }}
           >
-            <option value="All">Matrix View: All Priorities</option>
-            <option value="Must-Have">Isolate: Must-Have</option>
-            <option value="Should-Have">Isolate: Should-Have</option>
-            <option value="Nice-to-Have">Isolate: Nice-to-Have</option>
+            <option value="All">Show All</option>
+            <option value="Must-Have">Must-Have Only</option>
+            <option value="Should-Have">Should-Have Only</option>
+            <option value="Nice-to-Have">Nice-to-Have Only</option>
           </select>
         }
       >
 
         {filteredRequirements.length === 0 ? (
           <EmptyState 
-            message={requirements.length === 0 ? "Repository unpopulated. Inject foundation requirements via the console above." : "No baseline nodes fulfill the active matrix filter."} 
+            message={requirements.length === 0 ? "No requirements added yet. Use the form above to add your first requirement." : "No requirements match the selected filter."} 
             iconName="layers" 
           />
         ) : (

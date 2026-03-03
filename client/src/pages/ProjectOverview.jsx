@@ -32,23 +32,23 @@ export default function ProjectOverview() {
   ].filter(d => d.value > 0);
 
   return (
-    <div style={{ padding: '40px', maxWidth: '1200px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '32px' }} className="animate-fade-in">
+    <div style={{ padding: '40px', maxWidth: '1200px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '32px' }} className="animate-fade-in module-container">
       <div style={{ marginBottom: '16px' }}>
         <h1 style={{ fontSize: '2.5rem', color: 'var(--text-primary)', marginBottom: '8px', fontWeight: '800', fontFamily: 'var(--font-heading)' }}>
-          System Dashboard Overview
+          Project Dashboard
         </h1>
         <p style={{ fontSize: '1.2rem', color: 'var(--text-secondary)', lineHeight: '1.6', maxWidth: '800px' }}>
-          Welcome to the operational command hub. Evaluate real-time matrices, deployment progress, and validation tests for <strong>{project?.name}</strong>.
+          A quick snapshot of your project's progress. Track your requirements, test cases, and overall coverage for <strong>{project?.name}</strong>.
         </p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
-        <StatCard title="Total Authored Requirements" value={requirements.length} icon={ListTodo} color="var(--accent-color)" />
-        <StatCard title="Test Case Injections" value={testCases.length} icon={FlaskConical} color="#a855f7" />
-        <StatCard title="Global Structural Coverage" value={`${coveragePct}%`} icon={Network} color={coveragePct === 100 ? '#10b981' : coveragePct === 0 ? '#ef4444' : '#f59e0b'} />
+      <div className="stat-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
+        <StatCard title="Total Requirements" value={requirements.length} icon={ListTodo} color="var(--accent-color)" />
+        <StatCard title="Total Test Cases" value={testCases.length} icon={FlaskConical} color="#a855f7" />
+        <StatCard title="Requirement Coverage" value={`${coveragePct}%`} icon={Network} color={coveragePct === 100 ? '#10b981' : coveragePct === 0 ? '#ef4444' : '#f59e0b'} />
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '24px' }}>
+      <div className="stat-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '24px' }}>
         <SectionCard title="Requirements Distribution">
           <div style={{ width: '100%', height: '250px' }}>
             {reqData.length > 0 ? (
@@ -72,7 +72,7 @@ export default function ProjectOverview() {
           </div>
         </SectionCard>
         
-        <SectionCard title="Test Validation Health">
+        <SectionCard title="Test Results Overview">
           <div style={{ width: '100%', height: '250px' }}>
             {tcData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
@@ -100,28 +100,28 @@ export default function ProjectOverview() {
       </div>
 
       <SectionCard title="Quick Action Routes">
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px' }}>
+        <div className="stat-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px' }}>
           <div style={{ padding: '24px', backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)' }}>
             <h3 style={{ fontSize: '1.25rem', color: 'var(--text-primary)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <ListTodo size={20} color="var(--accent-color)" /> Requirements
             </h3>
-            <p style={{ color: 'var(--text-secondary)', marginBottom: '16px', fontSize: '0.95rem' }}>Author and isolate functional structural needs.</p>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '16px', fontSize: '0.95rem' }}>Define what your system needs to do.</p>
             <Button variant="secondary" onClick={() => navigate('../requirements')}>Open Module</Button>
           </div>
           
           <div style={{ padding: '24px', backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)' }}>
             <h3 style={{ fontSize: '1.25rem', color: 'var(--text-primary)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <FlaskConical size={20} color="#a855f7" /> Sandbox Execution
+              <FlaskConical size={20} color="#a855f7" /> Test Cases
             </h3>
-            <p style={{ color: 'var(--text-secondary)', marginBottom: '16px', fontSize: '0.95rem' }}>Draft workflows and test system constraints.</p>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '16px', fontSize: '0.95rem' }}>Write and run tests against your requirements.</p>
             <Button variant="secondary" onClick={() => navigate('../testcases')}>Open Module</Button>
           </div>
 
           <div style={{ padding: '24px', backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)' }}>
             <h3 style={{ fontSize: '1.25rem', color: 'var(--text-primary)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Network size={20} color="#10b981" /> RTM Analysis
+              <Network size={20} color="#10b981" /> Traceability Matrix
             </h3>
-            <p style={{ color: 'var(--text-secondary)', marginBottom: '16px', fontSize: '0.95rem' }}>Interpret structural cross-link matrix health.</p>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '16px', fontSize: '0.95rem' }}>See which requirements have tests and which don't.</p>
             <Button variant="secondary" onClick={() => navigate('../rtm')}>Open Module</Button>
           </div>
         </div>

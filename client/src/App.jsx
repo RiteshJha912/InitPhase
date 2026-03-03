@@ -20,7 +20,7 @@ function LoadingFallback() {
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: 'var(--bg-base)', color: 'var(--text-secondary)' }}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center' }}>
         <div style={{ width: '40px', height: '40px', border: '3px solid var(--border-color)', borderTopColor: 'var(--accent-color)', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
-        <p style={{ fontFamily: 'var(--font-heading)', fontWeight: '600' }}>Initializing Module Subsystem...</p>
+        <p style={{ fontFamily: 'var(--font-heading)', fontWeight: '600' }}>Loading...</p>
         <style dangerouslySetInnerHTML={{__html: `
           @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         `}} />
@@ -44,9 +44,9 @@ function App() {
     <BrowserRouter>
       <ScrollToTop />
       <Routes>
-        <Route path="/" element={<Landing />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route path="/" element={<div className="enterprise-app"><Landing /></div>} />
+        <Route path="/login" element={<div className="enterprise-app"><Login /></div>} />
+        <Route path="/register" element={<div className="enterprise-app"><Register /></div>} />
         
         <Route path="/dashboard" element={
           <Suspense fallback={<LoadingFallback />}>

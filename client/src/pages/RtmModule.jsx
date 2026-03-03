@@ -14,25 +14,25 @@ export default function RtmModule() {
   const failingTests = rtmData.filter(r => r.failed > 0).length;
 
   const columns = [
-    { label: 'Requirement Payload Source', width: '35%' },
-    { label: 'Escalation Tier', width: '150px' },
-    { label: 'Execution Instances', width: '120px' },
-    { label: 'Validated Routes', width: '100px' },
-    { label: 'Route Exceptions', width: '100px' },
-    { label: 'Structural Integrity', width: '100px' }
+    { label: 'Requirement', width: '35%' },
+    { label: 'Priority', width: '150px' },
+    { label: 'Total Tests', width: '120px' },
+    { label: 'Passed', width: '100px' },
+    { label: 'Failed', width: '100px' },
+    { label: 'Covered?', width: '100px' }
   ];
 
   return (
     <ModuleLayout
-      title="Requirement Traceability Matrix"
-      description="Analytical subsystem algorithmically linking requirements to executables. This structural validation plane evaluates systemic readiness prior to deployment."
-      connectionText="The Traceability Matrix aggregates upstream Requirement arrays alongside Test Execution boolean returns. A mathematically unified, covered matrix confirms that the underlying software architecture exactly matches the defined systemic bounds."
+      title="Traceability Matrix"
+      description="See the big picture - which requirements have tests, which are passing, and which still need attention. Your goal is 100% coverage."
+      connectionText={"• The Traceability Matrix automatically connects your Requirements with your Test Cases.\n• It shows you a clear table: each requirement and how many tests are linked to it.\n• A 'covered' requirement means it has at least one test case written for it.\n• Your goal is 100% coverage - meaning every single requirement has been tested.\n• Requirements highlighted in yellow have no tests yet. Red means some tests are failing.\n• This is essentially your project's health report before deployment."}
     >
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 1fr) 2fr', gap: '32px' }}>
+      <div className="stat-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 1fr) 2fr', gap: '32px' }}>
         
         {/* Core Coverage Metric */}
         <div style={{ padding: '32px', backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-md)', textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-          <h3 style={{ margin: '0 0 24px 0', fontSize: '1rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: '700' }}>Overall Array Coverage</h3>
+          <h3 style={{ margin: '0 0 24px 0', fontSize: '1rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: '700' }}>Overall Coverage</h3>
           
           <div style={{ position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '32px' }}>
             <div style={{ fontSize: '5rem', fontWeight: '800', fontFamily: 'var(--font-heading)', lineHeight: 1, color: isCompleteCoverage ? 'var(--success)' : coveragePct === 0 ? 'var(--danger)' : 'var(--warning)', textShadow: `0 0 20px ${isCompleteCoverage ? 'rgba(16, 185, 129, 0.2)' : 'rgba(245, 158, 11, 0.2)'}` }}>
@@ -44,7 +44,7 @@ export default function RtmModule() {
             <div style={{ height: '100%', width: `${coveragePct}%`, backgroundColor: isCompleteCoverage ? 'var(--success)' : 'var(--warning)', transition: 'width 1s cubic-bezier(0.4, 0, 0.2, 1)' }} />
           </div>
           <div style={{ marginTop: '16px', fontSize: '0.9rem', color: 'var(--text-tertiary)', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            Operational Baseline Goal: 100%
+            Target: 100%
           </div>
         </div>
 
@@ -56,8 +56,8 @@ export default function RtmModule() {
               <AlertTriangle size={32} color="var(--warning)" />
             </div>
             <div>
-              <div style={{ fontSize: '0.9rem', fontWeight: '700', color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>Exposed Structural Nodes</div>
-              <div style={{ fontSize: '2.5rem', fontWeight: '800', color: 'var(--warning)', fontFamily: 'var(--font-heading)', lineHeight: 1 }}>{untestables} <span style={{ fontSize: '1.25rem', color: 'var(--text-secondary)' }}>Requirements unbound</span></div>
+              <div style={{ fontSize: '0.9rem', fontWeight: '700', color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>Untested Requirements</div>
+              <div style={{ fontSize: '2.5rem', fontWeight: '800', color: 'var(--warning)', fontFamily: 'var(--font-heading)', lineHeight: 1 }}>{untestables} <span style={{ fontSize: '1.25rem', color: 'var(--text-secondary)' }}>without any tests</span></div>
             </div>
           </div>
           
@@ -66,18 +66,18 @@ export default function RtmModule() {
               <XCircle size={32} color="var(--danger)" />
             </div>
             <div>
-              <div style={{ fontSize: '0.9rem', fontWeight: '700', color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>Active Exception Flags</div>
-              <div style={{ fontSize: '2.5rem', fontWeight: '800', color: 'var(--danger)', fontFamily: 'var(--font-heading)', lineHeight: 1 }}>{failingTests} <span style={{ fontSize: '1.25rem', color: 'var(--text-secondary)' }}>Requirements failing</span></div>
+              <div style={{ fontSize: '0.9rem', fontWeight: '700', color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>Failing Requirements</div>
+              <div style={{ fontSize: '2.5rem', fontWeight: '800', color: 'var(--danger)', fontFamily: 'var(--font-heading)', lineHeight: 1 }}>{failingTests} <span style={{ fontSize: '1.25rem', color: 'var(--text-secondary)' }}>with failed tests</span></div>
             </div>
           </div>
 
         </div>
       </div>
 
-      <SectionCard title="Traceability Logic Aggregator">
+      <SectionCard title="Requirement-Test Mapping">
         {rtmData.length === 0 ? (
           <EmptyState 
-            message="No matrices generated. Process requires upstream Requirement Arrays coupled with active Test Operations parameters." 
+            message="No data to show yet. Add some requirements first, then create test cases for them." 
             iconName="layers" 
           />
         ) : (

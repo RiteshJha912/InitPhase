@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate, NavLink, Outlet, Link } from 'react-router-dom';
-import { LayoutDashboard, ListTodo, FlaskConical, Network, LogOut, LoaderCircle } from 'lucide-react';
+import { useParams, useNavigate, NavLink, Outlet, Link, useLocation } from 'react-router-dom';
+import { LayoutDashboard, ListTodo, FlaskConical, Network, LogOut, LoaderCircle, Menu, X } from 'lucide-react';
 import Button from '../components/Button';
 
 export default function ProjectWorkspace() {
@@ -8,6 +8,13 @@ export default function ProjectWorkspace() {
   const navigate = useNavigate();
   const [project, setProject] = useState(null);
   const [error, setError] = useState('');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const location = useLocation();
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [location.pathname]);
   
   // Data states
   const [requirements, setRequirements] = useState([]);
@@ -121,7 +128,7 @@ export default function ProjectWorkspace() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden', backgroundColor: 'var(--bg-base)' }}>
-      <nav style={{ 
+      <nav className="responsive-nav" style={{ 
         display: 'flex', 
         justifyContent: 'space-between', 
         alignItems: 'center', 
@@ -132,46 +139,56 @@ export default function ProjectWorkspace() {
         height: '64px', 
         zIndex: 10
       }}>
-        <div style={{ fontSize: '1.25rem', fontWeight: '800', letterSpacing: '-0.025em', fontFamily: 'var(--font-heading)' }}>
-          <Link to="/dashboard" style={{ color: 'var(--text-primary)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <div style={{ width: '24px', height: '24px', backgroundColor: 'var(--accent-color)', borderRadius: '4px' }}></div>
-            InitPhase
-          </Link>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <button className="hamburger-btn" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+          <div style={{ fontSize: '1.25rem', fontWeight: '800', letterSpacing: '-0.025em', fontFamily: 'var(--font-heading)' }}>
+            <Link to="/dashboard" style={{ color: 'var(--text-primary)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={{ width: '24px', height: '24px', backgroundColor: 'var(--accent-color)', borderRadius: '5px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><svg width={14} height={14} viewBox="0 0 24 24" fill="none"><path d="M4 6L11 12L4 18" stroke="#0f1115" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" /><path d="M13 18H20" stroke="#0f1115" strokeWidth="2.8" strokeLinecap="round" /></svg></div>
+              <span className="hide-on-mobile">InitPhase</span>
+            </Link>
+          </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <div style={{ fontWeight: '500', color: 'var(--text-secondary)', fontSize: '0.95rem', padding: '6px 16px', backgroundColor: 'var(--bg-card)', borderRadius: '9999px', border: '1px solid var(--border-color)' }}>
-            v2.1 Enterprise • Active
+          <div className="hide-on-mobile" style={{ fontWeight: '500', color: 'var(--text-secondary)', fontSize: '0.95rem', padding: '6px 16px', backgroundColor: 'var(--bg-card)', borderRadius: '9999px', border: '1px solid var(--border-color)' }}>
+            Active
           </div>
           <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard')}>
-            <LogOut size={16} /> Exit Workspace
+            <LogOut size={16} /> <span className="hide-on-mobile">Back to Projects</span>
           </Button>
         </div>
       </nav>
 
-      <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+      <div className="workspace-layout" style={{ display: 'flex', flex: 1, overflow: 'hidden', position: 'relative' }}>
+        {/* Mobile Overlay */}
+        {isMobileMenuOpen && (
+          <div className="mobile-overlay" onClick={() => setIsMobileMenuOpen(false)}></div>
+        )}
+
         {/* Left vertical sidebar */}
-        <aside style={{ 
+        <aside className={`workspace-sidebar ${isMobileMenuOpen ? 'mobile-open' : ''}`} style={{ 
           width: '280px', 
           backgroundColor: 'var(--bg-surface)', 
           borderRight: '1px solid var(--border-color)',
           display: 'flex', 
           flexDirection: 'column', 
           paddingTop: '32px',
-          zIndex: 5
+          zIndex: 50
         }}>
-          <div style={{ padding: '0 24px', marginBottom: '16px' }}>
+          <div className="sidebar-header" style={{ padding: '0 24px', marginBottom: '16px' }}>
             <h2 style={{ fontSize: '1.25rem', margin: 0, color: 'var(--text-primary)', fontFamily: 'var(--font-heading)', lineHeight: 1.2 }}>{project.name}</h2>
             <p style={{ margin: 0, marginTop: '8px', fontSize: '0.85rem', color: 'var(--text-tertiary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>ID: {project._id}</p>
           </div>
           
-          <div style={{ padding: '0 24px', marginBottom: '16px', marginTop: '16px', color: 'var(--text-tertiary)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: '700' }}>
+          <div className="sidebar-header" style={{ padding: '0 24px', marginBottom: '16px', marginTop: '16px', color: 'var(--text-tertiary)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: '700' }}>
             Workspace Modules
           </div>
           
-          <NavLink to="overview" style={navLinkStyle}><LayoutDashboard size={20} className="module-icon" /> Dashboard</NavLink>
-          <NavLink to="requirements" style={navLinkStyle}><ListTodo size={20} className="module-icon" /> Requirements</NavLink>
-          <NavLink to="testcases" style={navLinkStyle}><FlaskConical size={20} className="module-icon" /> Test Execution</NavLink>
-          <NavLink to="rtm" style={navLinkStyle}><Network size={20} className="module-icon" /> Analytics Matrix</NavLink>
+          <NavLink to="overview" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><LayoutDashboard size={20} className="module-icon" /> Dashboard</NavLink>
+          <NavLink to="requirements" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><ListTodo size={20} className="module-icon" /> Requirements</NavLink>
+          <NavLink to="testcases" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><FlaskConical size={20} className="module-icon" /> Test Execution</NavLink>
+          <NavLink to="rtm" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><Network size={20} className="module-icon" /> Analytics Matrix</NavLink>
         </aside>
 
         {/* Main Content Area */}
