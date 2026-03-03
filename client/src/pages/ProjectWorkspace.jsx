@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, NavLink, Outlet, Link } from 'react-router-dom';
+import { LayoutDashboard, ListTodo, FlaskConical, Network, LogOut, LoaderCircle } from 'lucide-react';
+import Button from '../components/Button';
 
 export default function ProjectWorkspace() {
   const { id } = useParams();
@@ -86,72 +88,63 @@ export default function ProjectWorkspace() {
 
   if (error) {
     return (
-      <div className="container" style={{ marginTop: '40px' }}>
-        <p style={{ color: '#e53e3e', fontSize: '1.25rem' }}>{error}</p>
-        <Link to="/dashboard" style={{ color: '#3182ce', textDecoration: 'underline' }}>Back to Dashboard</Link>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', backgroundColor: 'var(--bg-base)' }}>
+        <p style={{ color: 'var(--danger)', fontSize: '1.25rem', marginBottom: '16px' }}>{error}</p>
+        <Button variant="secondary" onClick={() => navigate('/dashboard')}>Back to Dashboard</Button>
       </div>
     );
   }
 
   if (!project) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#f7fafc', fontSize: '1.5rem', color: '#718096' }}>
-        loading enterprise workspace...
+      <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: 'var(--bg-base)', color: 'var(--text-secondary)' }}>
+        <LoaderCircle size={48} className="animate-spin" style={{ animation: 'spin 1.5s linear infinite' }} />
+        <p style={{ marginTop: '16px', fontFamily: 'var(--font-heading)' }}>Connecting to Workspace Core...</p>
       </div>
     );
   }
 
   const navLinkStyle = ({ isActive }) => ({
-    display: 'block',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
     padding: '12px 24px',
-    color: isActive ? '#fff' : '#a0aec0',
-    backgroundColor: isActive ? '#2d3748' : 'transparent',
+    color: isActive ? 'var(--text-primary)' : 'var(--text-secondary)',
+    backgroundColor: isActive ? 'var(--bg-card-hover)' : 'transparent',
     textDecoration: 'none',
-    fontWeight: isActive ? '600' : '400',
-    borderLeft: isActive ? '4px solid #63b3ed' : '4px solid transparent',
+    fontWeight: isActive ? '600' : '500',
+    borderLeft: isActive ? '4px solid var(--accent-color)' : '4px solid transparent',
     transition: 'all 0.2s ease-in-out',
-    marginBottom: '8px',
-    borderRadius: '0 8px 8px 0',
-    marginRight: '16px'
+    margin: '4px 16px 4px 0',
+    borderRadius: '0 var(--radius-md) var(--radius-md) 0'
   });
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden', backgroundColor: '#f0f4f8' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden', backgroundColor: 'var(--bg-base)' }}>
       <nav style={{ 
         display: 'flex', 
         justifyContent: 'space-between', 
         alignItems: 'center', 
         padding: '0 32px', 
-        backgroundColor: '#1a202c', 
-        color: '#fff', 
+        backgroundColor: 'var(--bg-surface)', 
+        borderBottom: '1px solid var(--border-color)',
+        color: 'var(--text-primary)', 
         height: '64px', 
-        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
         zIndex: 10
       }}>
-        <div style={{ fontSize: '1.5rem', fontWeight: '800', letterSpacing: '-0.025em' }}>
-          <Link to="/dashboard" style={{ color: '#fff', textDecoration: 'none' }}>InitPhase</Link>
+        <div style={{ fontSize: '1.25rem', fontWeight: '800', letterSpacing: '-0.025em', fontFamily: 'var(--font-heading)' }}>
+          <Link to="/dashboard" style={{ color: 'var(--text-primary)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ width: '24px', height: '24px', backgroundColor: 'var(--accent-color)', borderRadius: '4px' }}></div>
+            InitPhase
+          </Link>
         </div>
-        <div style={{ fontWeight: '600', color: '#cbd5e0', fontSize: '1.1rem' }}>
-          {project.name} Workspace
-        </div>
-        <div>
-          <button 
-            onClick={() => navigate('/dashboard')} 
-            style={{ 
-              backgroundColor: '#4a5568', 
-              color: '#fff', 
-              border: 'none', 
-              padding: '8px 24px', 
-              borderRadius: '6px', 
-              cursor: 'pointer',
-              fontWeight: '600',
-              transition: 'background-color 0.2s'
-            }}
-            onMouseOver={e => e.currentTarget.style.backgroundColor = '#2d3748'}
-            onMouseOut={e => e.currentTarget.style.backgroundColor = '#4a5568'}
-          >
-            Exit Workspace
-          </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div style={{ fontWeight: '500', color: 'var(--text-secondary)', fontSize: '0.95rem', padding: '6px 16px', backgroundColor: 'var(--bg-card)', borderRadius: '9999px', border: '1px solid var(--border-color)' }}>
+            v2.1 Enterprise • Active
+          </div>
+          <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard')}>
+            <LogOut size={16} /> Exit Workspace
+          </Button>
         </div>
       </nav>
 
@@ -159,25 +152,30 @@ export default function ProjectWorkspace() {
         {/* Left vertical sidebar */}
         <aside style={{ 
           width: '280px', 
-          backgroundColor: '#1a202c', 
+          backgroundColor: 'var(--bg-surface)', 
+          borderRight: '1px solid var(--border-color)',
           display: 'flex', 
           flexDirection: 'column', 
           paddingTop: '32px',
-          boxShadow: '4px 0 6px -1px rgba(0, 0, 0, 0.1)',
           zIndex: 5
         }}>
-          <div style={{ padding: '0 24px', marginBottom: '32px', color: '#718096', fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: '700' }}>
-            Modules
+          <div style={{ padding: '0 24px', marginBottom: '16px' }}>
+            <h2 style={{ fontSize: '1.25rem', margin: 0, color: 'var(--text-primary)', fontFamily: 'var(--font-heading)', lineHeight: 1.2 }}>{project.name}</h2>
+            <p style={{ margin: 0, marginTop: '8px', fontSize: '0.85rem', color: 'var(--text-tertiary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>ID: {project._id}</p>
           </div>
           
-          <NavLink to="overview" style={navLinkStyle}>Overview</NavLink>
-          <NavLink to="requirements" style={navLinkStyle}>Requirements Module</NavLink>
-          <NavLink to="testcases" style={navLinkStyle}>Test Case Module</NavLink>
-          <NavLink to="rtm" style={navLinkStyle}>RTM Module</NavLink>
+          <div style={{ padding: '0 24px', marginBottom: '16px', marginTop: '16px', color: 'var(--text-tertiary)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: '700' }}>
+            Workspace Modules
+          </div>
+          
+          <NavLink to="overview" style={navLinkStyle}><LayoutDashboard size={20} className="module-icon" /> Dashboard</NavLink>
+          <NavLink to="requirements" style={navLinkStyle}><ListTodo size={20} className="module-icon" /> Requirements</NavLink>
+          <NavLink to="testcases" style={navLinkStyle}><FlaskConical size={20} className="module-icon" /> Test Execution</NavLink>
+          <NavLink to="rtm" style={navLinkStyle}><Network size={20} className="module-icon" /> Analytics Matrix</NavLink>
         </aside>
 
         {/* Main Content Area */}
-        <main style={{ flex: 1, overflowY: 'auto' }}>
+        <main style={{ flex: 1, overflowY: 'auto', backgroundColor: 'var(--bg-base)' }}>
           <Outlet context={{ 
             projectId: id, 
             project, 
@@ -191,6 +189,10 @@ export default function ProjectWorkspace() {
           }} />
         </main>
       </div>
+      <style dangerouslySetInnerHTML={{__html: `
+        .module-icon { opacity: 0.7; transition: opacity 0.2s; }
+        .active .module-icon { opacity: 1; color: var(--accent-color); }
+      `}} />
     </div>
   );
 }

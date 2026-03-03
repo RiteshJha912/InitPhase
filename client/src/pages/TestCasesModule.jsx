@@ -5,6 +5,8 @@ import StatCard from '../components/StatCard';
 import SectionCard from '../components/SectionCard';
 import DataTable from '../components/DataTable';
 import EmptyState from '../components/EmptyState';
+import Button from '../components/Button';
+import { FlaskConical, CheckCircle2, XCircle, Clock, Save, ShieldCheck } from 'lucide-react';
 
 export default function TestCasesModule() {
   const { projectId, requirements, testCases, fetchTestCases, fetchRtm } = useOutletContext();
@@ -71,51 +73,67 @@ export default function TestCasesModule() {
   const failedTests = testCases.filter(t => t.status === 'Fail').length;
   const pendingTests = testCases.filter(t => t.status === 'Pending').length;
 
-  // Requirement coverage simple calc
   const coveredReqsCount = new Set(testCases.map(t => t.requirement ? t.requirement._id : null).filter(Boolean)).size;
   const totalReqs = requirements.length;
   const coverageRatio = totalReqs > 0 ? Math.round((coveredReqsCount / totalReqs) * 100) : 0;
 
   const columns = [
-    { label: 'Requirement', width: '30%' },
-    { label: 'Test Case Name', width: 'auto' },
-    { label: 'Status', width: '200px' }
+    { label: 'Parent Requirement', width: '30%' },
+    { label: 'Validation Protocol Name', width: 'auto' },
+    { label: 'Execution State', width: '200px' }
   ];
 
   return (
     <ModuleLayout
-      title="Test Case Management Module"
-      description="Quality Assurance subsystem for authoring, tracing, and executing test cases globally. Validate requirements against expected outcomes to ensure functional compliance."
+      title="Test Instance Execution"
+      description="Quality Assurance subsystem mapping authored compliance validations dynamically against initial structural requirements to calculate global system health."
+      connectionText="Test Execution links logically with the Requirements Console and computes downstream to the Traceability Matrix. Without structural integration occurring here, Downstream RTM capabilities will manifest zero analytical capability."
       stats={
         <>
-          <StatCard title="Total Test Cases" value={totalTests} color="#4299e1" />
-          <StatCard title="Passed" value={passedTests} color="#48bb78" />
-          <StatCard title="Failed" value={failedTests} color="#f56565" />
-          <StatCard title="Pending" value={pendingTests} color="#ecc94b" />
+          <StatCard title="Total Instance Calls" value={totalTests} color="var(--accent-color)" icon={FlaskConical} />
+          <StatCard title="Passed Assertions" value={passedTests} color="var(--success)" icon={CheckCircle2} />
+          <StatCard title="Failed Exceptions" value={failedTests} color="var(--danger)" icon={XCircle} />
+          <StatCard title="Pending Checks" value={pendingTests} color="var(--text-tertiary)" icon={Clock} />
         </>
       }
     >
-      <div style={{ padding: '16px 24px', backgroundColor: '#ebf8fa', borderRadius: '8px', border: '1px solid #b2ebf2', color: '#006064', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div>
-          <h3 style={{ margin: '0 0 4px 0', fontSize: '1.1rem' }}>Requirement Coverage Indicator</h3>
-          <p style={{ margin: 0, fontSize: '0.9rem', opacity: 0.8 }}>How many requirements have test cases mapped to them.</p>
+      <div style={{ 
+        padding: '24px 32px', 
+        backgroundColor: 'var(--bg-surface)', 
+        borderRadius: 'var(--radius-md)', 
+        border: '1px solid var(--border-color)', 
+        color: 'var(--text-primary)', 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center',
+        boxShadow: 'var(--shadow-sm)'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div style={{ padding: '12px', backgroundColor: 'var(--bg-card)', borderRadius: '50%' }}>
+            <ShieldCheck size={32} color={coverageRatio === 100 ? 'var(--success)' : coverageRatio === 0 ? 'var(--danger)' : 'var(--warning)'} />
+          </div>
+          <div>
+            <h3 style={{ margin: '0 0 6px 0', fontSize: '1.25rem', fontFamily: 'var(--font-heading)' }}>Parent Structural Coverage Integrity</h3>
+            <p style={{ margin: 0, fontSize: '0.95rem', color: 'var(--text-secondary)' }}>Metric: Active Requirements with Bound Validators</p>
+          </div>
         </div>
-        <div style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
-          {coveredReqsCount} / {totalReqs} ({coverageRatio}%)
+        <div style={{ fontSize: '2rem', fontWeight: '800', fontFamily: 'var(--font-heading)' }}>
+          <span style={{ color: coverageRatio === 100 ? 'var(--success)' : coverageRatio === 0 ? 'var(--danger)' : 'var(--warning)' }}>{coverageRatio}%</span>
+          <span style={{ fontSize: '1rem', color: 'var(--text-tertiary)', fontWeight: '600', marginLeft: '8px' }}>({coveredReqsCount} / {totalReqs})</span>
         </div>
       </div>
 
-      <SectionCard title="Test Case Creation Console">
-        <form onSubmit={handleAddTestCase} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+      <SectionCard title="Validation Instance Constructor">
+        <form onSubmit={handleAddTestCase} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
           <div style={{ gridColumn: '1 / -1' }}>
-            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', color: '#4a5568' }}>Select Requirement</label>
+            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: 'var(--text-secondary)', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Target Parent Requirement</label>
             <select 
               value={selectedReq} 
               onChange={(e) => setSelectedReq(e.target.value)}
-              style={{ width: '100%', padding: '10px 14px', border: '1px solid #cbd5e0', borderRadius: '6px' }}
+              style={{ width: '100%', padding: '12px 16px', backgroundColor: 'var(--bg-base)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-sm)', color: 'var(--text-primary)', fontSize: '1rem' }}
               required
             >
-              <option value="" disabled>Select Requirement to validate...</option>
+              <option value="" disabled>Awaiting valid structure link...</option>
               {requirements.map(req => (
                 <option key={req._id} value={req._id}>[{req.priority}] {req.title}</option>
               ))}
@@ -123,85 +141,78 @@ export default function TestCasesModule() {
           </div>
           
           <div style={{ gridColumn: '1 / -1' }}>
-            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', color: '#4a5568' }}>Test Case Name</label>
+            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: 'var(--text-secondary)', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Test Instance Nomenclature</label>
             <input 
               type="text" 
               value={testName} 
               onChange={(e) => setTestName(e.target.value)} 
-              placeholder="e.g., Verify valid login credentials" 
+              placeholder="e.g., Verify invalid token authorization bounce" 
               required 
-              style={{ width: '100%', padding: '10px 14px', border: '1px solid #cbd5e0', borderRadius: '6px' }}
+              style={{ width: '100%', padding: '12px 16px', backgroundColor: 'var(--bg-base)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-sm)', color: 'var(--text-primary)', fontSize: '1rem', margin: 0 }}
             />
           </div>
 
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', color: '#4a5568' }}>Execution Steps</label>
+            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: 'var(--text-secondary)', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Sequential Test Environment Operations</label>
             <textarea 
               value={testSteps} 
               onChange={(e) => setTestSteps(e.target.value)} 
-              placeholder="1. Open App 2. Click... 3. Enter..." 
+              placeholder="Draft simulated execution map line-by-line..." 
               required 
-              style={{ width: '100%', padding: '10px 14px', border: '1px solid #cbd5e0', borderRadius: '6px', minHeight: '80px', resize: 'vertical' }}
+              style={{ width: '100%', padding: '12px 16px', backgroundColor: 'var(--bg-base)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-sm)', color: 'var(--text-primary)', minHeight: '100px', resize: 'vertical', fontSize: '0.95rem' }}
             />
           </div>
 
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', color: '#4a5568' }}>Expected Result</label>
+            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: 'var(--text-secondary)', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Anticipated Console State Results</label>
             <textarea 
               value={testExpectedResult} 
               onChange={(e) => setTestExpectedResult(e.target.value)} 
-              placeholder="User is logged in successfully and redirected to dashboard." 
+              placeholder="State explicitly the acceptable structural outcome bounding condition." 
               required 
-              style={{ width: '100%', padding: '10px 14px', border: '1px solid #cbd5e0', borderRadius: '6px', minHeight: '80px', resize: 'vertical' }}
+              style={{ width: '100%', padding: '12px 16px', backgroundColor: 'var(--bg-base)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-sm)', color: 'var(--text-primary)', minHeight: '100px', resize: 'vertical', fontSize: '0.95rem' }}
             />
           </div>
 
-          <div style={{ gridColumn: '1 / -1', display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '16px', marginTop: '8px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <label style={{ fontWeight: '500', color: '#4a5568' }}>Initial Status:</label>
+          <div style={{ gridColumn: '1 / -1', display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '20px', marginTop: '12px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <label style={{ fontWeight: '600', color: 'var(--text-secondary)', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Initial Return Code:</label>
               <select 
                 value={testStatus} 
                 onChange={(e) => setTestStatus(e.target.value)}
-                style={{ padding: '8px 12px', border: '1px solid #cbd5e0', borderRadius: '6px' }}
+                style={{ padding: '10px 16px', backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', borderRadius: 'var(--radius-sm)', fontWeight: '600' }}
               >
-                <option value="Pending">Pending</option>
-                <option value="Pass">Pass</option>
-                <option value="Fail">Fail</option>
+                <option value="Pending">Process: Pending</option>
+                <option value="Pass">Process: Pass</option>
+                <option value="Fail">Process: Fail</option>
               </select>
             </div>
             
-            <button type="submit" style={{ 
-              padding: '10px 24px', 
-              backgroundColor: '#319795', 
-              color: 'white', 
-              border: 'none', 
-              borderRadius: '6px', 
-              fontSize: '1rem',
-              fontWeight: '600',
-              cursor: 'pointer'
-            }}>
-              Commit Test Case
-            </button>
+            <Button type="submit" variant="primary">
+              <Save size={18} /> Inject to Queue
+            </Button>
           </div>
         </form>
       </SectionCard>
 
-      <SectionCard title="Test Execution Dashboard">
+      <SectionCard title="Global Execution Analytics Map">
         {testCases.length === 0 ? (
           <EmptyState 
-            message="No test cases committed yet. Start by creating a test case against an existing requirement." 
-            icon="🧪" 
+            message="No functional instances initialized. Bind an operation against a requirement using the constructor interface." 
+            iconName="check" 
           />
         ) : (
           <DataTable 
             columns={columns}
             data={testCases}
             renderRow={(tc) => (
-              <tr key={tc._id} style={{ borderBottom: '1px solid #edf2f7', transition: 'background-color 0.2s' }}>
-                <td style={{ padding: '16px 24px', color: '#4a5568', fontSize: '0.95rem' }}>
-                  {tc.requirement ? tc.requirement.title : <span style={{ color: '#a0aec0', fontStyle: 'italic' }}>Deleted Requirement</span>}
+              <tr key={tc._id} style={{ borderBottom: '1px solid var(--border-color)', transition: 'background-color 0.2s' }}
+                  onMouseOver={e=>e.currentTarget.style.backgroundColor='var(--bg-card-hover)'}
+                  onMouseOut={e=>e.currentTarget.style.backgroundColor='transparent'}>
+                <td style={{ padding: '16px 24px', color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
+                  {tc.requirement ? <span style={{ fontWeight: '600' }}>{tc.requirement.title}</span> : <span style={{ color: 'var(--danger)', fontStyle: 'italic', padding: '4px 8px', backgroundColor: 'var(--danger-bg)', borderRadius: '4px' }}>Requirement Pointer Dereferenced</span>}
                 </td>
-                <td style={{ padding: '16px 24px', fontSize: '1rem', color: '#2d3748', fontWeight: '500' }}>
+                <td style={{ padding: '16px 24px', fontSize: '1rem', color: 'var(--text-primary)', fontWeight: '600' }}>
                   {tc.name}
                 </td>
                 <td style={{ padding: '16px 24px' }}>
@@ -209,20 +220,21 @@ export default function TestCasesModule() {
                     value={tc.status}
                     onChange={(e) => handleUpdateTestStatus(tc._id, e.target.value)}
                     style={{ 
-                      padding: '6px 16px', 
-                      border: '1px solid #cbd5e0', 
+                      padding: '8px 16px', 
+                      border: `1px solid ${tc.status === 'Pass' ? 'rgba(16, 185, 129, 0.4)' : tc.status === 'Fail' ? 'rgba(239, 68, 68, 0.4)' : 'rgba(161, 161, 170, 0.4)'}`, 
                       borderRadius: '9999px',
                       fontSize: '0.875rem',
-                      fontWeight: '600',
+                      fontWeight: '700',
                       cursor: 'pointer',
-                      backgroundColor: tc.status === 'Pass' ? '#c6f6d5' : tc.status === 'Fail' ? '#fed7d7' : '#fefcbf',
-                      color: tc.status === 'Pass' ? '#22543d' : tc.status === 'Fail' ? '#9b2c2c' : '#b7791f',
-                      outline: 'none'
+                      backgroundColor: tc.status === 'Pass' ? 'var(--success-bg)' : tc.status === 'Fail' ? 'var(--danger-bg)' : 'var(--bg-surface)',
+                      color: tc.status === 'Pass' ? 'var(--success)' : tc.status === 'Fail' ? 'var(--danger)' : 'var(--text-secondary)',
+                      outline: 'none',
+                      transition: 'all 0.2s'
                     }}
                   >
-                    <option value="Pending">Pending</option>
-                    <option value="Pass">Pass</option>
-                    <option value="Fail">Fail</option>
+                    <option value="Pending">Queued :: Pending</option>
+                    <option value="Pass">Verified :: Pass</option>
+                    <option value="Fail">Exception :: Fail</option>
                   </select>
                 </td>
               </tr>

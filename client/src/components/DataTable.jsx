@@ -1,16 +1,22 @@
 export default function DataTable({ columns, data, renderRow, emptyMessage }) {
   return (
-    <div style={{ overflowX: 'auto', margin: '-24px', borderRadius: '0 0 12px 12px' }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '600px' }}>
+    <div style={{ overflowX: 'auto', margin: '-24px', borderRadius: '0 0 var(--radius-md) var(--radius-md)' }}>
+      <table style={{ 
+        width: '100%', 
+        borderCollapse: 'collapse', 
+        textAlign: 'left', 
+        minWidth: '600px',
+        color: 'var(--text-primary)'
+      }}>
         <thead>
-          <tr style={{ backgroundColor: '#f7fafc', borderBottom: '2px solid #e2e8f0', borderTop: '1px solid #e2e8f0' }}>
+          <tr style={{ backgroundColor: 'var(--bg-surface)', borderBottom: '2px solid var(--border-color)', borderTop: '1px solid var(--border-color)' }}>
             {columns.map((col, idx) => (
               <th key={idx} style={{ 
                 padding: '16px 24px', 
-                color: '#4a5568', 
+                color: 'var(--text-secondary)', 
                 fontWeight: '600', 
                 width: col.width || 'auto',
-                fontSize: '0.875rem',
+                fontSize: '0.85rem',
                 textTransform: 'uppercase',
                 letterSpacing: '0.05em'
               }}>
@@ -19,12 +25,12 @@ export default function DataTable({ columns, data, renderRow, emptyMessage }) {
             ))}
           </tr>
         </thead>
-        <tbody>
+        <tbody style={{ backgroundColor: 'var(--bg-card)' }}>
           {data && data.length > 0 ? (
             data.map((item, idx) => renderRow(item, idx))
           ) : (
             <tr>
-              <td colSpan={columns.length} style={{ padding: '48px 24px', textAlign: 'center', color: '#a0aec0', fontSize: '1rem' }}>
+              <td colSpan={columns.length} style={{ padding: '48px 24px', textAlign: 'center', color: 'var(--text-tertiary)', fontSize: '1rem' }}>
                 {emptyMessage || 'No data available.'}
               </td>
             </tr>

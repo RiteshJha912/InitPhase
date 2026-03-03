@@ -1,15 +1,26 @@
-export default function SectionCard({ title, children }) {
+export default function SectionCard({ title, children, actions }) {
   return (
     <div style={{ 
-      backgroundColor: '#fff', 
-      border: '1px solid #e2e8f0', 
-      borderRadius: '12px', 
-      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)',
-      overflow: 'hidden'
+      backgroundColor: 'var(--bg-card)', 
+      border: '1px solid var(--border-color)', 
+      borderRadius: 'var(--radius-md)', 
+      boxShadow: 'var(--shadow-lg)',
+      overflow: 'hidden',
+      marginBottom: '24px'
     }}>
       {title && (
-        <div style={{ padding: '20px 24px', borderBottom: '1px solid #e2e8f0', backgroundColor: '#f7fafc' }}>
-          <h2 style={{ margin: 0, fontSize: '1.25rem', color: '#2d3748', fontWeight: '600' }}>{title}</h2>
+        <div style={{ 
+          padding: '20px 24px', 
+          borderBottom: '1px solid var(--border-color)', 
+          backgroundColor: 'var(--bg-surface)',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}>
+          <h2 style={{ margin: 0, fontSize: '1.25rem', color: 'var(--text-primary)', fontWeight: '700', fontFamily: 'var(--font-heading)' }}>
+            {title}
+          </h2>
+          {actions && <div>{actions}</div>}
         </div>
       )}
       <div style={{ padding: '24px' }}>

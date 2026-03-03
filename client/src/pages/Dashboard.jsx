@@ -3,6 +3,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import StatCard from '../components/StatCard';
 import SectionCard from '../components/SectionCard';
 import EmptyState from '../components/EmptyState';
+import Button from '../components/Button';
+import { Target, Server, Shield, Box, PlusCircle } from 'lucide-react';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -68,119 +70,85 @@ export default function Dashboard() {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: '#f0f4f8' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: 'var(--bg-base)' }}>
       <nav style={{ 
         display: 'flex', 
         justifyContent: 'space-between', 
         alignItems: 'center', 
         padding: '0 32px', 
-        backgroundColor: '#1a202c', 
-        color: '#fff', 
+        backgroundColor: 'var(--bg-surface)', 
+        borderBottom: '1px solid var(--border-color)',
+        color: 'var(--text-primary)', 
         height: '64px', 
-        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
         zIndex: 10
       }}>
-        <div style={{ fontSize: '1.5rem', fontWeight: '800', letterSpacing: '-0.025em' }}>
-          InitPhase Enterprise
+        <div style={{ fontSize: '1.25rem', fontWeight: '800', letterSpacing: '-0.025em', fontFamily: 'var(--font-heading)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ width: '24px', height: '24px', backgroundColor: 'var(--accent-color)', borderRadius: '4px' }}></div>
+          InitPhase Enterprise Hub
         </div>
         <div>
-          <button 
-            onClick={handleLogout} 
-            style={{ 
-              backgroundColor: '#e53e3e', 
-              color: '#fff', 
-              border: 'none', 
-              padding: '8px 24px', 
-              borderRadius: '6px', 
-              cursor: 'pointer',
-              fontWeight: '600',
-              transition: 'background-color 0.2s'
-            }}
-            onMouseOver={e => e.currentTarget.style.backgroundColor = '#c53030'}
-            onMouseOut={e => e.currentTarget.style.backgroundColor = '#e53e3e'}
-          >
-            Sign Out
-          </button>
+          <Button variant="danger" size="sm" onClick={handleLogout}>
+            Terminate Session
+          </Button>
         </div>
       </nav>
 
-      <div style={{ padding: '40px', maxWidth: '1200px', margin: '0 auto', width: '100%', boxSizing: 'border-box' }}>
+      <div className="animate-fade-in" style={{ padding: '40px', maxWidth: '1200px', margin: '0 auto', width: '100%', boxSizing: 'border-box' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '40px' }}>
           <div>
-            <h1 style={{ margin: '0 0 12px 0', fontSize: '2.5rem', color: '#1a202c', fontWeight: '800', letterSpacing: '-0.025em' }}>Global Project Directory</h1>
-            <p style={{ margin: 0, fontSize: '1.25rem', color: '#4a5568', maxWidth: '800px', lineHeight: '1.625' }}>
-              Select a project workspace to begin authoring requirements, tracing compliance matrices, and executing validation tests.
+            <h1 style={{ margin: '0 0 12px 0', fontSize: '2.5rem', color: 'var(--text-primary)', fontWeight: '800', letterSpacing: '-0.025em', fontFamily: 'var(--font-heading)' }}>Directory Protocol</h1>
+            <p style={{ margin: 0, fontSize: '1.15rem', color: 'var(--text-secondary)', maxWidth: '800px', lineHeight: '1.6' }}>
+              Select an active structural workspace to begin authoring requirements, tracing compliance matrices, and executing validation tests.
             </p>
           </div>
-          <button 
+          <Button 
+            variant={showForm ? 'secondary' : 'primary'}
             onClick={() => { setShowForm(!showForm); setError(''); setName(''); setDescription(''); }}
-            style={{ 
-              backgroundColor: showForm ? '#e2e8f0' : '#2b6cb0', 
-              color: showForm ? '#4a5568' : '#fff', 
-              border: 'none', 
-              padding: '12px 24px', 
-              borderRadius: '6px', 
-              cursor: 'pointer',
-              fontWeight: '600',
-              fontSize: '1rem',
-              transition: 'all 0.2s',
-              boxShadow: showForm ? 'none' : '0 4px 6px -1px rgba(0,0,0,0.1)'
-            }}
           >
-            {showForm ? 'Cancel Creation' : '+ Initialize Project'}
-          </button>
+            {showForm ? 'Cancel Creation' : <><PlusCircle size={18} /> Initialize Segment</>}
+          </Button>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px', marginBottom: '40px' }}>
-          <StatCard title="Active Projects" value={projects.length} color="#3182ce" />
-          <StatCard title="Global Status" value="Operational" color="#38a169" />
-          <StatCard title="Access Level" value="Enterprise" color="#805ad5" />
+          <StatCard title="Active Segments" value={projects.length} color="var(--accent-color)" icon={Target} />
+          <StatCard title="System Node" value="Operational" color="var(--success)" icon={Server} />
+          <StatCard title="Access Tier" value="Enterprise" color="#a855f7" icon={Shield} />
         </div>
 
         {showForm && (
           <div style={{ marginBottom: '40px' }}>
-            <SectionCard title="Initialize New Workspace">
+            <SectionCard title="Initialize New Node Parameter">
               {error && (
-                <div style={{ padding: '12px', backgroundColor: '#fed7d7', color: '#9b2c2c', borderRadius: '6px', marginBottom: '16px', fontWeight: '500' }}>
+                <div style={{ padding: '12px', backgroundColor: 'var(--danger-bg)', color: 'var(--danger)', borderRadius: 'var(--radius-sm)', marginBottom: '16px', fontWeight: '500', border: '1px solid rgba(239, 68, 68, 0.4)' }}>
                   {error}
                 </div>
               )}
-              <form onSubmit={handleCreateProject} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <form onSubmit={handleCreateProject} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 <div>
-                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#4a5568' }}>Project Nomenclature</label>
+                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: 'var(--text-secondary)', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Node Nomenclature</label>
                   <input 
                     type="text" 
                     value={name} 
                     onChange={e => setName(e.target.value)} 
                     required 
                     placeholder="e.g., Nexus Payment Gateway Module"
-                    style={{ width: '100%', padding: '12px', border: '1px solid #cbd5e0', borderRadius: '6px', fontSize: '1rem', boxSizing: 'border-box' }}
+                    style={{ width: '100%', padding: '12px 16px', backgroundColor: 'var(--bg-base)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-sm)', color: 'var(--text-primary)', fontSize: '1rem', boxSizing: 'border-box' }}
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#4a5568' }}>Executive Summary (Description)</label>
+                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: 'var(--text-secondary)', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Executive Summary Envelope</label>
                   <input 
                     type="text" 
                     value={description} 
                     onChange={e => setDescription(e.target.value)} 
-                    placeholder="A brief academic overview of the project's structural goals."
-                    style={{ width: '100%', padding: '12px', border: '1px solid #cbd5e0', borderRadius: '6px', fontSize: '1rem', boxSizing: 'border-box' }}
+                    placeholder="A brief academic overview of the segment's structural goals."
+                    style={{ width: '100%', padding: '12px 16px', backgroundColor: 'var(--bg-base)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-sm)', color: 'var(--text-primary)', fontSize: '1rem', boxSizing: 'border-box' }}
                   />
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '8px' }}>
-                  <button type="submit" style={{ 
-                    backgroundColor: '#38a169', 
-                    color: '#fff', 
-                    border: 'none', 
-                    padding: '12px 32px', 
-                    borderRadius: '6px', 
-                    fontSize: '1rem',
-                    fontWeight: '600',
-                    cursor: 'pointer',
-                    boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)'
-                  }}>
-                    Deploy Workspace
-                  </button>
+                  <Button type="submit" variant="primary">
+                    <Server size={18} /> Deploy Segment Container
+                  </Button>
                 </div>
               </form>
             </SectionCard>
@@ -191,50 +159,56 @@ export default function Dashboard() {
           {projects.length === 0 && !showForm ? (
             <div style={{ gridColumn: '1 / -1' }}>
               <EmptyState 
-                message="No projects have been initialized yet. Click '+ Initialize Project' to build your first enterprise workspace." 
-                icon="🏢" 
+                message="No nodes initialized yet. Click 'Initialize Segment' to build your first enterprise workspace." 
+                iconName="layers" 
               />
             </div>
           ) : (
             projects.map(project => (
               <div key={project._id} style={{ 
-                backgroundColor: '#fff', 
-                border: '1px solid #e2e8f0', 
-                borderRadius: '12px', 
+                backgroundColor: 'var(--bg-card)', 
+                border: '1px solid var(--border-color)', 
+                borderRadius: 'var(--radius-md)', 
                 padding: '24px',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
-                boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)',
+                boxShadow: 'var(--shadow-md)',
                 transition: 'transform 0.2s, box-shadow 0.2s',
                 cursor: 'default'
               }}
-              onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 10px 15px -3px rgba(0,0,0,0.1)'; }}
-              onMouseOut={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0,0,0,0.05)'; }}
+              onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = 'var(--shadow-lg)'; e.currentTarget.style.borderColor = 'var(--accent-color)'; }}
+              onMouseOut={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'var(--shadow-md)'; e.currentTarget.style.borderColor = 'var(--border-color)'; }}
               >
                 <div>
-                  <h3 style={{ margin: '0 0 12px 0', fontSize: '1.5rem', color: '#2d3748', fontWeight: '700' }}>{project.name}</h3>
-                  <p style={{ margin: '0 0 24px 0', color: '#718096', lineHeight: '1.5', fontSize: '1rem' }}>
-                    {project.description || 'No descriptive summary provided for this module.'}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+                    <div style={{ padding: '8px', backgroundColor: 'var(--bg-surface)', borderRadius: 'var(--radius-sm)', color: 'var(--accent-color)' }}>
+                      <Box size={24} />
+                    </div>
+                    <h3 style={{ margin: 0, fontSize: '1.5rem', color: 'var(--text-primary)', fontWeight: '700', fontFamily: 'var(--font-heading)', lineHeight: 1 }}>{project.name}</h3>
+                  </div>
+                  <p style={{ margin: '0 0 24px 0', color: 'var(--text-secondary)', lineHeight: '1.6', fontSize: '1rem', paddingLeft: '44px' }}>
+                    {project.description || 'No descriptive summary provided for this logical module.'}
                   </p>
                 </div>
                 <Link to={`/projects/${project._id}`} style={{ textDecoration: 'none' }}>
                   <button style={{ 
                     width: '100%', 
                     padding: '12px', 
-                    backgroundColor: '#ebf8fa', 
-                    color: '#00838f', 
-                    border: '1px solid #b2ebf2', 
-                    borderRadius: '6px',
+                    backgroundColor: 'var(--bg-surface)', 
+                    color: 'var(--accent-color)', 
+                    border: '1px solid var(--border-color)', 
+                    borderRadius: 'var(--radius-sm)',
                     fontSize: '1rem',
                     fontWeight: '600',
                     cursor: 'pointer',
-                    transition: 'all 0.2s'
+                    transition: 'all 0.2s',
+                    fontFamily: 'var(--font-heading)'
                   }}
-                  onMouseOver={e => { e.currentTarget.style.backgroundColor = '#e0f7fa'; }}
-                  onMouseOut={e => { e.currentTarget.style.backgroundColor = '#ebf8fa'; }}
+                  onMouseOver={e => { e.currentTarget.style.backgroundColor = 'var(--accent-muted)'; e.currentTarget.style.borderColor = 'var(--accent-hover)'; }}
+                  onMouseOut={e => { e.currentTarget.style.backgroundColor = 'var(--bg-surface)'; e.currentTarget.style.borderColor = 'var(--border-color)'; }}
                   >
-                    Enter Workspace &rarr;
+                    Enter Segment &rarr;
                   </button>
                 </Link>
               </div>

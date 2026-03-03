@@ -1,21 +1,53 @@
-export default function StatCard({ title, value, color = '#4a5568', bgColor = '#fff' }) {
+export default function StatCard({ title, value, color = 'var(--accent-color)', icon: Icon }) {
   return (
     <div style={{ 
-      padding: '24px', 
-      backgroundColor: bgColor, 
-      border: '1px solid #e2e8f0', 
-      borderRadius: '12px',
-      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)',
-      borderLeft: `5px solid ${color}`,
+      position: 'relative',
+      padding: '24px 28px', 
+      backgroundColor: 'var(--bg-card)', 
+      border: '1px solid var(--border-color)', 
+      borderRadius: 'var(--radius-lg)',
+      boxShadow: 'var(--shadow-md)',
       display: 'flex',
       flexDirection: 'column',
-      justifyContent: 'center'
+      justifyContent: 'space-between',
+      alignItems: 'flex-start',
+      transition: 'all 0.25s ease',
+      backgroundImage: `linear-gradient(to bottom right, color-mix(in srgb, ${color} 3%, transparent), transparent 40%)`
+    }}
+    onMouseOver={e => {
+        e.currentTarget.style.transform = 'translateY(-4px)';
+        e.currentTarget.style.boxShadow = 'var(--shadow-lg)';
+        e.currentTarget.style.borderColor = `color-mix(in srgb, ${color} 50%, var(--border-color))`;
+    }}
+    onMouseOut={e => {
+        e.currentTarget.style.transform = 'none';
+        e.currentTarget.style.boxShadow = 'var(--shadow-md)';
+        e.currentTarget.style.borderColor = 'var(--border-color)';
     }}>
-      <div style={{ fontSize: '0.875rem', color: '#718096', marginBottom: '12px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-        {title}
+      <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'flex-start', gap: '16px', marginBottom: '20px' }}>
+        <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: '600', letterSpacing: '0.05em', textTransform: 'uppercase', lineHeight: '1.4' }}>
+          {title}
+        </div>
+        {Icon && (
+          <div style={{ 
+            flexShrink: 0,
+            padding: '10px', 
+            backgroundColor: `color-mix(in srgb, ${color} 10%, transparent)`, 
+            borderRadius: '10px', 
+            color: color,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            border: `1px solid color-mix(in srgb, ${color} 20%, transparent)`
+          }}>
+            <Icon size={22} strokeWidth={2.5} />
+          </div>
+        )}
       </div>
-      <div style={{ fontSize: '2.5rem', fontWeight: '700', color: '#1a202c', lineHeight: 1 }}>
-        {value}
+      <div>
+        <div style={{ fontSize: '2.5rem', fontWeight: '800', color: 'var(--text-primary)', lineHeight: 1, fontFamily: 'var(--font-heading)' }}>
+          {value}
+        </div>
       </div>
     </div>
   );

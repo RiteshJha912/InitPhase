@@ -21,7 +21,69 @@ InitPhase is an enterprise-grade project management workspace designed to facili
 
 ## Project Architecture
 
-The application is structured into two main directories: `client` and `server`.
+The application is structured sequentially into two main isolated directories: `client` and `server`.
+
+### Repository Structure
+
+```text
+initphase/
+├── client/                     # React 19 Frontend (Vite)
+│   ├── public/                 # Static assets
+│   ├── src/
+│   │   ├── assets/             # Images, icons, global styling elements
+│   │   ├── components/         # Reusable structural UI components
+│   │   │   ├── DataTable.jsx
+│   │   │   ├── EmptyState.jsx
+│   │   │   ├── ModuleLayout.jsx
+│   │   │   ├── SectionCard.jsx
+│   │   │   └── StatCard.jsx
+│   │   ├── pages/              # Primary route views and module handlers
+│   │   │   ├── Dashboard.jsx
+│   │   │   ├── Landing.jsx
+│   │   │   ├── Login.jsx
+│   │   │   ├── Register.jsx
+│   │   │   ├── ProjectOverview.jsx
+│   │   │   ├── ProjectWorkspace.jsx
+│   │   │   ├── RequirementsModule.jsx
+│   │   │   ├── RtmModule.jsx
+│   │   │   └── TestCasesModule.jsx
+│   │   ├── App.jsx             # Main router configuration
+│   │   ├── main.jsx            # React root injection point
+│   │   ├── App.css
+│   │   └── index.css           # Global stylesheet containing design tokens
+│   ├── index.html              # Entry HTML template
+│   ├── package.json
+│   └── vite.config.js          # Vite configuration
+│
+├── server/                     # Node.js + Express.js Backend
+│   ├── config/                 # Environment and DB configuration
+│   │   └── db.js               # MongoDB connection logic
+│   ├── controllers/            # Business logic handlers
+│   │   ├── authController.js
+│   │   ├── projectController.js
+│   │   ├── requirementController.js
+│   │   ├── rtmController.js
+│   │   └── testCaseController.js
+│   ├── middleware/             # Express middlewares (Auth/Security)
+│   │   └── authMiddleware.js
+│   ├── models/                 # Mongoose database schemas
+│   │   ├── Project.js
+│   │   ├── Requirement.js
+│   │   ├── TestCase.js
+│   │   └── User.js
+│   ├── routes/                 # Express API route declarations
+│   │   ├── authRoutes.js
+│   │   ├── projectRoutes.js
+│   │   ├── requirementRoutes.js
+│   │   ├── rtmRoutes.js
+│   │   └── testCaseRoutes.js
+│   ├── .env                    # Secret environment configurations
+│   ├── package.json
+│   └── server.js               # Primary Express server entry point
+│
+├── dummy_data.md               # Follow-along testing manual
+└── readme.md                   # Enterprise technical documentation
+```
 
 ### Frontend Architecture (`/client`)
 The frontend is implemented as a Single Page Application (SPA) with a heavily modularized routing structure to simulate independent enterprise subsystems.
