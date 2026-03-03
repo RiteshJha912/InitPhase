@@ -22,7 +22,7 @@ export default function TestCasesModule() {
     if (!selectedReq) return;
     const token = localStorage.getItem('token');
     try {
-      const res = await fetch(`http://localhost:5000/api/testcases/${projectId}/${selectedReq}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/testcases/${projectId}/${selectedReq}`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -51,7 +51,7 @@ export default function TestCasesModule() {
   const handleUpdateTestStatus = async (testId, newStatus) => {
     const token = localStorage.getItem('token');
     try {
-      const res = await fetch(`http://localhost:5000/api/testcases/${testId}/status`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/testcases/${testId}/status`, {
         method: 'PATCH',
         headers: { 
           'Content-Type': 'application/json',

@@ -29,7 +29,7 @@ export default function ProjectWorkspace() {
 
   const fetchProject = async (token) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/projects/${id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/projects/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
@@ -45,7 +45,7 @@ export default function ProjectWorkspace() {
 
   const fetchRtm = async (token) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/rtm/${id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/rtm/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
@@ -60,7 +60,7 @@ export default function ProjectWorkspace() {
 
   const fetchRequirements = async (token) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/requirements/${id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/requirements/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
@@ -74,7 +74,7 @@ export default function ProjectWorkspace() {
 
   const fetchTestCases = async (token) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/testcases/${id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/testcases/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {

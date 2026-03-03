@@ -25,7 +25,7 @@ export default function Dashboard() {
 
   const fetchProjects = async (token) => {
     try {
-      const res = await fetch('http://localhost:5000/api/projects', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/projects`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
@@ -48,7 +48,7 @@ export default function Dashboard() {
     const token = localStorage.getItem('token');
     
     try {
-      const res = await fetch('http://localhost:5000/api/projects', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/projects`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',

@@ -18,7 +18,7 @@ export default function RequirementsModule() {
     e.preventDefault();
     const token = localStorage.getItem('token');
     try {
-      const res = await fetch(`http://localhost:5000/api/requirements/${projectId}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/requirements/${projectId}`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -40,7 +40,7 @@ export default function RequirementsModule() {
   const handleDeleteRequirement = async (reqId) => {
     const token = localStorage.getItem('token');
     try {
-      const res = await fetch(`http://localhost:5000/api/requirements/${reqId}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/requirements/${reqId}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` }
       });
