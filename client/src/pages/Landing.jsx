@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { 
   ArrowRight, CheckCircle, ListTodo, FlaskConical, Network, 
   AlertTriangle, ChevronDown, ChevronUp, Zap, Shield, Eye,
-  FileText, BarChart3, Target, Heart, Github, Star
+  FileText, BarChart3, Target, Heart, Github, Star,
+  XCircle, RefreshCw, Plus
 } from 'lucide-react';
 
 /* ═══════════ CUSTOM LOGO SVG ═══════════ */
@@ -111,12 +112,46 @@ export default function Landing() {
       0%, 100% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
     }
+    @keyframes ringDraw {
+      from { stroke-dashoffset: 251; }
+      to { stroke-dashoffset: 0; }
+    }
+    @keyframes barGrow {
+      from { width: 0%; }
+    }
+    @keyframes shimmerBorder {
+      0% { border-color: rgba(255,255,255,0.06); }
+      50% { border-color: rgba(255,255,255,0.14); }
+      100% { border-color: rgba(255,255,255,0.06); }
+    }
+    @keyframes dotPulse {
+      0%, 100% { opacity: 0.03; }
+      50% { opacity: 0.07; }
+    }
+    @keyframes tickerSlide {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+    @keyframes glowPulse {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
+    @keyframes countUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
     .hero-badge { animation: fadeInUp 0.6s ease-out 0.1s both; }
     .hero-title { animation: fadeInUp 0.6s ease-out 0.25s both; }
     .hero-desc { animation: fadeInUp 0.6s ease-out 0.4s both; }
     .hero-cta { animation: fadeInUp 0.6s ease-out 0.55s both; }
     .hero-terminal { animation: fadeInUp 0.8s ease-out 0.4s both; }
     .cta-glow-btn { animation: subtlePulse 3s ease-in-out infinite; }
+    .dash-stat-card { animation: shimmerBorder 4s ease-in-out infinite; }
+    .dash-stat-card:nth-child(2) { animation-delay: 0.5s; }
+    .dash-stat-card:nth-child(3) { animation-delay: 1s; }
+    .ring-progress { animation: ringDraw 1.8s ease-out 0.8s both; }
+    .bar-anim { animation: barGrow 1.2s ease-out 0.6s both; }
+    .ticker-track { animation: tickerSlide 20s linear infinite; }
     @media (max-width: 968px) {
       .landing-hero-grid {
         grid-template-columns: 1fr !important;
@@ -150,6 +185,9 @@ export default function Landing() {
         top: -100px !important;
         width: 400px !important;
         height: 400px !important;
+      }
+      .hero-glow-2 {
+        display: none !important;
       }
     }
     @media (max-width: 640px) {
@@ -204,6 +242,12 @@ export default function Landing() {
     }
   `;
 
+  /* SVG coverage ring helper */
+  const coveragePercent = 100;
+  const ringRadius = 40;
+  const ringCircumference = 2 * Math.PI * ringRadius;
+  const ringOffset = ringCircumference - (coveragePercent / 100) * ringCircumference;
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: '#09090b', color: '#fafafa' }}>
       <style dangerouslySetInnerHTML={{ __html: animationStyles }} />
@@ -256,62 +300,86 @@ export default function Landing() {
       {/* ═══════════════ HERO SECTION ═══════════════ */}
       <section className="hero-section" style={{ 
         position: 'relative', overflow: 'hidden',
-        padding: 'clamp(40px, 6vw, 80px) 24px clamp(50px, 8vw, 90px)',
+        padding: '24px 24px',
+        minHeight: 'calc(100vh - 58px)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
       }}>
-        {/* Subtle radial glow */}
-        <div className="hero-glow" style={{ 
-          position: 'absolute', top: '-200px', left: '30%', transform: 'translateX(-50%)',
-          width: '900px', height: '700px', 
-          background: 'radial-gradient(ellipse, rgba(255,255,255,0.035) 0%, transparent 65%)',
+        {/* ── Crosshatch subtle background (dark mode, faded edges) ── */}
+        <div style={{
+          position: 'absolute', inset: 0, 
+          backgroundImage: `
+            repeating-linear-gradient(22.5deg, transparent, transparent 2px, rgba(255,255,255,0.025) 2px, rgba(255,255,255,0.025) 3px, transparent 3px, transparent 8px),
+            repeating-linear-gradient(67.5deg, transparent, transparent 2px, rgba(255,255,255,0.02) 2px, rgba(255,255,255,0.02) 3px, transparent 3px, transparent 8px),
+            repeating-linear-gradient(112.5deg, transparent, transparent 2px, rgba(255,255,255,0.015) 2px, rgba(255,255,255,0.015) 3px, transparent 3px, transparent 8px),
+            repeating-linear-gradient(157.5deg, transparent, transparent 2px, rgba(255,255,255,0.01) 2px, rgba(255,255,255,0.01) 3px, transparent 3px, transparent 8px)
+          `,
+          maskImage: 'radial-gradient(ellipse 70% 70% at 50% 50%, black 40%, transparent 100%)',
+          WebkitMaskImage: 'radial-gradient(ellipse 70% 70% at 50% 50%, black 40%, transparent 100%)',
           pointerEvents: 'none'
         }} />
 
-        <div className="landing-hero-grid" style={{ maxWidth: '1140px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '56px', alignItems: 'center', position: 'relative', zIndex: 1 }}>
+        {/* ── Primary radial glow ── */}
+        <div className="hero-glow" style={{ 
+          position: 'absolute', top: '-200px', left: '30%', transform: 'translateX(-50%)',
+          width: '900px', height: '700px', 
+          background: 'radial-gradient(ellipse, rgba(255,255,255,0.04) 0%, transparent 65%)',
+          pointerEvents: 'none'
+        }} />
+
+        {/* ── Secondary accent glow (right side, tinted) ── */}
+        <div className="hero-glow-2" style={{ 
+          position: 'absolute', top: '60px', right: '-120px',
+          width: '600px', height: '500px', 
+          background: 'radial-gradient(ellipse, rgba(168, 85, 247, 0.04) 0%, transparent 60%)',
+          pointerEvents: 'none'
+        }} />
+
+        <div className="landing-hero-grid" style={{ maxWidth: '1060px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px', alignItems: 'center', position: 'relative', zIndex: 1 }}>
           
           {/* ══ LEFT: Text & CTA ══ */}
           <div>
             <div className="hero-badge" style={{ 
-              display: 'inline-flex', alignItems: 'center', gap: '8px',
-              padding: '6px 16px', backgroundColor: 'rgba(255,255,255,0.05)', 
+              display: 'inline-flex', alignItems: 'center', gap: '7px',
+              padding: '5px 14px', backgroundColor: 'rgba(255,255,255,0.05)', 
               border: '1px solid rgba(255,255,255,0.1)', borderRadius: '9999px', 
-              fontSize: '0.8rem', color: '#a1a1aa', marginBottom: '28px', fontWeight: '500'
+              fontSize: '0.75rem', color: '#a1a1aa', marginBottom: '20px', fontWeight: '500'
             }}>
-              <div style={{ width: '6px', height: '6px', backgroundColor: '#10b981', borderRadius: '50%' }} />
+              <div style={{ width: '6px', height: '6px', backgroundColor: '#10b981', borderRadius: '50%', boxShadow: '0 0 8px #10b981' }} />
               Open Source &amp; Free
             </div>
 
             <h1 className="hero-title" style={{ 
-              fontSize: 'clamp(2.2rem, 4.5vw, 3.8rem)', fontWeight: '800', fontFamily: 'var(--font-heading)', 
-              lineHeight: '1.08', letterSpacing: '-0.04em', color: '#fafafa', marginBottom: '24px'
+              fontSize: 'clamp(1.9rem, 3.8vw, 3.2rem)', fontWeight: '800', fontFamily: 'var(--font-heading)', 
+              lineHeight: '1.08', letterSpacing: '-0.04em', color: '#fafafa', marginBottom: '18px'
             }}>
               Structure Your<br/>Software Projects.
             </h1>
 
             <p className="hero-desc" style={{ 
-              fontSize: 'clamp(0.95rem, 1.5vw, 1.1rem)', color: '#a1a1aa', lineHeight: '1.7', 
-              marginBottom: '36px', maxWidth: '440px'
+              fontSize: 'clamp(0.88rem, 1.3vw, 1rem)', color: '#a1a1aa', lineHeight: '1.65', 
+              marginBottom: '28px', maxWidth: '400px'
             }}>
-              Define requirements, write test cases, and generate a traceability matrix : the OOSE way. 
+              Define requirements, write test cases, and generate a traceability matrix - the OOSE way. 
               Built for developers who want to ship software that actually works.
             </p>
 
-            <div className="hero-cta" style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+            <div className="hero-cta" style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
               <Link to="/register" style={{ textDecoration: 'none' }}>
                 <button className="cta-glow-btn" style={{ 
-                  padding: '14px 30px', backgroundColor: '#fafafa', color: '#09090b', 
-                  border: 'none', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '8px',
-                  fontSize: '0.95rem', fontWeight: '700', cursor: 'pointer', transition: 'transform 0.25s',
+                  padding: '11px 26px', backgroundColor: '#fafafa', color: '#09090b', 
+                  border: 'none', borderRadius: '9px', display: 'flex', alignItems: 'center', gap: '7px',
+                  fontSize: '0.88rem', fontWeight: '700', cursor: 'pointer', transition: 'transform 0.25s',
                 }}
                 onMouseOver={e => e.currentTarget.style.transform = 'translateY(-2px)'}
                 onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}>
-                  Start for Free <ArrowRight size={16} />
+                  Start for Free <ArrowRight size={15} />
                 </button>
               </Link>
               <a href="#how-it-works" style={{ textDecoration: 'none' }}>
                 <button style={{ 
-                  padding: '14px 28px', backgroundColor: 'transparent', color: '#a1a1aa', 
-                  border: '1px solid rgba(255,255,255,0.12)', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '8px',
-                  fontSize: '0.95rem', fontWeight: '600', cursor: 'pointer', transition: 'all 0.2s'
+                  padding: '11px 24px', backgroundColor: 'transparent', color: '#a1a1aa', 
+                  border: '1px solid rgba(255,255,255,0.12)', borderRadius: '9px', display: 'flex', alignItems: 'center', gap: '7px',
+                  fontSize: '0.88rem', fontWeight: '600', cursor: 'pointer', transition: 'all 0.2s'
                 }}
                 onMouseOver={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.3)'; e.currentTarget.style.color = '#fafafa'; }}
                 onMouseOut={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)'; e.currentTarget.style.color = '#a1a1aa'; }}>
@@ -321,119 +389,226 @@ export default function Landing() {
             </div>
           </div>
 
-          {/* ══ RIGHT: Product Preview Dashboard ══ */}
-          <div className="hero-terminal">
-            <div className="hero-terminal-inner" style={{ 
-              backgroundColor: '#111113', border: '1px solid rgba(255,255,255,0.08)', 
-              borderRadius: '16px', overflow: 'hidden', boxShadow: '0 25px 60px rgba(0,0,0,0.5)',
+          {/* ══ RIGHT: Advanced Product Preview Dashboard ══ */}
+          <div className="hero-terminal" style={{ minWidth: 0 }}>
+            <div style={{ 
+              backgroundColor: '#0d0d10', 
+              border: '1px solid rgba(255,255,255,0.07)', 
+              borderRadius: '14px', overflow: 'hidden', 
+              boxShadow: '0 25px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.03) inset',
+              maxWidth: '100%',
             }}>
-              {/* Window header */}
+              {/* ── Window chrome ── */}
               <div style={{ 
-                padding: '12px 18px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                borderBottom: '1px solid rgba(255,255,255,0.06)', backgroundColor: 'rgba(255,255,255,0.02)'
+                padding: '8px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                borderBottom: '1px solid rgba(255,255,255,0.06)', 
+                background: 'linear-gradient(180deg, rgba(255,255,255,0.025) 0%, rgba(255,255,255,0.01) 100%)'
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#ef4444', opacity: 0.7 }} />
-                  <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#f59e0b', opacity: 0.7 }} />
-                  <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#10b981', opacity: 0.7 }} />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <div style={{ width: '9px', height: '9px', borderRadius: '50%', backgroundColor: '#ef4444', opacity: 0.7 }} />
+                  <div style={{ width: '9px', height: '9px', borderRadius: '50%', backgroundColor: '#f59e0b', opacity: 0.7 }} />
+                  <div style={{ width: '9px', height: '9px', borderRadius: '50%', backgroundColor: '#10b981', opacity: 0.7 }} />
                 </div>
-                <span style={{ fontSize: '0.7rem', color: '#52525b', fontWeight: '600', letterSpacing: '0.05em' }}>INITPHASE DASHBOARD</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                  <div style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: '#10b981', animation: 'glowPulse 2s ease-in-out infinite' }} />
+                  <span style={{ fontSize: '0.58rem', color: '#52525b', fontWeight: '600', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Live Preview</span>
+                </div>
               </div>
 
-              {/* Dashboard content */}
-              <div style={{ padding: '20px' }}>
-                {/* Project name */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '18px' }}>
-                  <div style={{ width: '28px', height: '28px', backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Target size={14} color="#a1a1aa" />
+              {/* ── Dashboard body ── */}
+              <div style={{ padding: '12px' }}>
+                {/* Project header row */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div style={{ 
+                      width: '26px', height: '26px', borderRadius: '7px', 
+                      background: 'linear-gradient(135deg, rgba(168,85,247,0.2), rgba(16,185,129,0.2))',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      border: '1px solid rgba(255,255,255,0.06)'
+                    }}>
+                      <Target size={12} color="#a1a1aa" />
+                    </div>
+                    <div>
+                      <div style={{ fontSize: '0.78rem', fontWeight: '700', color: '#fafafa', fontFamily: 'var(--font-heading)' }}>E-Commerce Platform</div>
+                      <div style={{ fontSize: '0.55rem', color: '#3f3f46' }}>Updated 2h ago - Sprint 4</div>
+                    </div>
                   </div>
-                  <div>
-                    <div style={{ fontSize: '0.95rem', fontWeight: '700', color: '#fafafa', fontFamily: 'var(--font-heading)' }}>E-Commerce Platform</div>
-                    <div style={{ fontSize: '0.7rem', color: '#52525b' }}>Last updated 2 hours ago</div>
-                  </div>
+                  <div style={{ 
+                    padding: '2px 8px', borderRadius: '9999px', fontSize: '0.52rem', fontWeight: '700',
+                    backgroundColor: 'rgba(16,185,129,0.1)', color: '#10b981', border: '1px solid rgba(16,185,129,0.2)',
+                    textTransform: 'uppercase', letterSpacing: '0.06em'
+                  }}>On Track</div>
                 </div>
 
-                {/* Stat pills row */}
-                <div style={{ display: 'flex', gap: '8px', marginBottom: '18px', flexWrap: 'wrap' }}>
+                {/* ── Stat cards with shimmer ── */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '6px', marginBottom: '10px' }}>
                   {[
-                    { label: 'Requirements', value: '12', color: '#e4e4e7' },
-                    { label: 'Test Cases', value: '28', color: '#a855f7' },
-                    { label: 'Coverage', value: '100%', color: '#10b981' },
+                    { label: 'Requirements', value: '12', sub: '+3 this sprint', color: '#e4e4e7' },
+                    { label: 'Test Cases', value: '28', sub: '24 automated', color: '#a855f7' },
+                    { label: 'Coverage', value: '100%', sub: 'All mapped', color: '#10b981' },
                   ].map((s, i) => (
-                    <div key={i} style={{ 
-                      flex: 1, minWidth: '80px', padding: '10px 12px', backgroundColor: 'rgba(255,255,255,0.03)', 
-                      border: '1px solid rgba(255,255,255,0.06)', borderRadius: '10px', textAlign: 'center'
+                    <div className="dash-stat-card" key={i} style={{ 
+                      padding: '7px 8px', 
+                      backgroundColor: 'rgba(255,255,255,0.02)', 
+                      border: '1px solid rgba(255,255,255,0.06)', 
+                      borderRadius: '8px', 
+                      textAlign: 'center',
+                      transition: 'all 0.3s'
                     }}>
-                      <div style={{ fontSize: '1.1rem', fontWeight: '800', color: s.color, fontFamily: 'var(--font-heading)' }}>{s.value}</div>
-                      <div style={{ fontSize: '0.6rem', color: '#52525b', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.06em', marginTop: '2px' }}>{s.label}</div>
+                      <div style={{ fontSize: '1rem', fontWeight: '800', color: s.color, fontFamily: 'var(--font-heading)', animation: 'countUp 0.8s ease-out both', animationDelay: `${0.3 + i * 0.15}s` }}>{s.value}</div>
+                      <div style={{ fontSize: '0.52rem', color: '#52525b', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '1px' }}>{s.label}</div>
+                      <div style={{ fontSize: '0.48rem', color: '#3f3f46', marginTop: '2px' }}>{s.sub}</div>
                     </div>
                   ))}
                 </div>
 
-                {/* Mini requirements list */}
-                <div style={{ marginBottom: '16px' }}>
-                  <div style={{ fontSize: '0.7rem', fontWeight: '700', color: '#52525b', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '8px' }}>Requirements</div>
+                {/* ── Two column layout: Coverage ring + Test results ── */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.4fr', gap: '6px', marginBottom: '8px' }}>
+                  
+                  {/* Coverage ring */}
+                  <div style={{ 
+                    padding: '10px 8px', backgroundColor: 'rgba(255,255,255,0.02)', 
+                    border: '1px solid rgba(255,255,255,0.06)', borderRadius: '8px',
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                    gap: '4px'
+                  }}>
+                    <div style={{ position: 'relative', width: '56px', height: '56px' }}>
+                      <svg width="56" height="56" viewBox="0 0 100 100" style={{ transform: 'rotate(-90deg)' }}>
+                        <circle cx="50" cy="50" r={ringRadius} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="7" />
+                        <circle 
+                          className="ring-progress"
+                          cx="50" cy="50" r={ringRadius} fill="none" 
+                          stroke="#10b981" strokeWidth="7" strokeLinecap="round"
+                          strokeDasharray={ringCircumference}
+                          strokeDashoffset={ringOffset}
+                        />
+                      </svg>
+                      <div style={{ 
+                        position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: '0.78rem', fontWeight: '800', color: '#fafafa', fontFamily: 'var(--font-heading)'
+                      }}>100%</div>
+                    </div>
+                    <div style={{ fontSize: '0.52rem', color: '#52525b', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.06em' }}>RTM Coverage</div>
+                  </div>
+
+                  {/* Test execution breakdown */}
+                  <div style={{ 
+                    padding: '9px 10px', backgroundColor: 'rgba(255,255,255,0.02)', 
+                    border: '1px solid rgba(255,255,255,0.06)', borderRadius: '8px',
+                  }}>
+                    <div style={{ fontSize: '0.54rem', fontWeight: '700', color: '#52525b', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '7px' }}>Test Execution</div>
+                    {[
+                      { label: 'Passed', count: 24, total: 28, color: '#10b981' },
+                      { label: 'Failed', count: 1, total: 28, color: '#ef4444' },
+                      { label: 'Pending', count: 3, total: 28, color: '#f59e0b' },
+                    ].map((t, i) => (
+                      <div key={i} style={{ marginBottom: i < 2 ? '6px' : 0 }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
+                          <span style={{ fontSize: '0.58rem', color: '#71717a' }}>{t.label}</span>
+                          <span style={{ fontSize: '0.55rem', color: t.color, fontWeight: '700' }}>{t.count}/{t.total}</span>
+                        </div>
+                        <div style={{ height: '3px', backgroundColor: 'rgba(255,255,255,0.04)', borderRadius: '9999px', overflow: 'hidden' }}>
+                          <div className="bar-anim" style={{ 
+                            height: '100%', backgroundColor: t.color, borderRadius: '9999px',
+                            width: `${(t.count / t.total) * 100}%`,
+                            animationDelay: `${0.6 + i * 0.2}s`
+                          }} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* ── Requirements Table (mini) ── */}
+                <div style={{ 
+                  marginBottom: '8px', backgroundColor: 'rgba(255,255,255,0.015)', 
+                  border: '1px solid rgba(255,255,255,0.06)', borderRadius: '8px', overflow: 'hidden'
+                }}>
+                  {/* Table header */}
+                  <div style={{ 
+                    display: 'grid', gridTemplateColumns: '1fr auto auto', gap: '6px',
+                    padding: '5px 10px', borderBottom: '1px solid rgba(255,255,255,0.04)',
+                    backgroundColor: 'rgba(255,255,255,0.02)'
+                  }}>
+                    <span style={{ fontSize: '0.52rem', fontWeight: '700', color: '#52525b', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Requirement</span>
+                    <span style={{ fontSize: '0.52rem', fontWeight: '700', color: '#52525b', textTransform: 'uppercase', letterSpacing: '0.08em', textAlign: 'center' }}>Priority</span>
+                    <span style={{ fontSize: '0.52rem', fontWeight: '700', color: '#52525b', textTransform: 'uppercase', letterSpacing: '0.08em', textAlign: 'center' }}>Tests</span>
+                  </div>
+                  {/* Table rows */}
                   {[
-                    { name: 'User login with email/password', priority: 'Must-Have', pColor: '#ef4444' },
-                    { name: 'Product search & filtering', priority: 'Must-Have', pColor: '#ef4444' },
-                    { name: 'Shopping cart management', priority: 'Should-Have', pColor: '#f59e0b' },
-                    { name: 'Order history page', priority: 'Nice-to-Have', pColor: '#10b981' },
+                    { name: 'User login with email/password', priority: 'Must-Have', pColor: '#ef4444', tests: 8 },
+                    { name: 'Product search & filtering', priority: 'Must-Have', pColor: '#ef4444', tests: 6 },
+                    { name: 'Shopping cart management', priority: 'Should-Have', pColor: '#f59e0b', tests: 9 },
+                    { name: 'Order history page', priority: 'Nice-to-Have', pColor: '#10b981', tests: 5 },
                   ].map((r, i) => (
                     <div key={i} style={{ 
-                      display: 'flex', alignItems: 'center', justifyContent: 'space-between', 
-                      padding: '7px 10px', borderRadius: '6px', marginBottom: '3px',
-                      backgroundColor: i === 0 ? 'rgba(255,255,255,0.03)' : 'transparent',
+                      display: 'grid', gridTemplateColumns: '1fr auto auto', gap: '6px', alignItems: 'center',
+                      padding: '4px 10px', 
+                      borderBottom: i < 3 ? '1px solid rgba(255,255,255,0.03)' : 'none',
                       transition: 'background-color 0.2s'
-                    }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <CheckCircle size={12} color="#10b981" />
-                        <span style={{ fontSize: '0.78rem', color: '#a1a1aa' }}>{r.name}</span>
+                    }}
+                    onMouseOver={e => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.03)'}
+                    onMouseOut={e => e.currentTarget.style.backgroundColor = 'transparent'}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                        <CheckCircle size={9} color="#10b981" />
+                        <span style={{ fontSize: '0.62rem', color: '#a1a1aa' }}>{r.name}</span>
                       </div>
                       <span style={{ 
-                        fontSize: '0.6rem', fontWeight: '700', color: r.pColor, 
-                        padding: '2px 8px', backgroundColor: `${r.pColor}15`, borderRadius: '9999px',
+                        fontSize: '0.5rem', fontWeight: '700', color: r.pColor, 
+                        padding: '1px 6px', backgroundColor: `${r.pColor}12`, borderRadius: '9999px',
                         whiteSpace: 'nowrap'
                       }}>{r.priority}</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '3px', justifyContent: 'center' }}>
+                        <FlaskConical size={8} color="#71717a" />
+                        <span style={{ fontSize: '0.55rem', color: '#71717a', fontWeight: '600' }}>{r.tests}</span>
+                      </div>
                     </div>
                   ))}
                 </div>
 
-                {/* Test results bar */}
-                <div style={{ marginBottom: '16px' }}>
-                  <div style={{ fontSize: '0.7rem', fontWeight: '700', color: '#52525b', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '8px' }}>Test Results</div>
-                  <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                    <div style={{ display: 'flex', gap: '10px', flex: 1 }}>
-                      {[
-                        { label: 'Passed', count: 24, color: '#10b981' },
-                        { label: 'Failed', count: 1, color: '#ef4444' },
-                        { label: 'Pending', count: 3, color: '#f59e0b' },
-                      ].map((t, i) => (
-                        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                          <div style={{ width: '7px', height: '7px', borderRadius: '50%', backgroundColor: t.color }} />
-                          <span style={{ fontSize: '0.72rem', color: '#71717a' }}>{t.count} {t.label}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  {/* Progress bar */}
-                  <div style={{ height: '5px', backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: '9999px', marginTop: '10px', overflow: 'hidden', display: 'flex' }}>
-                    <div className="hero-progress-bar" style={{ width: '86%', backgroundColor: '#10b981', borderRadius: '9999px 0 0 9999px', transition: 'width 1.5s ease-out' }} />
-                    <div style={{ width: '3.5%', backgroundColor: '#ef4444' }} />
-                    <div style={{ width: '10.5%', backgroundColor: '#f59e0b', borderRadius: '0 9999px 9999px 0' }} />
+                {/* ── Activity ticker ── */}
+                <div style={{ 
+                  marginBottom: '8px', overflow: 'hidden', borderRadius: '6px',
+                  backgroundColor: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)',
+                  padding: '4px 0'
+                }}>
+                  <div className="ticker-track" style={{ display: 'flex', gap: '28px', whiteSpace: 'nowrap', width: 'max-content', alignItems: 'center' }}>
+                    {[
+                      { icon: CheckCircle, color: '#10b981', text: 'Test "Login redirect" passed' },
+                      { icon: Plus, color: '#a855f7', text: 'Requirement "Wishlist" added' },
+                      { icon: XCircle, color: '#ef4444', text: 'Test "Tax calc" failed' },
+                      { icon: RefreshCw, color: '#f59e0b', text: 'Status changed to Pass' },
+                      { icon: CheckCircle, color: '#10b981', text: 'Coverage reached 100%' },
+                      { icon: CheckCircle, color: '#10b981', text: 'Test "Login redirect" passed' },
+                      { icon: Plus, color: '#a855f7', text: 'Requirement "Wishlist" added' },
+                      { icon: XCircle, color: '#ef4444', text: 'Test "Tax calc" failed' },
+                      { icon: RefreshCw, color: '#f59e0b', text: 'Status changed to Pass' },
+                      { icon: CheckCircle, color: '#10b981', text: 'Coverage reached 100%' },
+                    ].map((item, i) => (
+                      <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '0.6rem', color: '#3f3f46', fontWeight: '500' }}>
+                        <item.icon size={10} color={item.color} />
+                        {item.text}
+                      </span>
+                    ))}
                   </div>
                 </div>
 
-                {/* Coverage footer */}
+                {/* ── Ship-ready footer ── */}
                 <div style={{ 
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                  padding: '10px 12px', backgroundColor: 'rgba(16, 185, 129, 0.06)', 
-                  border: '1px solid rgba(16, 185, 129, 0.15)', borderRadius: '10px'
+                  padding: '7px 10px', 
+                  background: 'linear-gradient(135deg, rgba(16,185,129,0.08), rgba(16,185,129,0.03))', 
+                  border: '1px solid rgba(16,185,129,0.15)', borderRadius: '8px'
                 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <CheckCircle size={14} color="#10b981" />
-                    <span style={{ fontSize: '0.78rem', color: '#10b981', fontWeight: '600' }}>All requirements covered</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <CheckCircle size={11} color="#10b981" />
+                    <span style={{ fontSize: '0.62rem', color: '#10b981', fontWeight: '600' }}>All requirements covered</span>
                   </div>
-                  <span style={{ fontSize: '0.72rem', color: '#52525b', fontWeight: '500' }}>Ready to ship</span>
+                  <span style={{ 
+                    fontSize: '0.52rem', color: '#10b981', fontWeight: '700', 
+                    padding: '2px 7px', backgroundColor: 'rgba(16,185,129,0.15)', borderRadius: '9999px',
+                    letterSpacing: '0.04em', textTransform: 'uppercase'
+                  }}>Ready to Ship</span>
                 </div>
               </div>
             </div>
@@ -758,7 +933,7 @@ export default function Landing() {
              }}
              onMouseOver={e => { e.currentTarget.style.color = '#fafafa'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; }}
              onMouseOut={e => { e.currentTarget.style.color = '#71717a'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; }}>
-            <Github size={14} /> <Star size={12} /> Star on GitHub
+            <Github size={14} /> Star on GitHub
           </a>
         </div>
       </footer>
