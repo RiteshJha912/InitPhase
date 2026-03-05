@@ -201,3 +201,6 @@ cd client
 npm run build
 ```
 This yields optimized static files in the `/dist` directory, capable of being served rapidly via any standard static hosting methodology or reverse-proxied through the running Node.js server.
+
+## Dummy Data
+The dummy data files contain, data to demonstrate how the active modules of the product are to be used in real world SW project cycles.
