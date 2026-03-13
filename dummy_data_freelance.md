@@ -127,3 +127,23 @@ Navigate to the **RTM Analysis Module** via the sidebar.
 6. Return to the **RTM Module**. 
 
 > *Final Verification:* The "Requirements with failures" metric should functionally read 0. The green coverage bar progression remains at `75%`. The overall matrices validate our structural integrity.
+
+---
+
+## 6. Sequence Flow Builder
+Navigate to the **Sequence Flow** module via the sidebar. Visualize the core ordering interactions.
+
+1. **Sequence Title:** `Daily Bread Checkout`
+2. **Description:** `Logical flow of a customer ordering a Sourdough Loaf via the Bakery App.`
+3. **Enter steps (copy and paste this strictly):**
+   ```text
+   Customer -> App : Add Sourdough to Cart
+   App -> Database : Check Inventory
+   Database --> App : In Stock
+   Customer -> App : Confirm Order
+   App -> Bakery Kitchen : Print Ticket
+   Bakery Kitchen --> App : Confirmed
+   App --> Customer : Show Pickup Time
+   ```
+4. **Action:** Click "Generate Sequence Flow"
+   > *Result:* A dynamic CSS sequence diagram generates below, mapping the multi-system communication across the "Customer", "App", "Database", and "Bakery Kitchen" lifelines.

@@ -137,3 +137,20 @@ Navigate to the **RTM Analysis Module** via the sidebar.
 6. Return to the **RTM Module**. 
 
 > *Final Verification:* The "Requirements with failures" metric should functionally read 0. The green coverage bar progression remains at `75%`. The overall matrices validate our theoretical transaction integrity—save for the non-essential confetti user story deliberately skipped by QA.
+
+---
+
+## 6. Sequence Flow Builder
+Navigate to the **Sequence Flow** module via the sidebar. Give it a test run to visualize your system interactions.
+
+1. **Sequence Title:** `User Payment Flow`
+2. **Description:** `Visualizing the checkout transaction between the User, Web System, and Payment Gateway.`
+3. **Enter steps (copy and paste this strictly):**
+   ```text
+   User -> Web System : Submit Checkout
+   Web System -> Stripe : Validate Card
+   Stripe --> Web System : Charge Succeeded
+   Web System --> User : Order Confirmation
+   ```
+4. **Action:** Click "Generate Sequence Flow"
+   > *Result:* A beautiful multi-lane CSS sequence diagram renders dynamically below, highlighting "User", "Web System", and "Stripe" as distinct actors mapping request and response lifelines automatically.

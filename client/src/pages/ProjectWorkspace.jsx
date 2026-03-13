@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, NavLink, Outlet, Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, ListTodo, FlaskConical, Network, LogOut, LoaderCircle, Menu, X } from 'lucide-react';
+import { LayoutDashboard, ListTodo, FlaskConical, Network, LogOut, LoaderCircle, Menu, X, GitMerge } from 'lucide-react';
 import Button from '../components/Button';
 
 export default function ProjectWorkspace() {
@@ -26,6 +26,7 @@ export default function ProjectWorkspace() {
   const [testCases, setTestCases] = useState([]);
   const [rtmData, setRtmData] = useState([]);
   const [coveragePct, setCoveragePct] = useState(0);
+  const [sequenceFlows, setSequenceFlows] = useState([]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -37,6 +38,7 @@ export default function ProjectWorkspace() {
     fetchRequirements(token);
     fetchTestCases(token);
     fetchRtm(token);
+    fetchSequenceFlows(token);
   }, [id, navigate]);
 
   const fetchProject = async (token) => {
@@ -92,6 +94,20 @@ export default function ProjectWorkspace() {
       if (res.ok) {
         const data = await res.json();
         setTestCases(data);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const fetchSequenceFlows = async (token) => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/sequence/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setSequenceFlows(data);
       }
     } catch (err) {
       console.error(err);
@@ -192,6 +208,7 @@ export default function ProjectWorkspace() {
           
           <NavLink to="overview" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><LayoutDashboard size={20} className="module-icon" /> Dashboard</NavLink>
           <NavLink to="requirements" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><ListTodo size={20} className="module-icon" /> Requirements</NavLink>
+          <NavLink to="sequence" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><GitMerge size={20} className="module-icon" /> Sequence Flow</NavLink>
           <NavLink to="testcases" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><FlaskConical size={20} className="module-icon" /> Test Execution</NavLink>
           <NavLink to="rtm" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><Network size={20} className="module-icon" /> Analytics Matrix</NavLink>
         </aside>
@@ -207,7 +224,9 @@ export default function ProjectWorkspace() {
             fetchTestCases, 
             rtmData, 
             fetchRtm, 
-            coveragePct 
+            coveragePct,
+            sequenceFlows,
+            fetchSequenceFlows 
           }} />
         </main>
       </div>

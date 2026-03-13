@@ -45,6 +45,7 @@ initphase/
 │   │   │   ├── ProjectOverview.jsx
 │   │   │   ├── ProjectWorkspace.jsx
 │   │   │   ├── RequirementsModule.jsx
+│   │   │   ├── SequenceFlowModule.jsx
 │   │   │   ├── RtmModule.jsx
 │   │   │   └── TestCasesModule.jsx
 │   │   ├── App.jsx             # Main router configuration
@@ -62,6 +63,7 @@ initphase/
 │   │   ├── authController.js
 │   │   ├── projectController.js
 │   │   ├── requirementController.js
+│   │   ├── sequenceController.js
 │   │   ├── rtmController.js
 │   │   └── testCaseController.js
 │   ├── middleware/             # Express middlewares (Auth/Security)
@@ -69,12 +71,14 @@ initphase/
 │   ├── models/                 # Mongoose database schemas
 │   │   ├── Project.js
 │   │   ├── Requirement.js
+│   │   ├── SequenceFlow.js
 │   │   ├── TestCase.js
 │   │   └── User.js
 │   ├── routes/                 # Express API route declarations
 │   │   ├── authRoutes.js
 │   │   ├── projectRoutes.js
 │   │   ├── requirementRoutes.js
+│   │   ├── sequenceRoutes.js
 │   │   ├── rtmRoutes.js
 │   │   └── testCaseRoutes.js
 │   ├── .env                    # Secret environment configurations
@@ -95,6 +99,7 @@ The frontend is implemented as a Single Page Application (SPA) with a heavily mo
 - `/projects/:id/*`: The enterprise workspace wrapper, which contains nested routes:
   - `/overview`: High-level statistical overview of the project.
   - `/requirements`: The Requirements Management Module.
+  - `/sequence`: Text-Based structural modeling into CSS visualizations.
   - `/testcases`: The Test Case Management Module.
   - `/rtm`: The Requirement Traceability Matrix (RTM) Analysis Module.
 
@@ -120,8 +125,9 @@ The server follows an MVC (Model-View-Controller) derived pattern, exposing REST
 1. **Authentication:** Secure user registration, login, and tokenized session persistence.
 2. **Project Segregation:** Users can maintain multiple isolated project environments.
 3. **Requirements Management:** Authoring interface for user stories with priority scaling (Must-Have, Should-Have, Nice-to-Have).
-4. **Test Case Console:** Ability to map technical test executions directly to specific requirements, tracking expected vs. actual outcomes.
-5. **Traceability Matrix (RTM):** Real-time analytical matrix calculating requirement coverage ratios, highlighting untested or failing requirements.
+4. **Sequence Flow Generator:** Transform simple text-based UML interactions into beautiful multi-lane responsive architecture visualizations.
+5. **Test Case Console:** Ability to map technical test executions directly to specific requirements, tracking expected vs. actual outcomes.
+6. **Traceability Matrix (RTM):** Real-time analytical matrix calculating requirement coverage ratios, highlighting untested or failing requirements.
 
 ## API Contracts
 
@@ -145,6 +151,11 @@ All protected routes require an `Authorization` header containing the JWT: `Bear
   - `GET /api/testcases/:projectId` - Retrieves project-wide test cases.
   - `POST /api/testcases/:projectId/:requirementId` - Maps a new test case to a specific requirement.
   - `PATCH /api/testcases/:testId/status` - Updates execution status (Pass/Fail/Pending).
+
+- **Sequence Flow APIs:**
+  - `GET /api/sequence/:projectId` - Fetch all sequence diagrams for a project.
+  - `POST /api/sequence/:projectId` - Generates and persists a system sequence model.
+  - `DELETE /api/sequence/:id` - Deletes the generated logical diagram.
 
 - **Analytical APIs:**
   - `GET /api/rtm/:projectId` - Aggregates requirements and dynamically cross-references test case statuses returning the structural traceability matrix.

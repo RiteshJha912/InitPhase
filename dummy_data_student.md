@@ -129,3 +129,23 @@ Navigate to the **RTM Analysis Module** via the sidebar.
 6. Return to the **RTM Module**. 
 
 > *Final Verification:* The "Requirements with failures" metric should functionally read 0. The green coverage bar progression remains at `75%`. The overall matrices validate our theoretical transaction integrity.
+
+---
+
+## 6. Sequence Flow Builder
+Navigate to the **Sequence Flow** module via the sidebar. Let's trace the textbook request logic.
+
+1. **Sequence Title:** `Textbook Request Trace`
+2. **Description:** `The event propagation when a student claims a course book.`
+3. **Enter steps (copy and paste this strictly):**
+   ```text
+   Student -> UniShare : Search for CS101
+   UniShare -> DB : Query Books
+   DB --> UniShare : Results Found
+   Student -> UniShare : Request Specific Copy
+   UniShare -> Email Service : Trigger Owner Notification
+   Email Service --> Owner : Send Request Email
+   UniShare --> Student : Success Prompt
+   ```
+4. **Action:** Click "Generate Sequence Flow"
+   > *Result:* A highly readable visual sequence block is plotted, distributing the "Student", "UniShare", "DB", "Email Service", and "Owner" into parallel lifelines.

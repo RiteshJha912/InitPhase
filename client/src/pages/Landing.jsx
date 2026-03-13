@@ -394,7 +394,7 @@ export default function Landing() {
             <div style={{ 
               backgroundColor: '#0d0d10', 
               border: '1px solid rgba(255,255,255,0.07)', 
-              borderRadius: '14px', overflow: 'hidden', 
+              borderRadius: '8px', overflow: 'hidden', 
               boxShadow: '0 25px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.03) inset',
               maxWidth: '100%',
             }}>
