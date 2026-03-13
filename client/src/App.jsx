@@ -15,6 +15,7 @@ const RequirementsModule = lazy(() => import('./pages/RequirementsModule'));
 const TestCasesModule = lazy(() => import('./pages/TestCasesModule'));
 const RtmModule = lazy(() => import('./pages/RtmModule'));
 const SequenceFlowModule = lazy(() => import('./pages/SequenceFlowModule'));
+const DocumentationModule = lazy(() => import('./pages/DocumentationModule'));
 
 function LoadingFallback() {
   return (
@@ -84,6 +85,7 @@ function App() {
           <Route path="testcases" element={<TestCasesModule />} />
           <Route path="rtm" element={<RtmModule />} />
           <Route path="sequence" element={<SequenceFlowModule />} />
+          <Route path="documentation" element={<DocumentationModule />} />
         </Route>
       </Routes>
     </BrowserRouter>

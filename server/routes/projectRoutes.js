@@ -7,5 +7,6 @@ const router = express.Router();
 router.post('/', protect, createProject);
 router.get('/', protect, getUserProjects);
 router.get('/:id', protect, getSingleProject);
+router.use('/:projectId/documentation', require('./documentationRoutes'));
 
 module.exports = router;

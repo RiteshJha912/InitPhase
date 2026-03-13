@@ -47,6 +47,7 @@ initphase/
 │   │   │   ├── RequirementsModule.jsx
 │   │   │   ├── SequenceFlowModule.jsx
 │   │   │   ├── RtmModule.jsx
+│   │   │   ├── DocumentationModule.jsx
 │   │   │   └── TestCasesModule.jsx
 │   │   ├── App.jsx             # Main router configuration
 │   │   ├── main.jsx            # React root injection point
@@ -65,6 +66,7 @@ initphase/
 │   │   ├── requirementController.js
 │   │   ├── sequenceController.js
 │   │   ├── rtmController.js
+│   │   ├── documentationController.js
 │   │   └── testCaseController.js
 │   ├── middleware/             # Express middlewares (Auth/Security)
 │   │   └── authMiddleware.js
@@ -80,6 +82,7 @@ initphase/
 │   │   ├── requirementRoutes.js
 │   │   ├── sequenceRoutes.js
 │   │   ├── rtmRoutes.js
+│   │   ├── documentationRoutes.js
 │   │   └── testCaseRoutes.js
 │   ├── .env                    # Secret environment configurations
 │   ├── package.json
@@ -102,6 +105,7 @@ The frontend is implemented as a Single Page Application (SPA) with a heavily mo
   - `/sequence`: Text-Based structural modeling into CSS visualizations.
   - `/testcases`: The Test Case Management Module.
   - `/rtm`: The Requirement Traceability Matrix (RTM) Analysis Module.
+  - `/documentation`: Dynamic Markdown & PDF Generator combining all project data.
 
 **Shared Components (`/client/src/components`):**
 To maintain visual consistency and DRY principles, shared UI components are utilized across modules:
@@ -128,6 +132,7 @@ The server follows an MVC (Model-View-Controller) derived pattern, exposing REST
 4. **Sequence Flow Generator:** Transform simple text-based UML interactions into beautiful multi-lane responsive architecture visualizations.
 5. **Test Case Console:** Ability to map technical test executions directly to specific requirements, tracking expected vs. actual outcomes.
 6. **Traceability Matrix (RTM):** Real-time analytical matrix calculating requirement coverage ratios, highlighting untested or failing requirements.
+7. **Documentation Generator:** Automates comprehensive project reporting, bundling overview, test logs, sequence diagrams, and traceability matrices into downloadable Markdown or elegantly styled, branded PDFs.
 
 ## API Contracts
 
@@ -159,6 +164,9 @@ All protected routes require an `Authorization` header containing the JWT: `Bear
 
 - **Analytical APIs:**
   - `GET /api/rtm/:projectId` - Aggregates requirements and dynamically cross-references test case statuses returning the structural traceability matrix.
+
+- **Documentation Generating APIs:**
+  - `GET /api/projects/:projectId/documentation` - Smart endpoint aggregating all relevant architecture, timeline, Sequence flow data, and RTM status matrices into a standardized export payload.
 
 ## Development Setup
 

@@ -1,11 +1,14 @@
-import { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import ModuleLayout from '../components/ModuleLayout';
 import SectionCard from '../components/SectionCard';
 import Button from '../components/Button';
 import { GitMerge, Plus, Trash2 } from 'lucide-react';
 
-const renderVisualDiagram = (steps) => {
+const VisualDiagram = ({ steps }) => {
+  const containerRef = useRef(null);
+  const [scale, setScale] = useState(1);
+
   const parsedSteps = [];
   const participantsSet = new Set();
   
@@ -38,6 +41,27 @@ const renderVisualDiagram = (steps) => {
   });
 
   const actors = Array.from(participantsSet);
+  const actorWidth = 140;
+  const colSpacing = 280;
+  const diagramWidth = actors.length === 1 ? actorWidth : (actors.length - 1) * colSpacing + actorWidth;
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const observer = new ResizeObserver(entries => {
+      for (let entry of entries) {
+        const availableW = entry.contentRect.width;
+        // Leave a 40px padding buffer for the visual layout bounds
+        const targetW = availableW - 40; 
+        if (diagramWidth > targetW && targetW > 0) {
+          setScale(targetW / diagramWidth);
+        } else {
+          setScale(1);
+        }
+      }
+    });
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, [diagramWidth]);
   
   if (actors.length === 0) {
     return (
@@ -47,20 +71,28 @@ const renderVisualDiagram = (steps) => {
     );
   }
 
-  const actorWidth = 140;
-  const colSpacing = 280;
-  const containerWidth = actors.length === 1 ? '100%' : `${(actors.length - 1) * colSpacing + actorWidth}px`;
+  // Height formula: Header (40+20) + Steps Padding (20+20) + Inner Step Heights
+  const diagramHeight = 100 + parsedSteps.reduce((sum, step) => sum + (step.raw ? 40 : 60), 0);
 
   return (
-    <div style={{ 
-      overflowX: 'auto', 
-      padding: '40px 20px', 
+    <div ref={containerRef} style={{ 
+      width: '100%',
+      overflow: 'hidden', 
+      padding: '40px 0', 
       backgroundColor: '#1E1E1E', 
       borderRadius: 'var(--radius-md)',
       border: '1px solid #333',
       boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.2)'
     }}>
-      <div style={{ position: 'relative', width: containerWidth, margin: '0 auto', minWidth: 'max-content' }}>
+      <div style={{ position: 'relative', width: '100%', height: diagramHeight * scale }}>
+        <div style={{
+          position: 'absolute',
+          width: diagramWidth,
+          height: diagramHeight,
+          left: '50%',
+          transform: `translateX(-50%) scale(${scale})`,
+          transformOrigin: 'top center'
+        }}>
         
         {/* Actors Header */}
         <div style={{ display: 'flex', position: 'relative', height: '40px', marginBottom: '20px' }}>
@@ -202,6 +234,7 @@ const renderVisualDiagram = (steps) => {
         </div>
       </div>
     </div>
+  </div>
   );
 };
 
@@ -390,7 +423,7 @@ export default function SequenceFlowModule() {
                   </Button>
                 </div>
                 
-                {renderVisualDiagram(seq.steps)}
+                <VisualDiagram steps={seq.steps} />
               </div>
             </SectionCard>
           ))
