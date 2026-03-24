@@ -223,3 +223,7 @@ This yields optimized static files in the `/dist` directory, capable of being se
 
 ## Dummy Data
 The dummy data files contain, data to demonstrate how the active modules of the product are to be used in real world SW project cycles.
+
+ok so for now, 
+1) Update the Dummy data, inlude more diagram modules 
+2) Scale with AI, BRD, Github, Jira etc 
