@@ -223,3 +223,16 @@ This yields optimized static files in the `/dist` directory, capable of being se
 
 ## Dummy Data
 The dummy data files contain, data to demonstrate how the active modules of the product are to be used in real world SW project cycles.
+
+## Upcoming Features
+
+1. **Idea-to-BRD Conversion:** Input raw ideas and have LLMs convert them into structured Business Requirement Documents (BRD) within InitPhase. [Reference](https://medium.com/@narendrant/automating-brd-creation-with-llms-b4e2227e6652)
+2. **Automated User Stories:** Automatically transform BRD content into structured user stories and ready-to-use Jira tasks.
+3. **Jira Integration:** Connect InitPhase directly to Jira using a CLI or API wrapper (via npx) for seamless data flow without manual exports.
+4. **Professional Diagrams:** Export sequence flows into professional diagrams using external tools like Lucidchart (via MCP).
+5. **Natural Language Project Setup:** Set up entire projects using natural language commands.
+6. **GitHub Integration:** Link repositories to projects to sync commits with requirements (e.g., REQ-12) and map Pull Requests to features.
+7. **Email-Based Workflow:** Automated delivery of weekly reports and risk summaries via email.
+8. **Calendar & Sprint Integration:** Sync project timelines and sprints with Google Calendar.
+9. **Webhooks System:** Enable external tool connectivity via events such as `requirement.created`, `testcase.failed`, and `project.updated`.
+10. **Internal Issue Tracker:** A lightweight built-in alternative to Jira for assigning tasks and tracking status within InitPhase.
