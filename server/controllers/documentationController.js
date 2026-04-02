@@ -2,6 +2,7 @@ const TestCase = require('../models/TestCase');
 const Requirement = require('../models/Requirement');
 const Project = require('../models/Project');
 const SequenceFlow = require('../models/SequenceFlow');
+const Issue = require('../models/Issue');
 
 const getDocumentation = async (req, res) => {
   const { projectId } = req.params;
@@ -18,6 +19,7 @@ const getDocumentation = async (req, res) => {
     const requirements = await Requirement.find({ project: projectId }).lean();
     const testCases = await TestCase.find({ project: projectId }).lean();
     const sequenceFlows = await SequenceFlow.find({ project: projectId }).lean();
+    const issues = await Issue.find({ project: projectId }).lean();
 
     let coveredRequirements = 0;
 
@@ -55,7 +57,8 @@ const getDocumentation = async (req, res) => {
       },
       rtmData,
       overallCoveragePercentage,
-      sequenceFlows
+      sequenceFlows,
+      issues
     };
 
     res.status(200).json(docData);

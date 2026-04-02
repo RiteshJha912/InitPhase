@@ -210,9 +210,9 @@ export default function ProjectWorkspace() {
           <NavLink to="requirements" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><ListTodo size={20} className="module-icon" /> Requirements</NavLink>
           <NavLink to="sequence" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><GitMerge size={20} className="module-icon" /> Sequence Flow</NavLink>
           <NavLink to="testcases" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><FlaskConical size={20} className="module-icon" /> Test Execution</NavLink>
+          <NavLink to="issues" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><Ticket size={20} className="module-icon" /> Issues</NavLink>
           <NavLink to="rtm" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><Network size={20} className="module-icon" /> Analytics Matrix</NavLink>
           <NavLink to="documentation" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><FileText size={20} className="module-icon" /> Documentation</NavLink>
-          <NavLink to="issues" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><Ticket size={20} className="module-icon" /> Issues</NavLink>
         </aside>
 
         {/* Main Content Area */}

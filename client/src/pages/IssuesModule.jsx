@@ -165,7 +165,7 @@ export default function IssuesModule() {
           {issue.status !== 'Resolved' && issue.status !== 'Closed' && (
             <Button variant="secondary" size="sm" onClick={() => handleUpdateStatus(issue._id, 'Resolved')}>Resolve</Button>
           )}
-          <Button style={{ backgroundColor: 'var(--danger)', color: 'white' }} size="sm" onClick={() => handleDeleteIssue(issue._id)}>Delete</Button>
+          <Button variant="danger" size="sm" onClick={() => handleDeleteIssue(issue._id)}>Delete</Button>
         </div>
       </td>
     </tr>
@@ -178,39 +178,39 @@ export default function IssuesModule() {
       connectionText="Issues are linked directly to your current project. Use this module to track tasks, bugs, and enhancements without leaving your workspace."
       stats={stats}
     >
-      <SectionCard title="Issue Registry">
-        <div style={{ padding: '24px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-            <h3 style={{ margin: 0, color: 'var(--text-primary)', fontFamily: 'var(--font-heading)' }}>Project Issues</h3>
-            <Button onClick={() => setShowForm(!showForm)}>
-              {showForm ? 'Cancel' : 'Create Issue'}
-            </Button>
-          </div>
-
+      <SectionCard 
+        title="Issue Registry"
+        actions={
+          <Button onClick={() => setShowForm(!showForm)}>
+            {showForm ? 'Cancel' : 'Create Issue'}
+          </Button>
+        }
+      >
+        <>
           {showForm && (
-            <form onSubmit={handleCreateIssue} style={{ display: 'flex', flexDirection: 'column', gap: '16px', padding: '24px', backgroundColor: 'var(--bg-card-hover)', borderRadius: 'var(--radius-lg)', marginBottom: '24px', border: '1px solid var(--border-color)' }}>
-              <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+            <form onSubmit={handleCreateIssue} style={{ display: 'flex', flexDirection: 'column', gap: '20px', padding: '24px', backgroundColor: 'var(--bg-card)', borderRadius: 'var(--radius-lg)', marginBottom: '32px', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-sm)' }}>
+              <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
                 <div style={{ flex: '1 1 300px' }}>
-                  <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Issue Title *</label>
-                  <input type="text" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} required style={{ width: '100%', padding: '12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-base)', color: 'var(--text-primary)' }} />
+                  <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '0.8rem', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Issue Title *</label>
+                  <input type="text" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} required style={{ width: '100%', padding: '10px 14px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-strong)', backgroundColor: 'var(--bg-base)', color: 'var(--text-primary)', outline: 'none', transition: 'border-color 0.2s' }} />
                 </div>
                 <div style={{ flex: '1 1 300px' }}>
-                  <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Description</label>
-                  <input type="text" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} style={{ width: '100%', padding: '12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-base)', color: 'var(--text-primary)' }} />
+                  <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '0.8rem', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Description</label>
+                  <input type="text" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} style={{ width: '100%', padding: '10px 14px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-strong)', backgroundColor: 'var(--bg-base)', color: 'var(--text-primary)', outline: 'none', transition: 'border-color 0.2s' }} />
                 </div>
               </div>
-              <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
                 <div style={{ flex: 1 }}>
-                  <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Type</label>
-                  <select value={formData.type} onChange={e => setFormData({...formData, type: e.target.value})} style={{ width: '100%', padding: '12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-base)', color: 'var(--text-primary)' }}>
+                  <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '0.8rem', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Type</label>
+                  <select value={formData.type} onChange={e => setFormData({...formData, type: e.target.value})} style={{ width: '100%', padding: '10px 14px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-strong)', backgroundColor: 'var(--bg-base)', color: 'var(--text-primary)', outline: 'none', cursor: 'pointer' }}>
                     <option>Task</option>
                     <option>Bug</option>
                     <option>Enhancement</option>
                   </select>
                 </div>
                 <div style={{ flex: 1 }}>
-                  <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Priority</label>
-                  <select value={formData.priority} onChange={e => setFormData({...formData, priority: e.target.value})} style={{ width: '100%', padding: '12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-base)', color: 'var(--text-primary)' }}>
+                  <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '0.8rem', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Priority</label>
+                  <select value={formData.priority} onChange={e => setFormData({...formData, priority: e.target.value})} style={{ width: '100%', padding: '10px 14px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-strong)', backgroundColor: 'var(--bg-base)', color: 'var(--text-primary)', outline: 'none', cursor: 'pointer' }}>
                     <option>Critical</option>
                     <option>High</option>
                     <option>Medium</option>
@@ -218,11 +218,11 @@ export default function IssuesModule() {
                   </select>
                 </div>
                 <div style={{ flex: 1 }}>
-                  <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Assigned To</label>
-                  <input type="text" placeholder="Name or Email" value={formData.assignedTo} onChange={e => setFormData({...formData, assignedTo: e.target.value})} style={{ width: '100%', padding: '12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-base)', color: 'var(--text-primary)' }} />
+                  <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '0.8rem', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Assigned To</label>
+                  <input type="text" placeholder="Name or Email" value={formData.assignedTo} onChange={e => setFormData({...formData, assignedTo: e.target.value})} style={{ width: '100%', padding: '10px 14px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-strong)', backgroundColor: 'var(--bg-base)', color: 'var(--text-primary)', outline: 'none' }} />
                 </div>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '8px' }}>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '4px', borderTop: '1px solid var(--border-color)', paddingTop: '16px' }}>
                 <Button type="submit">Submit Issue</Button>
               </div>
             </form>
@@ -238,7 +238,7 @@ export default function IssuesModule() {
               emptyMessage="No issues logged for this project yet." 
             />
           )}
-        </div>
+        </>
       </SectionCard>
     </ModuleLayout>
   );

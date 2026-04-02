@@ -316,6 +316,21 @@ export default function DocumentationModule() {
     } else {
       md += `*No sequence flows defined yet.*\n`;
     }
+    md += `\n`;
+
+    // Issues
+    md += `## Issues Tracker\n`;
+    if (docData.issues && docData.issues.length > 0) {
+      docData.issues.forEach(issue => {
+        md += `### [${issue.status}] ${issue.title}\n`;
+        if (issue.description) md += `${issue.description}\n`;
+        md += `- **Type:** ${issue.type}\n`;
+        md += `- **Priority:** ${issue.priority}\n`;
+        md += `- **Assigned To:** ${issue.assignedTo || 'Unassigned'}\n\n`;
+      });
+    } else {
+      md += `*No issues defined yet.*\n`;
+    }
 
     return md;
   };
@@ -549,6 +564,42 @@ export default function DocumentationModule() {
                 ))
               ) : (
                 <p style={{ color: '#888', fontSize: '13px' }}>System contains zero trace log diagnostics.</p>
+              )}
+            </div>
+
+            <div style={{ marginBottom: '30px' }}>
+              <h3 style={{ color: '#111', fontSize: '16px', borderBottom: '1px solid #eaeaea', paddingBottom: '6px', marginBottom: '12px', fontWeight: '700' }}>5. Issue Tracker Registry</h3>
+              {docData?.issues && docData.issues.length > 0 ? (
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+                  <thead>
+                    <tr style={{ borderBottom: '2px solid #eaeaea' }}>
+                      <th style={{ padding: '8px', textAlign: 'left', color: '#555', fontWeight: '600' }}>Issue Title</th>
+                      <th style={{ padding: '8px', textAlign: 'left', color: '#555', fontWeight: '600' }}>Type</th>
+                      <th style={{ padding: '8px', textAlign: 'left', color: '#555', fontWeight: '600' }}>Priority</th>
+                      <th style={{ padding: '8px', textAlign: 'left', color: '#555', fontWeight: '600' }}>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {docData.issues.map(issue => (
+                      <tr key={issue._id} style={{ borderBottom: '1px solid #f4f4f5' }}>
+                        <td style={{ padding: '12px 8px', color: '#222', lineHeight: '1.4' }}>{issue.title}</td>
+                        <td style={{ padding: '12px 8px', color: '#555' }}>{issue.type}</td>
+                        <td style={{ padding: '12px 8px', color: '#555' }}>{issue.priority}</td>
+                        <td style={{ padding: '12px 8px' }}>
+                          <span style={{ 
+                            fontWeight: '600', 
+                            color: issue.status === 'Resolved' || issue.status === 'Closed' ? '#10b981' : 
+                                   issue.status === 'Open' ? '#ef4444' : '#f59e0b'
+                          }}>
+                            {issue.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <p style={{ color: '#888', fontSize: '13px' }}>No internal issues tracked for this project.</p>
               )}
             </div>
             
