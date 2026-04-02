@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, NavLink, Outlet, Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, ListTodo, FlaskConical, Network, LogOut, LoaderCircle, Menu, X, GitMerge, FileText } from 'lucide-react';
+import { LayoutDashboard, ListTodo, FlaskConical, Network, LogOut, LoaderCircle, Menu, X, GitMerge, FileText, Ticket } from 'lucide-react';
 import Button from '../components/Button';
 
 export default function ProjectWorkspace() {
@@ -212,6 +212,7 @@ export default function ProjectWorkspace() {
           <NavLink to="testcases" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><FlaskConical size={20} className="module-icon" /> Test Execution</NavLink>
           <NavLink to="rtm" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><Network size={20} className="module-icon" /> Analytics Matrix</NavLink>
           <NavLink to="documentation" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><FileText size={20} className="module-icon" /> Documentation</NavLink>
+          <NavLink to="issues" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><Ticket size={20} className="module-icon" /> Issues</NavLink>
         </aside>
 
         {/* Main Content Area */}

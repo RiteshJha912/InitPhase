@@ -154,3 +154,34 @@ Navigate to the **Sequence Flow** module via the sidebar. Give it a test run to 
    ```
 4. **Action:** Click "Generate Sequence Flow"
    > *Result:* A beautiful multi-lane CSS sequence diagram renders dynamically below, highlighting "User", "Web System", and "Stripe" as distinct actors mapping request and response lifelines automatically.
+
+---
+
+## 7. Issue Tracker Initialization
+Navigate to the **Issues** module via the sidebar to log tasks, bugs, and enhancements tracked throughout the project lifespan.
+
+### Log Issue 1
+- **Issue Title:** `Stripe API Key Rotation Protocol`
+- **Description:** `Need to rotate the development Stripe keys before staging deployment.`
+- **Type:** `Task`
+- **Priority:** `Critical`
+- **Assigned To:** `System Architect`
+- **Action:** Click "Create Issue" and then "Submit Issue"
+
+### Log Issue 2
+- **Issue Title:** `Confetti missing on iOS devices`
+- **Description:** `The 'Nice-to-Have' confetti animation is not rendering on Safari mobile.`
+- **Type:** `Bug`
+- **Priority:** `High`
+- **Assigned To:** `Frontend Engineer`
+- **Action:** Click "Create Issue" and then "Submit Issue"
+
+### Log Issue 3
+- **Issue Title:** `Integrate PayPal Gateway`
+- **Description:** `Add PayPal button alongside the credit card component.`
+- **Type:** `Enhancement`
+- **Priority:** `Low`
+- **Assigned To:** `Product Team`
+- **Action:** Click "Create Issue" and then "Submit Issue"
+
+> *Verification Check:* The Issues Dashboard should update its StatCards in real-time. You should see 3 'Total Open Issues'. From the Datatable, test out the tracking by clicking "Resolve" on Issue 1. The stats will immediately reflect the new state to 'Resolved Issues: 1' and 'Total Open Issues: 2'.
