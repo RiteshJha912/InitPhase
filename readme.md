@@ -236,4 +236,4 @@ The dummy data files contain, data to demonstrate how the active modules of the 
 8. **Calendar & Sprint Integration:** Sync project timelines and sprints with Google Calendar.
 9. **Webhooks System:** Enable external tool connectivity via events such as `requirement.created`, `testcase.failed`, and `project.updated`.
 10. **Internal Issue Tracker:** A lightweight built-in alternative to Jira for assigning tasks and tracking status within InitPhase.
-
+11. **LucideChart MCP Integration**
