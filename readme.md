@@ -224,7 +224,6 @@ This yields optimized static files in the `/dist` directory, capable of being se
 ## Dummy Data
 The dummy data files contain, data to demonstrate how the active modules of the product are to be used in real world SW project cycles.
 
-<<<<<<< HEAD
 ## Upcoming Features
 
 1. **Idea-to-BRD Conversion:** Input raw ideas and have LLMs convert them into structured Business Requirement Documents (BRD) within InitPhase. [Reference](https://medium.com/@narendrant/automating-brd-creation-with-llms-b4e2227e6652)
@@ -237,8 +236,4 @@ The dummy data files contain, data to demonstrate how the active modules of the 
 8. **Calendar & Sprint Integration:** Sync project timelines and sprints with Google Calendar.
 9. **Webhooks System:** Enable external tool connectivity via events such as `requirement.created`, `testcase.failed`, and `project.updated`.
 10. **Internal Issue Tracker:** A lightweight built-in alternative to Jira for assigning tasks and tracking status within InitPhase.
-=======
-ok so for now, 
-1) Update the Dummy data, inlude more diagram modules 
-2) Scale with AI, BRD, Github, Jira etc 
->>>>>>> 254b5bd242f145825580d987ccd42e4aebe80090
+
