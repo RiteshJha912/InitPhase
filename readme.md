@@ -226,14 +226,24 @@ The dummy data files contain, data to demonstrate how the active modules of the 
 
 ## Upcoming Features
 
-1. **Idea-to-BRD Conversion:** Input raw ideas and have LLMs convert them into structured Business Requirement Documents (BRD) within InitPhase. [Reference](https://medium.com/@narendrant/automating-brd-creation-with-llms-b4e2227e6652)
-2. **Automated User Stories:** Automatically transform BRD content into structured user stories and ready-to-use Jira tasks.
-3. **Jira Integration:** Connect InitPhase directly to Jira using a CLI or API wrapper (via npx) for seamless data flow without manual exports.
-4. **Professional Diagrams:** Export sequence flows into professional diagrams using external tools like Lucidchart (via MCP).
-5. **Natural Language Project Setup:** Set up entire projects using natural language commands.
-6. **GitHub Integration:** Link repositories to projects to sync commits with requirements (e.g., REQ-12) and map Pull Requests to features.
-7. **Email-Based Workflow:** Automated delivery of weekly reports and risk summaries via email.
-8. **Calendar & Sprint Integration:** Sync project timelines and sprints with Google Calendar.
-9. **Webhooks System:** Enable external tool connectivity via events such as `requirement.created`, `testcase.failed`, and `project.updated`.
-10. **Internal Issue Tracker:** A lightweight built-in alternative to Jira for assigning tasks and tracking status within InitPhase.
-11. **LucideChart MCP Integration**
+- [ ] Idea-to-BRD Conversion: Input raw ideas and convert them into structured Business Requirement Documents (BRD) within InitPhase. [Reference](https://medium.com/@narendrant/automating-brd-creation-with-llms-b4e2227e6652)
+
+- [ ] Automated User Stories: Transform BRD content into structured user stories and ready-to-use Jira tasks.
+
+- [ ] Jira Integration: Connect InitPhase directly to Jira using a CLI or API wrapper (via npx) for seamless data flow.
+
+- [ ] Professional Diagrams: Export sequence flows into professional diagrams using tools like Lucidchart (via MCP).
+
+- [ ] Natural Language Project Setup: Set up entire projects using natural language commands.
+
+- [ ] GitHub Integration: Link repositories to sync commits with requirements (e.g., REQ-12) and map PRs to features.
+
+- [ ] Email-Based Workflow: Automate weekly reports and risk summaries via email.
+
+- [ ] Calendar & Sprint Integration: Sync project timelines and sprints with Google Calendar.
+
+- [ ] Webhooks System: Enable external tool connectivity via events like `requirement.created`, `testcase.failed`, and `project.updated`.
+
+- [x] Internal Issue Tracker: Built-in lightweight alternative to Jira for task assignment and tracking.
+
+- [ ] Lucidchart MCP Integration
