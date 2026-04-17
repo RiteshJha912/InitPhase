@@ -80,6 +80,18 @@ Add the following steps iteratively by typing in the Visual Builder rows:
 6. **Sender:** `SVV Portal` | **Receiver:** `AWS S3 Bucket` | **Message:** `Fetch Watermarked PDF`
 7. **Sender:** `AWS S3 Bucket` | **Receiver:** `Student` | **Message:** `Return File Download`
 
+*Alternatively, you can switch to the **Raw UML** tab and paste the following code directly to achieve the exact same result:*
+
+```text
+Student -> SVV Portal : Enter NetID Credentials
+SVV Portal -> LDAP Server : Validate Authenticity
+LDAP Server --> SVV Portal : Auth Success Token
+SVV Portal --> Student : Render Result Dashboard
+Student -> SVV Portal : Click Download PDF Transcript
+SVV Portal -> AWS S3 Bucket : Fetch Watermarked PDF
+AWS S3 Bucket --> Student : Return File Download
+```
+
 **Action:** Click "Generate Sequence Flow".
 > *Verification:* A dynamic CSS-mapped sequence graph will be drawn matching exact request vectors. Response packets like "Auth Success Token" automatically translate to dashed lifelines natively!
 
