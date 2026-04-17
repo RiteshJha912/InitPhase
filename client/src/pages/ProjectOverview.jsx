@@ -3,7 +3,7 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, BarChart, Bar, XAxis
 import StatCard from '../components/StatCard';
 import SectionCard from '../components/SectionCard';
 import Button from '../components/Button';
-import { ListTodo, FlaskConical, Network } from 'lucide-react';
+import { ListTodo, FlaskConical, Network, Ticket, AlertCircle, GitMerge } from 'lucide-react';
 
 const COLORS = {
   'Must-Have': '#ef4444', 
@@ -11,11 +11,15 @@ const COLORS = {
   'Nice-to-Have': '#10b981',
   'Pass': '#10b981',
   'Fail': '#ef4444',
-  'Pending': '#69717a'
+  'Pending': '#69717a',
+  'Open': '#ef4444',
+  'In Progress': '#38bdf8',
+  'Resolved': '#10b981',
+  'Closed': '#10b981'
 };
 
 export default function ProjectOverview() {
-  const { project, requirements, testCases, coveragePct } = useOutletContext();
+  const { project, requirements, testCases, coveragePct, sequenceFlows, issues } = useOutletContext();
   const navigate = useNavigate();
 
   // Data mapping for charts
@@ -31,6 +35,15 @@ export default function ProjectOverview() {
     { name: 'Pending', value: testCases.filter(t => t.status === 'Pending').length },
   ].filter(d => d.value > 0);
 
+  const issueData = [
+    { name: 'Open', value: (issues || []).filter(i => i.status === 'Open').length },
+    { name: 'In Progress', value: (issues || []).filter(i => i.status === 'In Progress').length },
+    { name: 'Resolved', value: (issues || []).filter(i => i.status === 'Resolved' || i.status === 'Closed').length },
+  ].filter(d => d.value > 0);
+
+  const openIssuesCount = (issues || []).filter(i => i.status === 'Open').length;
+  const criticalIssuesCount = (issues || []).filter(i => i.priority === 'Critical' && i.status !== 'Resolved' && i.status !== 'Closed').length;
+
   return (
     <div style={{ padding: '40px', maxWidth: '1200px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '32px' }} className="animate-fade-in module-container">
       <div style={{ marginBottom: '16px' }}>
@@ -38,23 +51,35 @@ export default function ProjectOverview() {
           Project Dashboard
         </h1>
         <p style={{ fontSize: '1.2rem', color: 'var(--text-secondary)', lineHeight: '1.6', maxWidth: '800px' }}>
-          A quick snapshot of your project's progress. Track your requirements, test cases, and overall coverage for <strong>{project?.name}</strong>.
+          A quick snapshot of your project's progress. Track your requirements, sequence flows, test cases, issues and overall coverage for <strong>{project?.name}</strong>.
         </p>
       </div>
 
-      <div className="stat-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
+      <div className="stat-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '24px' }}>
         <StatCard title="Total Requirements" value={requirements.length} icon={ListTodo} color="var(--accent-color)" />
+        <StatCard title="Sequence Flows" value={(sequenceFlows || []).length} icon={GitMerge} color="#3b82f6" />
         <StatCard title="Total Test Cases" value={testCases.length} icon={FlaskConical} color="#a855f7" />
+        <StatCard title="Open Issues" value={openIssuesCount} icon={Ticket} color={openIssuesCount > 0 ? "var(--danger)" : "var(--success)"} />
         <StatCard title="Requirement Coverage" value={`${coveragePct}%`} icon={Network} color={coveragePct === 100 ? '#10b981' : coveragePct === 0 ? '#ef4444' : '#f59e0b'} />
       </div>
 
-      <div className="stat-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '24px' }}>
+      {criticalIssuesCount > 0 && (
+        <div style={{ padding: '16px 24px', backgroundColor: 'rgba(239, 68, 68, 0.1)', border: '1px solid var(--danger)', borderRadius: 'var(--radius-md)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <AlertCircle color="var(--danger)" size={24} />
+          <div>
+            <h4 style={{ color: 'var(--danger)', margin: 0, fontWeight: 'bold' }}>Attention Required</h4>
+            <p style={{ margin: 0, color: 'var(--text-primary)', fontSize: '0.95rem' }}>There are {criticalIssuesCount} unresolved critical priority issues in this project.</p>
+          </div>
+        </div>
+      )}
+
+      <div className="stat-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '24px' }}>
         <SectionCard title="Requirements Distribution">
           <div style={{ width: '100%', height: '250px' }}>
             {reqData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                  <Pie data={reqData} cx="50%" cy="50%" innerRadius={60} outerRadius={90} paddingAngle={5} dataKey="value">
+                  <Pie data={reqData} innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
                     {reqData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[entry.name]} stroke="var(--bg-card)" strokeWidth={2} />
                     ))}
@@ -79,6 +104,7 @@ export default function ProjectOverview() {
                 <BarChart data={tcData} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" vertical={false} />
                   <XAxis dataKey="name" stroke="var(--text-secondary)" tick={{fill: 'var(--text-secondary)'}} />
+                  <YAxis stroke="var(--text-secondary)" tick={{fill: 'var(--text-secondary)'}} allowDecimals={false} />
                   <Tooltip 
                     cursor={{ fill: 'rgba(255, 255, 255, 0.05)' }} 
                     contentStyle={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-sm)' }} 
@@ -97,31 +123,71 @@ export default function ProjectOverview() {
             )}
           </div>
         </SectionCard>
+
+        <SectionCard title="Issues Status">
+          <div style={{ width: '100%', height: '250px' }}>
+            {issueData.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie data={issueData} innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
+                    {issueData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[entry.name]} stroke="var(--bg-card)" strokeWidth={2} />
+                    ))}
+                  </Pie>
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-sm)' }} 
+                    itemStyle={{ color: 'var(--text-primary)' }} 
+                    labelStyle={{ color: 'var(--text-primary)', fontWeight: 'bold' }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <div style={{ display: 'flex', justifyContent: 'center', height: '100%', alignItems: 'center', color: 'var(--text-tertiary)' }}>No issues logged</div>
+            )}
+          </div>
+        </SectionCard>
       </div>
 
       <SectionCard title="Quick Action Routes">
-        <div className="stat-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px' }}>
-          <div style={{ padding: '24px', backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)' }}>
+        <div className="stat-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '24px' }}>
+          
+          <div style={{ padding: '24px', backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', display: 'flex', flexDirection: 'column' }}>
+            <h3 style={{ fontSize: '1.25rem', color: 'var(--text-primary)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <GitMerge size={20} color="#3b82f6" /> Flows
+            </h3>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '16px', fontSize: '0.90rem', flex: 1 }}>Design systemic behavioral flows.</p>
+            <Button variant="secondary" onClick={() => navigate('../sequence')}>Open Module</Button>
+          </div>
+
+          <div style={{ padding: '24px', backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', display: 'flex', flexDirection: 'column' }}>
             <h3 style={{ fontSize: '1.25rem', color: 'var(--text-primary)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <ListTodo size={20} color="var(--accent-color)" /> Requirements
             </h3>
-            <p style={{ color: 'var(--text-secondary)', marginBottom: '16px', fontSize: '0.95rem' }}>Define what your system needs to do.</p>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '16px', fontSize: '0.90rem', flex: 1 }}>Define system needs and priorities.</p>
             <Button variant="secondary" onClick={() => navigate('../requirements')}>Open Module</Button>
           </div>
           
-          <div style={{ padding: '24px', backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)' }}>
+          <div style={{ padding: '24px', backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', display: 'flex', flexDirection: 'column' }}>
             <h3 style={{ fontSize: '1.25rem', color: 'var(--text-primary)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <FlaskConical size={20} color="#a855f7" /> Test Cases
             </h3>
-            <p style={{ color: 'var(--text-secondary)', marginBottom: '16px', fontSize: '0.95rem' }}>Write and run tests against your requirements.</p>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '16px', fontSize: '0.90rem', flex: 1 }}>Write and execute tests against requirements.</p>
             <Button variant="secondary" onClick={() => navigate('../testcases')}>Open Module</Button>
           </div>
 
-          <div style={{ padding: '24px', backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)' }}>
+          <div style={{ padding: '24px', backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', display: 'flex', flexDirection: 'column' }}>
             <h3 style={{ fontSize: '1.25rem', color: 'var(--text-primary)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Network size={20} color="#10b981" /> Traceability Matrix
+              <Ticket size={20} color="var(--danger)" /> Issues
             </h3>
-            <p style={{ color: 'var(--text-secondary)', marginBottom: '16px', fontSize: '0.95rem' }}>See which requirements have tests and which don't.</p>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '16px', fontSize: '0.90rem', flex: 1 }}>Log and track project bugs and tasks.</p>
+            <Button variant="secondary" onClick={() => navigate('../issues')}>Open Module</Button>
+          </div>
+
+          <div style={{ padding: '24px', backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', display: 'flex', flexDirection: 'column' }}>
+            <h3 style={{ fontSize: '1.25rem', color: 'var(--text-primary)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Network size={20} color="#10b981" /> Matrix
+            </h3>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '16px', fontSize: '0.90rem', flex: 1 }}>Analyze requirement tracing and coverage.</p>
             <Button variant="secondary" onClick={() => navigate('../rtm')}>Open Module</Button>
           </div>
         </div>

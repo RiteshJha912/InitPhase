@@ -62,11 +62,7 @@ export default function RequirementsModule() {
     ? requirements 
     : requirements.filter(r => r.priority === filterPriority);
 
-  const columns = [
-    { label: 'Requirement (What your system should do)', width: 'auto' },
-    { label: 'Priority', width: '200px' },
-    { label: 'Action', width: '150px' }
-  ];
+
 
   return (
     <ModuleLayout
@@ -103,24 +99,28 @@ export default function RequirementsModule() {
               width: '100%'
             }}
           />
-          <select 
-            value={reqPriority} 
-            onChange={(e) => setReqPriority(e.target.value)}
-            style={{ 
-              padding: '12px 16px', 
-              backgroundColor: 'var(--bg-base)',
-              border: '1px solid var(--border-color)', 
-              color: 'var(--text-primary)',
-              borderRadius: 'var(--radius-sm)',
-              fontSize: '1rem',
-              minWidth: 0,
-              width: '100%'
-            }}
-          >
-            <option value="Must-Have">Must-Have (Critical)</option>
-            <option value="Should-Have">Should-Have (High)</option>
-            <option value="Nice-to-Have">Nice-to-Have (Low)</option>
-          </select>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+            {['Must-Have', 'Should-Have', 'Nice-to-Have'].map(p => (
+              <button
+                type="button"
+                key={p}
+                onClick={() => setReqPriority(p)}
+                style={{
+                  padding: '10px 16px',
+                  borderRadius: '9999px',
+                  border: reqPriority === p ? `1px solid ${p === 'Must-Have' ? 'var(--danger)' : p === 'Should-Have' ? 'var(--warning)' : 'var(--success)'}` : '1px solid var(--border-color)',
+                  backgroundColor: reqPriority === p ? (p === 'Must-Have' ? 'var(--danger-bg)' : p === 'Should-Have' ? 'var(--warning-bg)' : 'var(--success-bg)') : 'var(--bg-base)',
+                  color: reqPriority === p ? (p === 'Must-Have' ? 'var(--danger)' : p === 'Should-Have' ? 'var(--warning)' : 'var(--success)') : 'var(--text-secondary)',
+                  cursor: 'pointer',
+                  fontWeight: reqPriority === p ? '700' : '500',
+                  transition: 'all 0.2s',
+                  fontSize: '0.9rem'
+                }}
+              >
+                {p}
+              </button>
+            ))}
+          </div>
           <Button type="submit" variant="primary">
             <Plus size={18} /> Add Requirement
           </Button>
@@ -158,43 +158,68 @@ export default function RequirementsModule() {
             iconName="layers" 
           />
         ) : (
-          <DataTable 
-            columns={columns}
-            data={filteredRequirements}
-            renderRow={(req) => (
-              <tr key={req._id} style={{ borderBottom: '1px solid var(--border-color)', transition: 'background-color 0.2s' }}
-                  onMouseOver={e=>e.currentTarget.style.backgroundColor='var(--bg-card-hover)'}
-                  onMouseOut={e=>e.currentTarget.style.backgroundColor='transparent'}>
-                <td style={{ padding: '16px 24px', fontSize: '1rem', color: 'var(--text-primary)' }}>{req.title}</td>
-                <td style={{ padding: '16px 24px' }}>
-                  <span style={{
-                    padding: '6px 14px',
-                    borderRadius: '9999px',
-                    fontSize: '0.8rem',
-                    fontWeight: '700',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.05em',
-                    backgroundColor: req.priority === 'Must-Have' ? 'var(--danger-bg)' : req.priority === 'Should-Have' ? 'var(--warning-bg)' : 'var(--success-bg)',
-                    color: req.priority === 'Must-Have' ? 'var(--danger)' : req.priority === 'Should-Have' ? 'var(--warning)' : 'var(--success)',
-                    border: `1px solid ${req.priority === 'Must-Have' ? 'rgba(239, 68, 68, 0.4)' : req.priority === 'Should-Have' ? 'rgba(245, 158, 11, 0.4)' : 'rgba(16, 185, 129, 0.4)'}`
-                  }}>
-                    {req.priority === 'Must-Have' && <AlertCircle size={14} />}
-                    {req.priority === 'Should-Have' && <ListTodo size={14} />}
-                    {req.priority === 'Nice-to-Have' && <CheckCircle size={14} />}
-                    {req.priority}
-                  </span>
-                </td>
-                <td style={{ padding: '16px 24px' }}>
-                  <Button variant="danger" size="sm" onClick={() => handleDeleteRequirement(req._id)}>
-                    <Trash2 size={16} /> Delete
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
+            {filteredRequirements.map(req => (
+              <div 
+                key={req._id}
+                style={{
+                  backgroundColor: 'var(--bg-base)',
+                  border: '1px solid var(--border-color)',
+                  borderRadius: 'var(--radius-md)',
+                  padding: '24px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  transition: 'all 0.2s',
+                  position: 'relative',
+                  overflow: 'hidden'
+                }}
+                onMouseOver={e => {
+                  e.currentTarget.style.transform = 'translateY(-4px)';
+                  e.currentTarget.style.boxShadow = 'var(--shadow-md)';
+                  e.currentTarget.style.borderColor = req.priority === 'Must-Have' ? 'rgba(239, 68, 68, 0.5)' : req.priority === 'Should-Have' ? 'rgba(245, 158, 11, 0.5)' : 'rgba(16, 185, 129, 0.5)';
+                }}
+                onMouseOut={e => {
+                  e.currentTarget.style.transform = 'none';
+                  e.currentTarget.style.boxShadow = 'none';
+                  e.currentTarget.style.borderColor = 'var(--border-color)';
+                }}
+              >
+
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+                    <span style={{
+                      padding: '4px 10px',
+                      borderRadius: '9999px',
+                      fontSize: '0.75rem',
+                      fontWeight: '700',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em',
+                      backgroundColor: req.priority === 'Must-Have' ? 'var(--danger-bg)' : req.priority === 'Should-Have' ? 'var(--warning-bg)' : 'var(--success-bg)',
+                      color: req.priority === 'Must-Have' ? 'var(--danger)' : req.priority === 'Should-Have' ? 'var(--warning)' : 'var(--success)',
+                      border: `1px solid ${req.priority === 'Must-Have' ? 'rgba(239, 68, 68, 0.3)' : req.priority === 'Should-Have' ? 'rgba(245, 158, 11, 0.3)' : 'rgba(16, 185, 129, 0.3)'}`
+                    }}>
+                      {req.priority === 'Must-Have' && <AlertCircle size={12} />}
+                      {req.priority === 'Should-Have' && <ListTodo size={12} />}
+                      {req.priority === 'Nice-to-Have' && <CheckCircle size={12} />}
+                      {req.priority}
+                    </span>
+                  </div>
+                  <h4 style={{ margin: '0 0 20px 0', fontSize: '1.1rem', color: 'var(--text-primary)', lineHeight: '1.5', wordBreak: 'break-word', fontWeight: '500' }}>
+                    {req.title}
+                  </h4>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', borderTop: '1px solid var(--border-color)', paddingTop: '16px' }}>
+                  <Button variant="danger" size="sm" onClick={() => handleDeleteRequirement(req._id)} style={{ padding: '6px 12px' }}>
+                    <Trash2 size={16} />
                   </Button>
-                </td>
-              </tr>
-            )}
-          />
+                </div>
+              </div>
+            ))}
+          </div>
         )}
       </SectionCard>
     </ModuleLayout>

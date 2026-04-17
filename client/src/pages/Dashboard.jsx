@@ -4,7 +4,7 @@ import StatCard from '../components/StatCard';
 import SectionCard from '../components/SectionCard';
 import EmptyState from '../components/EmptyState';
 import Button from '../components/Button';
-import { Target, Server, Shield, Box, PlusCircle } from 'lucide-react';
+import { Target, Server, Shield, Box, PlusCircle, Edit3, Trash2, Save, X } from 'lucide-react';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -13,6 +13,10 @@ export default function Dashboard() {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [error, setError] = useState('');
+  
+  const [editingProjectId, setEditingProjectId] = useState(null);
+  const [editName, setEditName] = useState('');
+  const [editDescription, setEditDescription] = useState('');
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -60,12 +64,49 @@ export default function Dashboard() {
       const data = await res.json();
       
       if (res.ok) {
-        navigate(`/projects/${data._id}`);
+        navigate(`/projects/${data._id}/requirements`);
       } else {
         setError(data.message || 'Error creating project');
       }
     } catch (err) {
       setError('Error connecting to server');
+    }
+  };
+
+  const handleUpdateProject = async (e, id) => {
+    e.preventDefault();
+    const token = localStorage.getItem('token');
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/projects/${id}`, {
+        method: 'PATCH',
+        headers: { 
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ name: editName, description: editDescription })
+      });
+      if (res.ok) {
+        setEditingProjectId(null);
+        fetchProjects(token);
+      }
+    } catch (err) {
+      console.error('Error updating project', err);
+    }
+  };
+
+  const handleDeleteProject = async (id) => {
+    if (!window.confirm('Are you sure you want to completely delete this project? This cannot be undone.')) return;
+    const token = localStorage.getItem('token');
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/projects/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        fetchProjects(token);
+      }
+    } catch (err) {
+      console.error('Error deleting project', err);
     }
   };
 
@@ -164,55 +205,102 @@ export default function Dashboard() {
               />
             </div>
           ) : (
-            projects.map(project => (
-              <div key={project._id} style={{ 
-                backgroundColor: 'var(--bg-card)', 
-                border: '1px solid var(--border-color)', 
-                borderRadius: 'var(--radius-md)', 
-                padding: '24px',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                boxShadow: 'var(--shadow-md)',
-                transition: 'transform 0.2s, box-shadow 0.2s',
-                cursor: 'default'
-              }}
-              onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = 'var(--shadow-lg)'; e.currentTarget.style.borderColor = 'var(--accent-color)'; }}
-              onMouseOut={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'var(--shadow-md)'; e.currentTarget.style.borderColor = 'var(--border-color)'; }}
-              >
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-                    <div style={{ padding: '8px', backgroundColor: 'var(--bg-surface)', borderRadius: 'var(--radius-sm)', color: 'var(--accent-color)' }}>
-                      <Box size={24} />
-                    </div>
-                    <h3 style={{ margin: 0, fontSize: '1.5rem', color: 'var(--text-primary)', fontWeight: '700', fontFamily: 'var(--font-heading)', lineHeight: 1 }}>{project.name}</h3>
+            projects.map(project => {
+              const isEditing = editingProjectId === project._id;
+              
+              return (
+                <div key={project._id} style={{ 
+                  backgroundColor: 'var(--bg-card)', 
+                  border: isEditing ? '1px solid var(--accent-color)' : '1px solid var(--border-color)', 
+                  borderRadius: 'var(--radius-md)', 
+                  padding: '24px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  boxShadow: isEditing ? 'var(--shadow-lg)' : 'var(--shadow-md)',
+                  transition: 'transform 0.2s, box-shadow 0.2s',
+                  cursor: 'default',
+                  position: 'relative'
+                }}
+                onMouseOver={e => { if (!isEditing) { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = 'var(--shadow-lg)'; e.currentTarget.style.borderColor = 'var(--accent-color)'; } }}
+                onMouseOut={e => { if (!isEditing) { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'var(--shadow-md)'; e.currentTarget.style.borderColor = 'var(--border-color)'; } }}
+                >
+                  <div style={{ position: 'absolute', top: '16px', right: '16px', display: 'flex', gap: '8px', zIndex: 10 }}>
+                    {!isEditing && (
+                      <>
+                        <button onClick={() => { setEditingProjectId(project._id); setEditName(project.name); setEditDescription(project.description || ''); }} style={{ background: 'none', border: 'none', color: 'var(--text-tertiary)', cursor: 'pointer', padding: '4px' }} title="Rename Project">
+                          <Edit3 size={18} />
+                        </button>
+                        <button onClick={() => handleDeleteProject(project._id)} style={{ background: 'none', border: 'none', color: 'var(--danger)', cursor: 'pointer', padding: '4px' }} title="Delete Project">
+                          <Trash2 size={18} />
+                        </button>
+                      </>
+                    )}
                   </div>
-                  <p style={{ margin: '0 0 24px 0', color: 'var(--text-secondary)', lineHeight: '1.6', fontSize: '1rem', paddingLeft: '44px' }}>
-                    {project.description || 'No description provided.'}
-                  </p>
+
+                  <div>
+                    {isEditing ? (
+                      <form onSubmit={(e) => handleUpdateProject(e, project._id)} style={{ marginBottom: '24px' }}>
+                         <input
+                          type="text"
+                          value={editName}
+                          onChange={(e) => setEditName(e.target.value)}
+                          required
+                          placeholder="Project Name"
+                          style={{ width: '100%', padding: '8px 12px', marginBottom: '12px', backgroundColor: 'var(--bg-base)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-sm)', color: 'var(--text-primary)', fontSize: '1.2rem', fontWeight: 'bold' }}
+                        />
+                         <textarea
+                          value={editDescription}
+                          onChange={(e) => setEditDescription(e.target.value)}
+                          placeholder="Description"
+                          rows={3}
+                          style={{ width: '100%', padding: '8px 12px', marginBottom: '16px', backgroundColor: 'var(--bg-base)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-sm)', color: 'var(--text-primary)', fontSize: '0.9rem', resize: 'vertical' }}
+                        />
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                          <Button type="submit" variant="primary" size="sm" style={{ flex: 1 }}><Save size={16} /> Save</Button>
+                          <Button type="button" variant="ghost" size="sm" onClick={() => setEditingProjectId(null)} style={{ flex: 1 }}><X size={16} /> Cancel</Button>
+                        </div>
+                      </form>
+                    ) : (
+                      <>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px', paddingRight: '48px' }}>
+                          <div style={{ padding: '8px', backgroundColor: 'var(--bg-surface)', borderRadius: 'var(--radius-sm)', color: 'var(--accent-color)' }}>
+                            <Box size={24} />
+                          </div>
+                          <h3 style={{ margin: 0, fontSize: '1.5rem', color: 'var(--text-primary)', fontWeight: '700', fontFamily: 'var(--font-heading)', lineHeight: 1.2, wordBreak: 'break-word' }}>{project.name}</h3>
+                        </div>
+                        <p style={{ margin: '0 0 24px 0', color: 'var(--text-secondary)', lineHeight: '1.6', fontSize: '1rem', paddingLeft: '44px' }}>
+                          {project.description || 'No description provided.'}
+                        </p>
+                      </>
+                    )}
+                  </div>
+                  
+                  {!isEditing && (
+                    <Link to={`/projects/${project._id}/requirements`} style={{ textDecoration: 'none' }}>
+                      <button style={{ 
+                        width: '100%', 
+                        padding: '12px', 
+                        backgroundColor: 'var(--bg-surface)', 
+                        color: 'var(--accent-color)', 
+                        border: '1px solid var(--border-color)', 
+                        borderRadius: 'var(--radius-sm)',
+                        fontSize: '1rem',
+                        fontWeight: '600',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s',
+                        fontFamily: 'var(--font-heading)'
+                      }}
+                      onMouseOver={e => { e.currentTarget.style.backgroundColor = 'var(--accent-muted)'; e.currentTarget.style.borderColor = 'var(--accent-hover)'; }}
+                      onMouseOut={e => { e.currentTarget.style.backgroundColor = 'var(--bg-surface)'; e.currentTarget.style.borderColor = 'var(--border-color)'; }}
+                      >
+                        Open Project &rarr;
+                      </button>
+                    </Link>
+                  )}
                 </div>
-                <Link to={`/projects/${project._id}`} style={{ textDecoration: 'none' }}>
-                  <button style={{ 
-                    width: '100%', 
-                    padding: '12px', 
-                    backgroundColor: 'var(--bg-surface)', 
-                    color: 'var(--accent-color)', 
-                    border: '1px solid var(--border-color)', 
-                    borderRadius: 'var(--radius-sm)',
-                    fontSize: '1rem',
-                    fontWeight: '600',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                    fontFamily: 'var(--font-heading)'
-                  }}
-                  onMouseOver={e => { e.currentTarget.style.backgroundColor = 'var(--accent-muted)'; e.currentTarget.style.borderColor = 'var(--accent-hover)'; }}
-                  onMouseOut={e => { e.currentTarget.style.backgroundColor = 'var(--bg-surface)'; e.currentTarget.style.borderColor = 'var(--border-color)'; }}
-                  >
-                    Open Project &rarr;
-                  </button>
-                </Link>
-              </div>
-            ))
+              );
+            })
           )}
         </div>
       </div>

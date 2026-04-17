@@ -6,7 +6,72 @@ import SectionCard from '../components/SectionCard';
 import DataTable from '../components/DataTable';
 import EmptyState from '../components/EmptyState';
 import Button from '../components/Button';
-import { FlaskConical, CheckCircle2, XCircle, Clock, Save, ShieldCheck } from 'lucide-react';
+import { FlaskConical, CheckCircle2, XCircle, Clock, Save, ShieldCheck, ChevronDown, ChevronUp } from 'lucide-react';
+
+const TestCaseRow = ({ tc, handleUpdateTestStatus }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  return (
+    <>
+      <tr 
+        style={{ borderBottom: isExpanded ? 'none' : '1px solid var(--border-color)', transition: 'background-color 0.2s', cursor: 'pointer' }}
+        onMouseOver={e=>e.currentTarget.style.backgroundColor='var(--bg-card-hover)'}
+        onMouseOut={e=>e.currentTarget.style.backgroundColor='transparent'}
+        onClick={() => setIsExpanded(!isExpanded)}
+      >
+        <td style={{ padding: '16px 24px', color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
+          {tc.requirement ? <span style={{ fontWeight: '600' }}>{tc.requirement.title}</span> : <span style={{ color: 'var(--danger)', fontStyle: 'italic', padding: '4px 8px', backgroundColor: 'var(--danger-bg)', borderRadius: '4px' }}>Requirement Pointer Dereferenced</span>}
+        </td>
+        <td style={{ padding: '16px 24px', fontSize: '1rem', color: 'var(--text-primary)', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          {isExpanded ? <ChevronUp size={18} color="var(--accent-color)" /> : <ChevronDown size={18} color="var(--text-tertiary)" />}
+          {tc.name}
+        </td>
+        <td style={{ padding: '16px 24px' }} onClick={e => e.stopPropagation()}>
+          <select
+            value={tc.status}
+            onChange={(e) => handleUpdateTestStatus(tc._id, e.target.value)}
+            style={{ 
+              padding: '8px 16px', 
+              border: `1px solid ${tc.status === 'Pass' ? 'rgba(16, 185, 129, 0.4)' : tc.status === 'Fail' ? 'rgba(239, 68, 68, 0.4)' : 'rgba(161, 161, 170, 0.4)'}`, 
+              borderRadius: '9999px',
+              fontSize: '0.875rem',
+              fontWeight: '700',
+              cursor: 'pointer',
+              backgroundColor: tc.status === 'Pass' ? 'var(--success-bg)' : tc.status === 'Fail' ? 'var(--danger-bg)' : 'var(--bg-surface)',
+              color: tc.status === 'Pass' ? 'var(--success)' : tc.status === 'Fail' ? 'var(--danger)' : 'var(--text-secondary)',
+              outline: 'none',
+              transition: 'all 0.2s'
+            }}
+          >
+            <option value="Pending">Pending</option>
+            <option value="Pass">Pass</option>
+            <option value="Fail">Fail</option>
+          </select>
+        </td>
+      </tr>
+      {isExpanded && (
+        <tr style={{ borderBottom: '1px solid var(--border-color)', backgroundColor: 'var(--bg-base)' }}>
+          <td colSpan={3} style={{ padding: '0' }}>
+            <div className="animate-fade-in" style={{ padding: '20px 24px 24px 48px', display: 'flex', gap: '40px', flexWrap: 'wrap' }}>
+              <div style={{ flex: 1, minWidth: '300px' }}>
+                <h5 style={{ margin: '0 0 12px 0', color: 'var(--text-secondary)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Steps to Perform</h5>
+                <div style={{ padding: '16px', backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', color: 'var(--text-primary)', whiteSpace: 'pre-wrap', fontFamily: 'monospace', fontSize: '0.9rem' }}>
+                  {tc.steps || 'No steps provided.'}
+                </div>
+              </div>
+              <div style={{ flex: 1, minWidth: '300px' }}>
+                <h5 style={{ margin: '0 0 12px 0', color: 'var(--text-secondary)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Expected Result</h5>
+                <div style={{ padding: '16px', backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', color: 'var(--text-primary)', whiteSpace: 'pre-wrap', fontSize: '0.95rem' }}>
+                  {tc.expectedResult || 'No expected result provided.'}
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+      )}
+    </>
+  );
+};
 
 export default function TestCasesModule() {
   const { projectId, requirements, testCases, fetchTestCases, fetchRtm } = useOutletContext();
@@ -209,40 +274,7 @@ export default function TestCasesModule() {
           <DataTable 
             columns={columns}
             data={testCases}
-            renderRow={(tc) => (
-              <tr key={tc._id} style={{ borderBottom: '1px solid var(--border-color)', transition: 'background-color 0.2s' }}
-                  onMouseOver={e=>e.currentTarget.style.backgroundColor='var(--bg-card-hover)'}
-                  onMouseOut={e=>e.currentTarget.style.backgroundColor='transparent'}>
-                <td style={{ padding: '16px 24px', color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
-                  {tc.requirement ? <span style={{ fontWeight: '600' }}>{tc.requirement.title}</span> : <span style={{ color: 'var(--danger)', fontStyle: 'italic', padding: '4px 8px', backgroundColor: 'var(--danger-bg)', borderRadius: '4px' }}>Requirement Pointer Dereferenced</span>}
-                </td>
-                <td style={{ padding: '16px 24px', fontSize: '1rem', color: 'var(--text-primary)', fontWeight: '600' }}>
-                  {tc.name}
-                </td>
-                <td style={{ padding: '16px 24px' }}>
-                  <select
-                    value={tc.status}
-                    onChange={(e) => handleUpdateTestStatus(tc._id, e.target.value)}
-                    style={{ 
-                      padding: '8px 16px', 
-                      border: `1px solid ${tc.status === 'Pass' ? 'rgba(16, 185, 129, 0.4)' : tc.status === 'Fail' ? 'rgba(239, 68, 68, 0.4)' : 'rgba(161, 161, 170, 0.4)'}`, 
-                      borderRadius: '9999px',
-                      fontSize: '0.875rem',
-                      fontWeight: '700',
-                      cursor: 'pointer',
-                      backgroundColor: tc.status === 'Pass' ? 'var(--success-bg)' : tc.status === 'Fail' ? 'var(--danger-bg)' : 'var(--bg-surface)',
-                      color: tc.status === 'Pass' ? 'var(--success)' : tc.status === 'Fail' ? 'var(--danger)' : 'var(--text-secondary)',
-                      outline: 'none',
-                      transition: 'all 0.2s'
-                    }}
-                  >
-                    <option value="Pending">Pending</option>
-                    <option value="Pass">Pass</option>
-                    <option value="Fail">Fail</option>
-                  </select>
-                </td>
-              </tr>
-            )}
+            renderRow={(tc) => <TestCaseRow key={tc._id} tc={tc} handleUpdateTestStatus={handleUpdateTestStatus} />}
           />
         )}
       </SectionCard>

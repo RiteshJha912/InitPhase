@@ -2,7 +2,7 @@ export default function StatCard({ title, value, color = 'var(--accent-color)', 
   return (
     <div style={{ 
       position: 'relative',
-      padding: '24px 28px', 
+      padding: '20px', 
       backgroundColor: 'var(--bg-card)', 
       border: '1px solid var(--border-color)', 
       borderRadius: 'var(--radius-lg)',
@@ -24,8 +24,8 @@ export default function StatCard({ title, value, color = 'var(--accent-color)', 
         e.currentTarget.style.boxShadow = 'var(--shadow-md)';
         e.currentTarget.style.borderColor = 'var(--border-color)';
     }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'flex-start', gap: '16px', marginBottom: '20px' }}>
-        <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: '600', letterSpacing: '0.05em', textTransform: 'uppercase', lineHeight: '1.4' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'flex-start', gap: '12px', marginBottom: '20px' }}>
+        <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: '600', letterSpacing: '0.05em', textTransform: 'uppercase', lineHeight: '1.4', overflowWrap: 'break-word', wordBreak: 'break-word', flex: 1 }}>
           {title}
         </div>
         {Icon && (

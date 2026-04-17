@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import { Ticket, AlertCircle, CheckCircle2, Clock } from 'lucide-react';
+import { Ticket, AlertCircle, CheckCircle2, Clock, Trash2 } from 'lucide-react';
 import ModuleLayout from '../components/ModuleLayout';
 import SectionCard from '../components/SectionCard';
 import StatCard from '../components/StatCard';
@@ -141,34 +141,40 @@ export default function IssuesModule() {
     );
   };
 
-  const columns = [
-    { label: 'Issue Title', width: '30%' },
-    { label: 'Type', width: '10%' },
-    { label: 'Priority', width: '10%' },
-    { label: 'Assigned To', width: '15%' },
-    { label: 'Status', width: '15%' },
-    { label: 'Actions', width: '20%' }
-  ];
-
-  const renderRow = (issue, idx) => (
-    <tr key={issue._id} style={{ borderBottom: '1px solid var(--border-color)', transition: 'background-color 0.2s' }}>
-      <td style={{ padding: '16px 24px' }}>
-        <div style={{ fontWeight: '600', color: 'var(--text-primary)' }}>{issue.title}</div>
-        <div style={{ fontSize: '0.8rem', color: 'var(--text-tertiary)' }}>{issue.description}</div>
-      </td>
-      <td style={{ padding: '16px 24px', color: 'var(--text-secondary)' }}>{issue.type}</td>
-      <td style={{ padding: '16px 24px', ...getPriorityStyle(issue.priority) }}>{issue.priority}</td>
-      <td style={{ padding: '16px 24px', color: 'var(--text-secondary)' }}>{issue.assignedTo || 'Unassigned'}</td>
-      <td style={{ padding: '16px 24px' }}>{getStatusBadge(issue.status)}</td>
-      <td style={{ padding: '16px 24px' }}>
-        <div style={{ display: 'flex', gap: '8px' }}>
-          {issue.status !== 'Resolved' && issue.status !== 'Closed' && (
-            <Button variant="secondary" size="sm" onClick={() => handleUpdateStatus(issue._id, 'Resolved')}>Resolve</Button>
-          )}
-          <Button variant="danger" size="sm" onClick={() => handleDeleteIssue(issue._id)}>Delete</Button>
-        </div>
-      </td>
-    </tr>
+  const IssueCard = ({ issue }) => (
+    <div 
+      draggable
+      onDragStart={(e) => {
+        e.dataTransfer.setData('issueId', issue._id);
+      }}
+      style={{ 
+        backgroundColor: 'var(--bg-card)', 
+        border: '1px solid var(--border-color)', 
+        borderRadius: 'var(--radius-sm)', 
+        padding: '16px',
+        marginBottom: '16px',
+        boxShadow: 'var(--shadow-sm)',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '12px',
+        position: 'relative',
+        cursor: 'grab'
+      }}
+    >
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <h4 style={{ margin: 0, color: 'var(--text-primary)', fontSize: '1.05rem', fontWeight: '600' }}>{issue.title}</h4>
+        <Button variant="ghost" size="sm" onClick={() => handleDeleteIssue(issue._id)} style={{ padding: '4px', color: 'var(--text-tertiary)' }}>
+          <Trash2 size={14} />
+        </Button>
+      </div>
+      {issue.description && <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '0.85rem' }}>{issue.description}</p>}
+      
+      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+        <span style={{ fontSize: '0.75rem', padding: '2px 8px', backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: '4px', color: 'var(--text-secondary)', fontWeight: 'bold' }}>{issue.type}</span>
+        <span style={{ fontSize: '0.75rem', padding: '2px 8px', color: getPriorityStyle(issue.priority).color, backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: '4px', fontWeight: 'bold' }}>{issue.priority}</span>
+        {issue.assignedTo && <span style={{ fontSize: '0.75rem', padding: '2px 8px', backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: '4px', color: 'var(--text-secondary)' }}>@ {issue.assignedTo}</span>}
+      </div>
+    </div>
   );
 
   return (
@@ -231,12 +237,58 @@ export default function IssuesModule() {
           {loading ? (
             <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>Loading issues...</div>
           ) : (
-            <DataTable 
-              columns={columns} 
-              data={issues} 
-              renderRow={renderRow} 
-              emptyMessage="No issues logged for this project yet." 
-            />
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px', alignItems: 'start' }}>
+              {/* Open Column */}
+              <div 
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  const issueId = e.dataTransfer.getData('issueId');
+                  if (issueId) handleUpdateStatus(issueId, 'Open');
+                }}
+                style={{ backgroundColor: 'var(--bg-surface)', padding: '16px', borderRadius: 'var(--radius-md)', minHeight: '300px', border: '1px solid rgba(239, 68, 68, 0.2)' }}
+              >
+                <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-primary)', marginBottom: '16px', borderBottom: '2px solid var(--danger)', paddingBottom: '8px' }}>
+                  <AlertCircle size={18} color="var(--danger)" /> Open ({openCount})
+                </h3>
+                {issues.filter(i => i.status === 'Open').length === 0 ? <p style={{ color: 'var(--text-tertiary)', fontSize: '0.9rem', textAlign: 'center', marginTop: '32px' }}>Drop here</p> : null}
+                {issues.filter(i => i.status === 'Open').map(issue => <IssueCard key={issue._id} issue={issue} />)}
+              </div>
+
+              {/* In Progress Column */}
+              <div 
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  const issueId = e.dataTransfer.getData('issueId');
+                  if (issueId) handleUpdateStatus(issueId, 'In Progress');
+                }}
+                style={{ backgroundColor: 'var(--bg-surface)', padding: '16px', borderRadius: 'var(--radius-md)', minHeight: '300px', border: '1px solid rgba(56, 187, 248, 0.2)' }}
+              >
+                <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-primary)', marginBottom: '16px', borderBottom: '2px solid var(--info)', paddingBottom: '8px' }}>
+                  <Clock size={18} color="var(--info)" /> In Progress ({inProgressCount})
+                </h3>
+                {issues.filter(i => i.status === 'In Progress').length === 0 ? <p style={{ color: 'var(--text-tertiary)', fontSize: '0.9rem', textAlign: 'center', marginTop: '32px' }}>Drop here</p> : null}
+                {issues.filter(i => i.status === 'In Progress').map(issue => <IssueCard key={issue._id} issue={issue} />)}
+              </div>
+
+              {/* Resolved Column */}
+              <div 
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  const issueId = e.dataTransfer.getData('issueId');
+                  if (issueId) handleUpdateStatus(issueId, 'Resolved');
+                }}
+                style={{ backgroundColor: 'var(--bg-surface)', padding: '16px', borderRadius: 'var(--radius-md)', minHeight: '300px', border: '1px solid rgba(34, 197, 94, 0.2)' }}
+              >
+                <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-primary)', marginBottom: '16px', borderBottom: '2px solid var(--success)', paddingBottom: '8px' }}>
+                  <CheckCircle2 size={18} color="var(--success)" /> Resolved ({resolvedCount})
+                </h3>
+                {issues.filter(i => i.status === 'Resolved' || i.status === 'Closed').length === 0 ? <p style={{ color: 'var(--text-tertiary)', fontSize: '0.9rem', textAlign: 'center', marginTop: '32px' }}>Drop here</p> : null}
+                {issues.filter(i => i.status === 'Resolved' || i.status === 'Closed').map(issue => <IssueCard key={issue._id} issue={issue} />)}
+              </div>
+            </div>
           )}
         </>
       </SectionCard>

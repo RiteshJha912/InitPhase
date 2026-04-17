@@ -243,6 +243,22 @@ export default function SequenceFlowModule() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [rawSteps, setRawSteps] = useState('');
+  const [useVisualBuilder, setUseVisualBuilder] = useState(true);
+  const [visualSteps, setVisualSteps] = useState([{ sender: '', receiver: '', message: '' }]);
+
+  const updateVisualStep = (index, field, value) => {
+    const newSteps = [...visualSteps];
+    newSteps[index][field] = value;
+    setVisualSteps(newSteps);
+    setRawSteps(newSteps.filter(s => s.sender && s.receiver).map(s => `${s.sender} -> ${s.receiver} ${s.message ? ': ' + s.message : ''}`).join('\n'));
+  };
+
+  const addVisualStep = () => setVisualSteps([...visualSteps, { sender: '', receiver: '', message: '' }]);
+  const removeVisualStep = (index) => {
+    const newSteps = visualSteps.filter((_, i) => i !== index);
+    setVisualSteps(newSteps.length > 0 ? newSteps : [{ sender: '', receiver: '', message: '' }]);
+    setRawSteps(newSteps.filter(s => s.sender && s.receiver).map(s => `${s.sender} -> ${s.receiver} ${s.message ? ': ' + s.message : ''}`).join('\n'));
+  };
 
   const generateUml = (text) => {
     const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
@@ -286,6 +302,7 @@ export default function SequenceFlowModule() {
         setTitle('');
         setDescription('');
         setRawSteps('');
+        setVisualSteps([{ sender: '', receiver: '', message: '' }]);
         fetchSequenceFlows(token);
       }
     } catch (err) {
@@ -350,24 +367,62 @@ export default function SequenceFlowModule() {
               fontSize: '1rem'
             }}
           />
-          <textarea 
-            value={rawSteps} 
-            onChange={(e) => setRawSteps(e.target.value)} 
-            placeholder={`Enter steps, one per line:\nUser -> System : Login Request\nSystem -> DB : Validate Credentials\nDB -> System : Success\nSystem -> User : Login Successful`} 
-            required
-            rows={6}
-            style={{ 
-              width: '100%', 
-              padding: '12px 16px', 
-              backgroundColor: 'var(--bg-base)',
-              border: '1px solid var(--border-color)', 
-              borderRadius: 'var(--radius-sm)',
-              color: 'var(--text-primary)',
-              fontSize: '1rem',
-              fontFamily: 'monospace',
-              resize: 'vertical'
-            }}
-          />
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px' }}>
+            <h4 style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Interaction Steps</h4>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button type="button" onClick={() => setUseVisualBuilder(true)} style={{ padding: '6px 12px', fontSize: '0.8rem', borderRadius: '4px', border: useVisualBuilder ? '1px solid var(--accent-color)' : '1px solid var(--border-color)', backgroundColor: useVisualBuilder ? 'rgba(56, 187, 248, 0.1)' : 'var(--bg-base)', color: useVisualBuilder ? 'var(--text-primary)' : 'var(--text-secondary)', cursor: 'pointer' }}>Visual Builder</button>
+              <button type="button" onClick={() => setUseVisualBuilder(false)} style={{ padding: '6px 12px', fontSize: '0.8rem', borderRadius: '4px', border: !useVisualBuilder ? '1px solid var(--accent-color)' : '1px solid var(--border-color)', backgroundColor: !useVisualBuilder ? 'rgba(56, 187, 248, 0.1)' : 'var(--bg-base)', color: !useVisualBuilder ? 'var(--text-primary)' : 'var(--text-secondary)', cursor: 'pointer' }}>Raw UML</button>
+            </div>
+          </div>
+
+          {useVisualBuilder ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', backgroundColor: 'var(--bg-card)', padding: '16px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)' }}>
+              {visualSteps.map((vStep, index) => (
+                <div key={index} style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+                  <span style={{ color: 'var(--text-tertiary)', fontSize: '0.8rem', width: '20px' }}>{index + 1}.</span>
+                  <input type="text" placeholder="Sender (e.g. User)" value={vStep.sender} onChange={(e) => updateVisualStep(index, 'sender', e.target.value)} style={{ flex: 1, minWidth: '100px', padding: '8px 12px', backgroundColor: 'var(--bg-base)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-sm)', color: 'var(--text-primary)' }} />
+                  <span style={{ color: 'var(--text-tertiary)' }}>→</span>
+                  <input type="text" placeholder="Receiver (e.g. System)" value={vStep.receiver} onChange={(e) => updateVisualStep(index, 'receiver', e.target.value)} style={{ flex: 1, minWidth: '100px', padding: '8px 12px', backgroundColor: 'var(--bg-base)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-sm)', color: 'var(--text-primary)' }} />
+                  <input type="text" placeholder="Message (e.g. Login Request)" value={vStep.message} onChange={(e) => updateVisualStep(index, 'message', e.target.value)} style={{ flex: 2, minWidth: '150px', padding: '8px 12px', backgroundColor: 'var(--bg-base)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-sm)', color: 'var(--text-primary)' }} />
+                  <Button variant="ghost" size="sm" type="button" onClick={() => removeVisualStep(index)} style={{ padding: '8px', color: 'var(--danger)' }}><Trash2 size={16} /></Button>
+                </div>
+              ))}
+              <Button variant="secondary" size="sm" type="button" onClick={addVisualStep} style={{ alignSelf: 'flex-start', marginTop: '8px' }}><Plus size={16} /> Add Step</Button>
+            </div>
+          ) : (
+            <textarea 
+              value={rawSteps} 
+              onChange={(e) => {
+                setRawSteps(e.target.value);
+                // Try to loosely sync it back to visual steps if they switch back
+                const lines = e.target.value.split('\n').filter(Boolean);
+                const newVisual = lines.map(line => {
+                  const arrowMatch = line.match(/(-->|->)/);
+                  if (arrowMatch) {
+                    const parts = line.split(arrowMatch[0]);
+                    const rightParts = parts[1].split(':');
+                    return { sender: parts[0].trim(), receiver: rightParts[0].trim(), message: rightParts.slice(1).join(':').trim() };
+                  }
+                  return { sender: line, receiver: '', message: '' };
+                });
+                setVisualSteps(newVisual.length > 0 ? newVisual : [{ sender: '', receiver: '', message: '' }]);
+              }} 
+              placeholder={`Enter steps, one per line:\nUser -> System : Login Request\nSystem -> DB : Validate Credentials\nDB -> System : Success\nSystem -> User : Login Successful`} 
+              required
+              rows={6}
+              style={{ 
+                width: '100%', 
+                padding: '12px 16px', 
+                backgroundColor: 'var(--bg-base)',
+                border: '1px solid var(--border-color)', 
+                borderRadius: 'var(--radius-sm)',
+                color: 'var(--text-primary)',
+                fontSize: '1rem',
+                fontFamily: 'monospace',
+                resize: 'vertical'
+              }}
+            />
+          )}
           <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
             <Button type="submit" variant="primary">
               <Plus size={18} /> Generate Sequence Flow

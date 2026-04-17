@@ -27,6 +27,7 @@ export default function ProjectWorkspace() {
   const [rtmData, setRtmData] = useState([]);
   const [coveragePct, setCoveragePct] = useState(0);
   const [sequenceFlows, setSequenceFlows] = useState([]);
+  const [issues, setIssues] = useState([]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -39,6 +40,7 @@ export default function ProjectWorkspace() {
     fetchTestCases(token);
     fetchRtm(token);
     fetchSequenceFlows(token);
+    fetchIssues(token);
   }, [id, navigate]);
 
   const fetchProject = async (token) => {
@@ -108,6 +110,20 @@ export default function ProjectWorkspace() {
       if (res.ok) {
         const data = await res.json();
         setSequenceFlows(data);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const fetchIssues = async (token) => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/issues/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setIssues(data);
       }
     } catch (err) {
       console.error(err);
@@ -206,11 +222,11 @@ export default function ProjectWorkspace() {
             Workspace Modules
           </div>
           
-          <NavLink to="overview" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><LayoutDashboard size={20} className="module-icon" /> Dashboard</NavLink>
           <NavLink to="requirements" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><ListTodo size={20} className="module-icon" /> Requirements</NavLink>
           <NavLink to="sequence" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><GitMerge size={20} className="module-icon" /> Sequence Flow</NavLink>
           <NavLink to="testcases" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><FlaskConical size={20} className="module-icon" /> Test Execution</NavLink>
           <NavLink to="issues" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><Ticket size={20} className="module-icon" /> Issues</NavLink>
+          <NavLink to="overview" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><LayoutDashboard size={20} className="module-icon" /> Dashboard</NavLink>
           <NavLink to="rtm" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><Network size={20} className="module-icon" /> Analytics Matrix</NavLink>
           <NavLink to="documentation" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><FileText size={20} className="module-icon" /> Documentation</NavLink>
         </aside>
@@ -228,7 +244,9 @@ export default function ProjectWorkspace() {
             fetchRtm, 
             coveragePct,
             sequenceFlows,
-            fetchSequenceFlows 
+            fetchSequenceFlows,
+            issues,
+            fetchIssues
           }} />
         </main>
       </div>
