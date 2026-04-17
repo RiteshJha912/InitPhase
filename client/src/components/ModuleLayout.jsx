@@ -5,13 +5,37 @@ export default function ModuleLayout({ title, description, connectionText, stats
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', flex: 1, minHeight: '100vh', padding: '0 0 40px 0', backgroundColor: 'var(--bg-base)' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', flex: 1, minHeight: '100vh', padding: '0 0 40px 0', backgroundColor: 'var(--bg-base)', position: 'relative' }}>
+      {/* Subtle Dashed Grid Background */}
+      <div
+        style={{
+          position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none',
+          backgroundImage: `
+            linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px)
+          `,
+          backgroundSize: "20px 20px",
+          backgroundPosition: "0 0, 0 0",
+          maskImage: `
+            repeating-linear-gradient(to right, black 0px, black 3px, transparent 3px, transparent 8px),
+            repeating-linear-gradient(to bottom, black 0px, black 3px, transparent 3px, transparent 8px)
+          `,
+          WebkitMaskImage: `
+            repeating-linear-gradient(to right, black 0px, black 3px, transparent 3px, transparent 8px),
+            repeating-linear-gradient(to bottom, black 0px, black 3px, transparent 3px, transparent 8px)
+          `,
+          maskComposite: "intersect",
+          WebkitMaskComposite: "source-in",
+        }}
+      />
+
       {/* Heavy Enterprise Dark Header Component */}
       <div className="module-header-padding" style={{ 
         padding: '32px 40px', 
         backgroundColor: 'var(--bg-surface)', 
         borderBottom: '1px solid var(--border-color)', 
-        boxShadow: 'var(--shadow-sm)'
+        boxShadow: 'var(--shadow-sm)',
+        position: 'relative', zIndex: 1
       }}>
         <h1 style={{ margin: '0 0 12px 0', fontSize: '2.5rem', color: 'var(--text-primary)', fontWeight: '800', fontFamily: 'var(--font-heading)' }}>
           {title}
@@ -70,7 +94,7 @@ export default function ModuleLayout({ title, description, connectionText, stats
         )}
       </div>
 
-      <div className="module-padding" style={{ padding: '0 40px', display: 'flex', flexDirection: 'column', gap: '32px' }}>
+      <div className="module-padding" style={{ padding: '0 40px', display: 'flex', flexDirection: 'column', gap: '32px', position: 'relative', zIndex: 1 }}>
         {children}
       </div>
     </div>

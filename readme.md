@@ -1,6 +1,6 @@
 # InitPhase
 
-InitPhase is an enterprise-grade project management workspace designed to facilitate the systematic analysis, planning, and traceability of software requirements and quality assurance processes throughout the development lifecycle.
+InitPhase is an enterprise-grade SaaS project management workspace designed to facilitate the systematic analysis, planning, and traceability of software requirements, testing, and issue pipelines throughout the development lifecycle.
 
 ## Tech Stack Overview
 
@@ -47,6 +47,7 @@ initphase/
 │   │   │   ├── RequirementsModule.jsx
 │   │   │   ├── SequenceFlowModule.jsx
 │   │   │   ├── RtmModule.jsx
+│   │   │   ├── IssuesModule.jsx
 │   │   │   ├── DocumentationModule.jsx
 │   │   │   └── TestCasesModule.jsx
 │   │   ├── App.jsx             # Main router configuration
@@ -66,6 +67,7 @@ initphase/
 │   │   ├── requirementController.js
 │   │   ├── sequenceController.js
 │   │   ├── rtmController.js
+│   │   ├── issueController.js
 │   │   ├── documentationController.js
 │   │   └── testCaseController.js
 │   ├── middleware/             # Express middlewares (Auth/Security)
@@ -74,6 +76,7 @@ initphase/
 │   │   ├── Project.js
 │   │   ├── Requirement.js
 │   │   ├── SequenceFlow.js
+│   │   ├── Issue.js
 │   │   ├── TestCase.js
 │   │   └── User.js
 │   ├── routes/                 # Express API route declarations
@@ -82,6 +85,7 @@ initphase/
 │   │   ├── requirementRoutes.js
 │   │   ├── sequenceRoutes.js
 │   │   ├── rtmRoutes.js
+│   │   ├── issueRoutes.js
 │   │   ├── documentationRoutes.js
 │   │   └── testCaseRoutes.js
 │   ├── .env                    # Secret environment configurations
@@ -96,20 +100,21 @@ initphase/
 The frontend is implemented as a Single Page Application (SPA) with a heavily modularized routing structure to simulate independent enterprise subsystems.
 
 **Core Routes:**
-- `/`: Landing page.
+- `/`: Landing page (SaaS-focused branding).
 - `/login` & `/register`: Authentication views.
-- `/dashboard`: Primary hub for creating and selecting distinct projects.
+- `/dashboard`: Primary hub for creating, securing, editing, and deleting distinct projects.
 - `/projects/:id/*`: The enterprise workspace wrapper, which contains nested routes:
   - `/overview`: High-level statistical overview of the project.
   - `/requirements`: The Requirements Management Module.
-  - `/sequence`: Text-Based structural modeling into CSS visualizations.
+  - `/sequence`: System modeling via intuitive Visual Builder and direct text-based UML.
   - `/testcases`: The Test Case Management Module.
+  - `/issues`: Interactive HTML5 Drag-and-Drop Kanban issue tracker.
   - `/rtm`: The Requirement Traceability Matrix (RTM) Analysis Module.
-  - `/documentation`: Dynamic Markdown & PDF Generator combining all project data.
+  - `/documentation`: Dynamic Markdown generator combining all project data.
 
 **Shared Components (`/client/src/components`):**
 To maintain visual consistency and DRY principles, shared UI components are utilized across modules:
-- `ModuleLayout`: Standard wrapper providing title, description, and statistics metrics.
+- `ModuleLayout`: Standard wrapper providing titles, descriptions, contextual help panels, and embedded subtle styling grids.
 - `StatCard`: Visual component for numerical data representation.
 - `SectionCard`: Wrapper for distinct functional areas within a module.
 - `DataTable`: Reusable structural table for entity lists.
@@ -119,20 +124,21 @@ To maintain visual consistency and DRY principles, shared UI components are util
 The server follows an MVC (Model-View-Controller) derived pattern, exposing RESTful API endpoints.
 
 **Core Components:**
-- **Models (`/server/models`):** Mongoose schemas defining `User`, `Project`, `Requirement`, and `TestCase`.
-- **Controllers (`/server/controllers`):** Business logic handlers for authentication, project management, requirements CRUD, test case execution, and RTM generation.
-- **Routes (`/server/routes`):** Express routers mapping HTTP methods to corresponding controller logic.
-- **Middleware (`/server/middleware`):** Reusable request interceptors, primarily `authMiddleware` for intercepting and verifying JWT tokens.
+- **Models (`/server/models`):** Mongoose schemas defining core structures (`User`, `Project`, `Requirement`, `TestCase`, `SequenceFlow`, `Issue`).
+- **Controllers (`/server/controllers`):** Advanced business logic handling CRUD capabilities across namespaces.
+- **Routes (`/server/routes`):** Express routers mapping HTTP methods to corresponding controllers.
+- **Middleware (`/server/middleware`):** Secures the application via `authMiddleware` JWT verification layers.
 
 ## Features
 
 1. **Authentication:** Secure user registration, login, and tokenized session persistence.
-2. **Project Segregation:** Users can maintain multiple isolated project environments.
-3. **Requirements Management:** Authoring interface for user stories with priority scaling (Must-Have, Should-Have, Nice-to-Have).
-4. **Sequence Flow Generator:** Transform simple text-based UML interactions into beautiful multi-lane responsive architecture visualizations.
-5. **Test Case Console:** Ability to map technical test executions directly to specific requirements, tracking expected vs. actual outcomes.
-6. **Traceability Matrix (RTM):** Real-time analytical matrix calculating requirement coverage ratios, highlighting untested or failing requirements.
-7. **Documentation Generator:** Automates comprehensive project reporting, bundling overview, test logs, sequence diagrams, and traceability matrices into downloadable Markdown or elegantly styled, branded PDFs.
+2. **Project Segregation:** Users can maintain numerous isolated project environments, with full lifecycle functionality (Rename/Delete capabilities inline).
+3. **Requirements Manager:** Authoring interface for capturing business needs mapped alongside custom priority scales (Must-Have, Should-Have, Nice-to-Have).
+4. **Visual Sequence Flows:** Transform logical backend interactions into beautifully crafted swimlane diagrams using an intuitive UI element-builder.
+5. **Test Execution Engine:** Tether strict pass/fail parameters to project requirements and execute QA checks seamlessly.
+6. **Live Traceability Matrix:** Real-time analytics engine returning complete requirements coverage ratios—isolating precisely which items remain untested.
+7. **Integrated Issue Tracker:** Manage incoming tasks, enhancements, and bugs visually using a frictionless drag-and-drop Kanban workflow.
+8. **Documentation Export:** Automates comprehensive project reporting, bundling overview, test logs, sequence diagrams, and traceability matrices into downloadable Markdown formatting.
 
 ## API Contracts
 
@@ -146,6 +152,8 @@ All protected routes require an `Authorization` header containing the JWT: `Bear
   - `GET /api/projects` - Retrieves all projects for the authenticated user.
   - `POST /api/projects` - Creates a new project.
   - `GET /api/projects/:id` - Retrieves singular project details.
+  - `PATCH /api/projects/:id` - Updates project meta details (renaming).
+  - `DELETE /api/projects/:id` - Fully removes a specific project and cascade metadata.
 
 - **Requirement APIs:**
   - `GET /api/requirements/:projectId` - Fetches all requirements for a project.
@@ -156,6 +164,12 @@ All protected routes require an `Authorization` header containing the JWT: `Bear
   - `GET /api/testcases/:projectId` - Retrieves project-wide test cases.
   - `POST /api/testcases/:projectId/:requirementId` - Maps a new test case to a specific requirement.
   - `PATCH /api/testcases/:testId/status` - Updates execution status (Pass/Fail/Pending).
+
+- **Issue Tracker APIs:**
+  - `GET /api/issues/:projectId` - Gathers internal issue lists.
+  - `POST /api/issues/:projectId` - Commits a new issue to the tracked sprint.
+  - `PATCH /api/issues/:issueId/status` - Migrates an issue across Kanban columns.
+  - `DELETE /api/issues/:issueId` - Removes a closed issue.
 
 - **Sequence Flow APIs:**
   - `GET /api/sequence/:projectId` - Fetch all sequence diagrams for a project.
@@ -222,28 +236,18 @@ npm run build
 This yields optimized static files in the `/dist` directory, capable of being served rapidly via any standard static hosting methodology or reverse-proxied through the running Node.js server.
 
 ## Dummy Data
-The dummy data files contain, data to demonstrate how the active modules of the product are to be used in real world SW project cycles.
+The `dummy_data.md` file contains data to demonstrate how the active modules of the product are to be used in real world SW project cycles, including deep Somaiya Results testing metrics.
 
 ## Upcoming Features
 
-- [ ] Idea-to-BRD Conversion: Input raw ideas and convert them into structured Business Requirement Documents (BRD) within InitPhase. [Reference](https://medium.com/@narendrant/automating-brd-creation-with-llms-b4e2227e6652)
-
+- [ ] Idea-to-BRD Conversion: Input raw ideas and convert them into structured Business Requirement Documents (BRD) within InitPhase.
 - [ ] Automated User Stories: Transform BRD content into structured user stories and ready-to-use Jira tasks.
-
 - [ ] Jira Integration: Connect InitPhase directly to Jira using a CLI or API wrapper (via npx) for seamless data flow.
-
 - [ ] Professional Diagrams: Export sequence flows into professional diagrams using tools like Lucidchart (via MCP).
-
 - [ ] Natural Language Project Setup: Set up entire projects using natural language commands.
-
 - [ ] GitHub Integration: Link repositories to sync commits with requirements (e.g., REQ-12) and map PRs to features.
-
 - [ ] Email-Based Workflow: Automate weekly reports and risk summaries via email.
-
 - [ ] Calendar & Sprint Integration: Sync project timelines and sprints with Google Calendar.
-
 - [ ] Webhooks System: Enable external tool connectivity via events like `requirement.created`, `testcase.failed`, and `project.updated`.
-
-- [x] Internal Issue Tracker: Built-in lightweight alternative to Jira for task assignment and tracking.
-
+- [x] Internal Issue Tracker: Built-in drag-and-drop alternative to Jira for task handling natively.
 - [ ] Lucidchart MCP Integration

@@ -4,7 +4,7 @@ import {
   ArrowRight, CheckCircle, ListTodo, FlaskConical, Network, 
   AlertTriangle, ChevronDown, ChevronUp, Zap, Shield, Eye,
   FileText, BarChart3, Target, Heart, Github, Star,
-  XCircle, RefreshCw, Plus
+  XCircle, RefreshCw, Plus, GitMerge, FileDown, Kanban
 } from 'lucide-react';
 
 /* ═══════════ CUSTOM LOGO SVG ═══════════ */
@@ -352,15 +352,14 @@ export default function Landing() {
               fontSize: 'clamp(1.9rem, 3.8vw, 3.2rem)', fontWeight: '800', fontFamily: 'var(--font-heading)', 
               lineHeight: '1.08', letterSpacing: '-0.04em', color: '#fafafa', marginBottom: '18px'
             }}>
-              Structure Your<br/>Software Projects.
+              The Operating System <br/>for Software Engineering.
             </h1>
 
             <p className="hero-desc" style={{ 
               fontSize: 'clamp(0.88rem, 1.3vw, 1rem)', color: '#a1a1aa', lineHeight: '1.65', 
-              marginBottom: '28px', maxWidth: '400px'
+              marginBottom: '28px', maxWidth: '440px'
             }}>
-              Define requirements, write test cases, and generate a traceability matrix - the OOSE way. 
-              Built for developers who want to ship software that actually works.
+              A comprehensive SaaS workspace to define priorities, trace test execution, diagram sequence flows, and track internal bugs seamlessly. Built for scale.
             </p>
 
             <div className="hero-cta" style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
@@ -691,7 +690,7 @@ export default function Landing() {
                 How It Works
               </div>
               <h2 style={{ fontSize: 'clamp(1.6rem, 3.5vw, 2.5rem)', fontFamily: 'var(--font-heading)', fontWeight: '800', marginBottom: '16px', lineHeight: '1.2', letterSpacing: '-0.02em' }}>
-                Three steps. One structured workflow.
+                Complete Lifecycle Management.
               </h2>
               <p style={{ color: '#a1a1aa', fontSize: '1.05rem', maxWidth: '500px', margin: '0 auto' }}>
                 InitPhase guides you through the proper software engineering process - no prior knowledge required.
@@ -711,20 +710,32 @@ export default function Landing() {
               {
                 num: '01', icon: ListTodo, color: '#e4e4e7',
                 title: 'Define Your Requirements',
-                desc: 'Start by listing what your software needs to do. Each requirement gets a priority level - Must-Have, Should-Have, or Nice-to-Have.',
-                detail: '"User must be able to log in" -> Must-Have'
+                desc: 'Start by listing what your software needs to do. Each requirement gets a priority level - Must-Have, Should-Have, or Nice-to-Have, setting a strong baseline.',
+                detail: '"System must calculate geo-tax" -> Must-Have'
               },
               {
-                num: '02', icon: FlaskConical, color: '#a855f7',
-                title: 'Write Test Cases',
-                desc: 'For each requirement, create a test case. Describe the steps to test it and the expected result. Mark each test as Pass, Fail, or Pending.',
-                detail: '"Enter wrong password -> Error shown" -> Pass'
+                num: '02', icon: GitMerge, color: '#3b82f6',
+                title: 'Model Sequence Flows',
+                desc: 'Visually map out how your system architecture will handle requests using our built-in Sequence Diagram builder before a single line of code is written.',
+                detail: 'Client -> API -> Database -> Return Response'
               },
               {
-                num: '03', icon: Network, color: '#10b981',
-                title: 'View Your Traceability Matrix',
-                desc: 'InitPhase auto-generates a matrix showing which requirements have tests and which don\'t. Your goal: 100% coverage before shipping.',
-                detail: '12 requirements -> 28 tests -> 100% covered'
+                num: '03', icon: FlaskConical, color: '#a855f7',
+                title: 'Execute Verification Tests',
+                desc: 'Create rigid test cases tethered directly to your requirements. Execute them simulating real workflows to ensure exact functionality passes without errors.',
+                detail: 'Test #23: Validate Tax Calculation -> PASSED'
+              },
+              {
+                num: '04', icon: Kanban, color: '#f59e0b',
+                title: 'Track Bugs via Kanban',
+                desc: 'When tests fail, drag and drop bugs directly into the integrated issues tracker. Assign them to your team natively within your workspace environment.',
+                detail: 'Move "Timeout Bug" -> In Progress'
+              },
+              {
+                num: '05', icon: Network, color: '#10b981',
+                title: 'Trace Everything Back',
+                desc: 'Ensure compliance before launch. InitPhase auto-calculates total requirement coverage and instantly alerts you if an original specification was never tested.',
+                detail: 'Coverage calculation complete: 100% Ready'
               }
             ].map((step, i) => (
               <AnimatedSection key={i} delay={i * 0.12}>
@@ -783,12 +794,12 @@ export default function Landing() {
 
           <div className="stat-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
             {[
-              { icon: FileText, title: 'Priority-Based Requirements', desc: 'Organize features into Must-Have, Should-Have, and Nice-to-Have categories to focus on what matters most.' },
-              { icon: FlaskConical, title: 'Structured Test Cases', desc: 'Define test steps, expected results, and pass/fail status. Link every test directly to a requirement.' },
-              { icon: BarChart3, title: 'Auto-Generated RTM', desc: 'Your traceability matrix is built automatically from your data. See gaps instantly without any manual work.' },
-              { icon: Target, title: 'Coverage Tracking', desc: 'Know exactly what percentage of your requirements have been tested. Target: 100% before you ship.' },
-              { icon: Eye, title: 'Visual Dashboard', desc: 'Charts and stats give you an instant project overview. Requirements distribution, test results - all at a glance.' },
-              { icon: Shield, title: 'Secure & Private', desc: 'JWT authentication keeps your projects safe. Only you can see your data. No sharing, no leaks.' }
+              { icon: FileText, title: 'Requirements Manager', desc: 'Capture business needs with custom priority levels. Structure your exact functional expectations before writing a single line of code.' },
+              { icon: GitMerge, title: 'Visual Sequence Flows', desc: 'Design system interactions via an intuitive UI builder. Auto-renders into beautiful cross-system architectural diagrams.' },
+              { icon: FlaskConical, title: 'Test Execution Engine', desc: 'Map dedicated verification tests directly against your requirements. Execute workflows and log specific pass/fail telemetry.' },
+              { icon: Network, title: 'Live Traceability Matrix', desc: 'Real-time Analytics Dashboard that calculates test coverage percentages and specifically isolates unverified requirements.' },
+              { icon: Kanban, title: 'Integrated Issue Tracker', desc: 'A built-in HTML5 drag-and-drop Kanban board designed for tracking localized sprint tasks, bugs, and enhancements.' },
+              { icon: FileDown, title: 'Documentation Export', desc: 'Automated generation of your entire Software Test Document (STD) packaged cleanly into structured, presentation-ready files.' }
             ].map((f, i) => (
               <AnimatedSection key={i} delay={(i % 3) * 0.08}>
                 <div style={{ 
