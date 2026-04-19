@@ -9,6 +9,9 @@ InitPhase is an enterprise-grade SaaS project management workspace designed to f
 - **Build Tool:** Vite
 - **Routing:** React Router DOM v7
 - **Styling:** Vanilla CSS with scoped inline styling for components
+- **Charts:** Recharts for data visualization
+- **Icons:** Lucide React
+- **PDF Generation:** html2pdf.js for documentation export
 - **Architecture:** Modular component-based architecture with dedicated sub-routes for each major feature subsystem.
 
 ### Backend
@@ -18,6 +21,7 @@ InitPhase is an enterprise-grade SaaS project management workspace designed to f
 - **ODM:** Mongoose v9
 - **Authentication:** JSON Web Tokens (JWT)
 - **Security:** BcryptJS for password hashing, CORS enabled.
+- **Development:** Nodemon for hot reloading
 
 ## Project Architecture
 
@@ -129,58 +133,322 @@ The server follows an MVC (Model-View-Controller) derived pattern, exposing REST
 - **Routes (`/server/routes`):** Express routers mapping HTTP methods to corresponding controllers.
 - **Middleware (`/server/middleware`):** Secures the application via `authMiddleware` JWT verification layers.
 
-## Features
+## Detailed Module Documentation
 
-1. **Authentication:** Secure user registration, login, and tokenized session persistence.
-2. **Project Segregation:** Users can maintain numerous isolated project environments, with full lifecycle functionality (Rename/Delete capabilities inline).
-3. **Requirements Manager:** Authoring interface for capturing business needs mapped alongside custom priority scales (Must-Have, Should-Have, Nice-to-Have).
-4. **Visual Sequence Flows:** Transform logical backend interactions into beautifully crafted swimlane diagrams using an intuitive UI element-builder.
-5. **Test Execution Engine:** Tether strict pass/fail parameters to project requirements and execute QA checks seamlessly.
-6. **Live Traceability Matrix:** Real-time analytics engine returning complete requirements coverage ratios—isolating precisely which items remain untested.
-7. **Integrated Issue Tracker:** Manage incoming tasks, enhancements, and bugs visually using a frictionless drag-and-drop Kanban workflow.
-8. **Documentation Export:** Automates comprehensive project reporting, bundling overview, test logs, sequence diagrams, and traceability matrices into downloadable Markdown formatting.
+### Authentication System
+
+**Purpose:** Secure user registration, login, and session management for multi-tenant project isolation.
+
+**Inputs/Outputs:**
+- **Inputs:** Email, password for registration/login
+- **Outputs:** JWT token for authenticated sessions
+
+**Internal Logic:**
+- Passwords hashed with bcryptjs before storage
+- JWT tokens issued with user ID payload
+- Middleware validates tokens on protected routes
+- Automatic logout on invalid/expired tokens
+
+**Interactions:**
+- Provides user context to all project-related modules
+- Enforces ownership validation on all data operations
+
+**Key Functions:**
+- `register`: Creates new user with hashed password
+- `login`: Validates credentials and returns JWT
+- `authMiddleware`: Validates JWT on incoming requests
+
+### Project Management (Dashboard)
+
+**Purpose:** Central hub for creating and managing isolated project workspaces.
+
+**Inputs/Outputs:**
+- **Inputs:** Project name, description
+- **Outputs:** Project list with CRUD operations
+
+**Internal Logic:**
+- Projects are user-scoped for multi-tenancy
+- Automatic navigation to requirements module after creation
+- Inline editing with optimistic UI updates
+
+**Interactions:**
+- Creates context for all child modules via React Router outlet
+- Triggers data refresh across modules on project changes
+
+**Key Functions:**
+- `fetchProjects`: Retrieves user's projects with auth
+- `handleCreateProject`: Validates and creates new project
+- `handleUpdateProject`: Updates project metadata
+- `handleDeleteProject`: Cascades delete with confirmation
+
+### Requirements Module
+
+**Purpose:** Define and prioritize software requirements as the foundation for testing and traceability.
+
+**Inputs/Outputs:**
+- **Inputs:** Requirement title, priority level (Must-Have/Should-Have/Nice-to-Have)
+- **Outputs:** Prioritized requirement list with statistics
+
+**Internal Logic:**
+- Requirements linked to projects with user authorization
+- Priority-based filtering and statistics calculation
+- Real-time updates trigger RTM recalculation
+
+**Interactions:**
+- Provides requirements data to Test Cases and RTM modules
+- Updates trigger cascading refreshes in dependent modules
+
+**Key Functions:**
+- `handleAddRequirement`: Creates requirement with validation
+- `handleDeleteRequirement`: Removes requirement and updates RTM
+- Priority filtering and statistics computation
+
+### Test Cases Module
+
+**Purpose:** Create executable test scenarios linked to specific requirements for validation.
+
+**Inputs/Outputs:**
+- **Inputs:** Test name, steps, expected result, linked requirement
+- **Outputs:** Test case list with status updates (Pending/Pass/Fail)
+
+**Internal Logic:**
+- Test cases are requirement-scoped within projects
+- Status updates affect RTM coverage calculations
+- CRUD operations with authorization checks
+
+**Interactions:**
+- Consumes requirements from Requirements module
+- Provides test data to RTM for coverage analysis
+- Status changes trigger RTM updates
+
+**Key Functions:**
+- `handleAddTestCase`: Links test to requirement with validation
+- `handleUpdateStatus`: Updates test status and refreshes RTM
+- `handleDeleteTestCase`: Removes test and updates coverage
+
+### Traceability Matrix (RTM) Module
+
+**Purpose:** Provide real-time analytics on requirement-test coverage and project health.
+
+**Inputs/Outputs:**
+- **Inputs:** Aggregated requirements and test cases
+- **Outputs:** Coverage percentage, detailed mapping table
+
+**Internal Logic:**
+- Joins requirements with test cases by project
+- Calculates coverage metrics: total tests, passed/failed counts
+- Highlights untested and failing requirements
+- Percentage calculation: (covered requirements / total requirements) * 100
+
+**Interactions:**
+- Consumes data from Requirements and Test Cases modules
+- Provides coverage insights for project overview
+- Used in Documentation module for reporting
+
+**Key Functions:**
+- `getRTMAggregation`: Performs database joins and calculations
+- Coverage percentage computation
+- Requirement-test mapping generation
+
+### Issues Module
+
+**Purpose:** Kanban-style issue tracking for bugs, enhancements, and tasks.
+
+**Inputs/Outputs:**
+- **Inputs:** Issue title, description, status
+- **Outputs:** Drag-and-drop Kanban board with status columns
+
+**Internal Logic:**
+- Issues stored with status enum (To Do, In Progress, Done)
+- HTML5 drag-and-drop for status transitions
+- Project-scoped with user authorization
+
+**Interactions:**
+- Standalone module with no direct dependencies
+- Provides issue metrics to Project Overview
+
+**Key Functions:**
+- `handleAddIssue`: Creates new issue in To Do column
+- `handleStatusChange`: Updates issue status via drag-drop
+- `handleDeleteIssue`: Removes completed issues
+
+### Sequence Flow Module
+
+**Purpose:** Visual modeling of system interactions using swimlane diagrams.
+
+**Inputs/Outputs:**
+- **Inputs:** Diagram elements (actors, actions, flows)
+- **Outputs:** Generated sequence diagrams with text representation
+
+**Internal Logic:**
+- Visual builder for creating swimlane diagrams
+- Text-based UML alternative for direct input
+- Diagrams persisted as structured data
+
+**Interactions:**
+- Provides sequence data to Documentation module
+- Standalone creation with project scoping
+
+**Key Functions:**
+- `handleCreateSequence`: Saves diagram structure
+- `handleDeleteSequence`: Removes diagram
+- Visual rendering and text parsing
+
+### Documentation Module
+
+**Purpose:** Automated generation of comprehensive project documentation.
+
+**Inputs/Outputs:**
+- **Inputs:** Aggregated project data (requirements, tests, RTM, sequences)
+- **Outputs:** Markdown documentation with PDF export
+
+**Internal Logic:**
+- Combines data from all modules into structured report
+- Markdown generation with sections for each module
+- PDF export using html2pdf.js
+
+**Interactions:**
+- Consumes data from all other modules
+- Final output stage in project lifecycle
+
+**Key Functions:**
+- `getDocumentation`: Aggregates all project data
+- Markdown compilation and PDF generation
 
 ## API Contracts
 
 All protected routes require an `Authorization` header containing the JWT: `Bearer <token>`.
 
-- **Auth APIs:**
-  - `POST /api/auth/register` - Creates a new user.
-  - `POST /api/auth/login` - Authenticates and returns a JWT.
+### Auth APIs
+- `POST /api/auth/register` - Creates a new user account
+  - Body: `{ email, password }`
+  - Returns: User object with JWT
+- `POST /api/auth/login` - Authenticates user
+  - Body: `{ email, password }`
+  - Returns: JWT token
 
-- **Project APIs:**
-  - `GET /api/projects` - Retrieves all projects for the authenticated user.
-  - `POST /api/projects` - Creates a new project.
-  - `GET /api/projects/:id` - Retrieves singular project details.
-  - `PATCH /api/projects/:id` - Updates project meta details (renaming).
-  - `DELETE /api/projects/:id` - Fully removes a specific project and cascade metadata.
+### Project APIs
+- `GET /api/projects` - Retrieves user's projects
+- `POST /api/projects` - Creates new project
+  - Body: `{ name, description }`
+- `GET /api/projects/:id` - Gets project details
+- `PATCH /api/projects/:id` - Updates project
+  - Body: `{ name, description }`
+- `DELETE /api/projects/:id` - Deletes project
 
-- **Requirement APIs:**
-  - `GET /api/requirements/:projectId` - Fetches all requirements for a project.
-  - `POST /api/requirements/:projectId` - Authors a new requirement.
-  - `DELETE /api/requirements/:reqId` - Removes a requirement.
+### Requirement APIs
+- `GET /api/requirements/:projectId` - Lists project requirements
+- `POST /api/requirements/:projectId` - Creates requirement
+  - Body: `{ title, priority }`
+- `DELETE /api/requirements/:reqId` - Deletes requirement
 
-- **Test Case APIs:**
-  - `GET /api/testcases/:projectId` - Retrieves project-wide test cases.
-  - `POST /api/testcases/:projectId/:requirementId` - Maps a new test case to a specific requirement.
-  - `PATCH /api/testcases/:testId/status` - Updates execution status (Pass/Fail/Pending).
+### Test Case APIs
+- `GET /api/testcases/:projectId` - Lists project test cases
+- `POST /api/testcases/:projectId/:requirementId` - Creates test case
+  - Body: `{ name, steps, expectedResult }`
+- `PATCH /api/testcases/:testId/status` - Updates test status
+  - Body: `{ status }`
 
-- **Issue Tracker APIs:**
-  - `GET /api/issues/:projectId` - Gathers internal issue lists.
-  - `POST /api/issues/:projectId` - Commits a new issue to the tracked sprint.
-  - `PATCH /api/issues/:issueId/status` - Migrates an issue across Kanban columns.
-  - `DELETE /api/issues/:issueId` - Removes a closed issue.
+### Issue APIs
+- `GET /api/issues/:projectId` - Lists project issues
+- `POST /api/issues/:projectId` - Creates issue
+  - Body: `{ title, description }`
+- `PATCH /api/issues/:issueId/status` - Updates issue status
+- `DELETE /api/issues/:issueId` - Deletes issue
 
-- **Sequence Flow APIs:**
-  - `GET /api/sequence/:projectId` - Fetch all sequence diagrams for a project.
-  - `POST /api/sequence/:projectId` - Generates and persists a system sequence model.
-  - `DELETE /api/sequence/:id` - Deletes the generated logical diagram.
+### Sequence APIs
+- `GET /api/sequence/:projectId` - Lists project sequences
+- `POST /api/sequence/:projectId` - Creates sequence diagram
+  - Body: Diagram data
+- `DELETE /api/sequence/:id` - Deletes sequence
 
-- **Analytical APIs:**
-  - `GET /api/rtm/:projectId` - Aggregates requirements and dynamically cross-references test case statuses returning the structural traceability matrix.
+### RTM APIs
+- `GET /api/rtm/:projectId` - Gets traceability matrix data
 
-- **Documentation Generating APIs:**
-  - `GET /api/projects/:projectId/documentation` - Smart endpoint aggregating all relevant architecture, timeline, Sequence flow data, and RTM status matrices into a standardized export payload.
+### Documentation APIs
+- `GET /api/projects/:projectId/documentation` - Generates project docs
+
+## Workflows and Usage Examples
+
+### Typical Project Lifecycle
+
+1. **Project Setup:**
+   - Register/Login to dashboard
+   - Create new project with name and description
+   - Navigate to project workspace
+
+2. **Requirements Gathering:**
+   - Add requirements with priorities (Must-Have, Should-Have, Nice-to-Have)
+   - Example: "User must authenticate with email and password" (Must-Have)
+
+3. **Test Planning:**
+   - For each requirement, create test cases
+   - Example: Test login with valid/invalid credentials, check expected outcomes
+
+4. **Sequence Modeling:**
+   - Design system interactions using visual builder
+   - Example: User login flow with actors (User, System, Database)
+
+5. **Issue Tracking:**
+   - Add bugs/enhancements to Kanban board
+   - Drag from "To Do" → "In Progress" → "Done"
+
+6. **Coverage Analysis:**
+   - Check RTM for untested requirements
+   - Aim for 100% coverage before deployment
+
+7. **Documentation:**
+   - Generate comprehensive project report
+   - Export as Markdown or PDF
+
+### Example API Usage
+
+**Create a requirement:**
+```bash
+curl -X POST http://localhost:5000/api/requirements/64f1a2b3c4d5e6f7g8h9i0j1 \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"title": "User login functionality", "priority": "Must-Have"}'
+```
+
+**Get RTM data:**
+```bash
+curl http://localhost:5000/api/rtm/64f1a2b3c4d5e6f7g8h9i0j1 \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
+
+## Design Decisions and Assumptions
+
+### Architecture Choices
+- **React 19:** Chosen for latest features, concurrent rendering, and ecosystem maturity
+- **Vite:** Fast development server and optimized production builds
+- **MongoDB:** Flexible schema for varying project structures, easy scaling
+- **JWT Authentication:** Stateless sessions, suitable for API-first architecture
+- **Modular Frontend:** Lazy loading for performance, clear separation of concerns
+
+### Security Assumptions
+- JWT secrets stored securely in environment variables
+- Passwords hashed with bcryptjs (salt rounds: default)
+- CORS enabled for cross-origin requests
+- User ownership enforced on all data operations
+
+### Data Model Assumptions
+- Single user per project (no team collaboration yet)
+- Requirements are project-scoped and immutable once created
+- Test cases linked 1:many to requirements
+- Issues are simple status-based (no complex workflows)
+
+### UI/UX Decisions
+- Dark theme with CSS custom properties for consistency
+- Responsive design with mobile-first approach
+- Subtle grid backgrounds for enterprise feel
+- Collapsible help panels for self-service usability
+
+### Performance Considerations
+- Lazy loading of route components
+- Efficient database queries with Mongoose population
+- Client-side caching with localStorage for tokens
+- Minimal bundle size with tree-shaking
 
 ## Development Setup
 
@@ -197,7 +465,6 @@ JWT_SECRET=your_secure_random_string
 ```
 
 ### Installation Steps
-
 1. **Install Server Dependencies:**
    ```bash
    cd server
