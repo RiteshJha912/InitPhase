@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, NavLink, Outlet, Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, ListTodo, FlaskConical, Network, LogOut, LoaderCircle, Menu, X, GitMerge, FileText, Ticket } from 'lucide-react';
+import { LayoutDashboard, ListTodo, FlaskConical, Network, LogOut, LoaderCircle, Menu, X, GitMerge, FileText, Ticket, Sparkles } from 'lucide-react';
 import Button from '../components/Button';
 
 export default function ProjectWorkspace() {
@@ -223,6 +223,7 @@ export default function ProjectWorkspace() {
           </div>
           
           <NavLink to="requirements" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><ListTodo size={20} className="module-icon" /> Requirements</NavLink>
+          <NavLink to="idea-brd" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><Sparkles size={20} className="module-icon" /> Idea to BRD</NavLink>
           <NavLink to="sequence" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><GitMerge size={20} className="module-icon" /> Sequence Flow</NavLink>
           <NavLink to="testcases" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><FlaskConical size={20} className="module-icon" /> Test Execution</NavLink>
           <NavLink to="issues" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><Ticket size={20} className="module-icon" /> Issues</NavLink>

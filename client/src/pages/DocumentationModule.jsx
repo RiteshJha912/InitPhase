@@ -258,6 +258,38 @@ export default function DocumentationModule() {
     md += `**Name:** ${docData.project.name}\n\n`;
     md += `**Description:** ${docData.project.description}\n\n`;
 
+    // BRDs
+    md += `## Business Requirement Documents\n`;
+    if (docData.brds && docData.brds.length > 0) {
+      docData.brds.forEach(brd => {
+        md += `### ${brd.title}\n`;
+        md += `**Status:** ${brd.status}\n\n`;
+        md += `**Source Idea:** ${brd.sourceIdea}\n\n`;
+        if (brd.sections?.executiveSummary) md += `**Executive Summary:** ${brd.sections.executiveSummary}\n\n`;
+        if (brd.sections?.problemStatement) md += `**Problem Statement:** ${brd.sections.problemStatement}\n\n`;
+        if (brd.sections?.businessObjectives?.length) {
+          md += `**Business Objectives:**\n`;
+          brd.sections.businessObjectives.forEach(item => { md += `- ${item}\n`; });
+          md += `\n`;
+        }
+        if (brd.sections?.functionalRequirements?.length) {
+          md += `**Functional Requirements:**\n`;
+          brd.sections.functionalRequirements.forEach(item => {
+            md += `- **[${item.priority}] ${item.title}:** ${item.description}\n`;
+          });
+          md += `\n`;
+        }
+        if (brd.sections?.successMetrics?.length) {
+          md += `**Success Metrics:**\n`;
+          brd.sections.successMetrics.forEach(item => { md += `- ${item}\n`; });
+          md += `\n`;
+        }
+      });
+    } else {
+      md += `*No BRDs generated yet.*\n`;
+    }
+    md += `\n`;
+
     // Requirements
     md += `## Requirements\n`;
     if (docData.rtmData && docData.rtmData.length > 0) {
@@ -478,8 +510,31 @@ export default function DocumentationModule() {
               <p style={{ margin: '12px 0 0 0', lineHeight: '1.5', color: '#333', fontSize: '14px' }}><strong style={{ color: '#555' }}>Business Case:</strong> {docData?.project?.description}</p>
             </div>
 
+            <div style={{ marginBottom: '30px' }}>
+              <h3 style={{ color: '#111', fontSize: '16px', borderBottom: '1px solid #eaeaea', paddingBottom: '6px', marginBottom: '12px', fontWeight: '700' }}>2. Business Requirement Documents</h3>
+              {docData?.brds && docData.brds.length > 0 ? (
+                docData.brds.map(brd => (
+                  <div key={brd._id} style={{ marginBottom: '18px', pageBreakInside: 'avoid' }}>
+                    <h4 style={{ margin: '0 0 6px 0', fontSize: '14px', color: '#222', fontWeight: '700' }}>{brd.title}</h4>
+                    <p style={{ margin: '0 0 8px 0', color: '#555', lineHeight: '1.5', fontSize: '13px' }}>{brd.sections?.executiveSummary || brd.sourceIdea}</p>
+                    {brd.sections?.functionalRequirements && brd.sections.functionalRequirements.length > 0 && (
+                      <ul style={{ margin: '0 0 0 15px', padding: 0, color: '#555', fontSize: '12px' }}>
+                        {brd.sections.functionalRequirements.slice(0, 6).map((item, index) => (
+                          <li key={`${brd._id}-fr-${index}`} style={{ marginBottom: '5px' }}>
+                            <strong style={{ color: '#333' }}>[{item.priority}] {item.title}</strong> {item.description}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                ))
+              ) : (
+                <p style={{ color: '#888', fontSize: '13px' }}>No business requirement documents generated for this project.</p>
+              )}
+            </div>
+
             <div style={{ marginBottom: '30px', pageBreakInside: 'avoid' }}>
-              <h3 style={{ color: '#111', fontSize: '16px', borderBottom: '1px solid #eaeaea', paddingBottom: '6px', marginBottom: '12px', fontWeight: '700' }}>2. Requirement Matrix & Coverage</h3>
+              <h3 style={{ color: '#111', fontSize: '16px', borderBottom: '1px solid #eaeaea', paddingBottom: '6px', marginBottom: '12px', fontWeight: '700' }}>3. Requirement Matrix & Coverage</h3>
               <p style={{ margin: '0 0 12px 0', fontSize: '14px' }}>
                 <strong style={{ color: '#555' }}>Architectural Coverage Score: </strong> 
                 <span style={{ color: docData?.overallCoveragePercentage > 70 ? '#10b981' : '#ef4444', fontWeight: '700' }}>
@@ -519,7 +574,7 @@ export default function DocumentationModule() {
             </div>
 
             <div style={{ marginBottom: '30px' }}>
-              <h3 style={{ color: '#111', fontSize: '16px', borderBottom: '1px solid #eaeaea', paddingBottom: '6px', marginBottom: '12px', fontWeight: '700' }}>3. Logical Sequence Flows</h3>
+              <h3 style={{ color: '#111', fontSize: '16px', borderBottom: '1px solid #eaeaea', paddingBottom: '6px', marginBottom: '12px', fontWeight: '700' }}>4. Logical Sequence Flows</h3>
               {docData?.sequenceFlows && docData.sequenceFlows.length > 0 ? (
                 docData.sequenceFlows.map(seq => (
                   <div key={seq._id} style={{ marginBottom: '20px', pageBreakInside: 'avoid' }}>
@@ -536,7 +591,7 @@ export default function DocumentationModule() {
             </div>
 
             <div style={{ marginBottom: '30px' }}>
-              <h3 style={{ color: '#111', fontSize: '16px', borderBottom: '1px solid #eaeaea', paddingBottom: '6px', marginBottom: '12px', fontWeight: '700' }}>4. Quality Assurance Executions</h3>
+              <h3 style={{ color: '#111', fontSize: '16px', borderBottom: '1px solid #eaeaea', paddingBottom: '6px', marginBottom: '12px', fontWeight: '700' }}>5. Quality Assurance Executions</h3>
               {docData?.rtmData && docData.rtmData.length > 0 ? (
                 docData.rtmData.map(req => (
                   <div key={'tc-' + req.requirementId} style={{ marginBottom: '16px', pageBreakInside: 'avoid' }}>
@@ -568,7 +623,7 @@ export default function DocumentationModule() {
             </div>
 
             <div style={{ marginBottom: '30px' }}>
-              <h3 style={{ color: '#111', fontSize: '16px', borderBottom: '1px solid #eaeaea', paddingBottom: '6px', marginBottom: '12px', fontWeight: '700' }}>5. Issue Tracker Registry</h3>
+              <h3 style={{ color: '#111', fontSize: '16px', borderBottom: '1px solid #eaeaea', paddingBottom: '6px', marginBottom: '12px', fontWeight: '700' }}>6. Issue Tracker Registry</h3>
               {docData?.issues && docData.issues.length > 0 ? (
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
                   <thead>
