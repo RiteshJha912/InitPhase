@@ -50,6 +50,7 @@ initphase/
 │   │   │   ├── ProjectWorkspace.jsx
 │   │   │   ├── RequirementsModule.jsx
 │   │   │   ├── SequenceFlowModule.jsx
+│   │   │   ├── IdeaBrdModule.jsx
 │   │   │   ├── RtmModule.jsx
 │   │   │   ├── IssuesModule.jsx
 │   │   │   ├── DocumentationModule.jsx
@@ -110,6 +111,7 @@ The frontend is implemented as a Single Page Application (SPA) with a heavily mo
 - `/projects/:id/*`: The enterprise workspace wrapper, which contains nested routes:
   - `/overview`: High-level statistical overview of the project.
   - `/requirements`: The Requirements Management Module.
+  - `/idea-brd`: AI-assisted Idea-to-BRD generation using Groq from the backend.
   - `/sequence`: System modeling via intuitive Visual Builder and direct text-based UML.
   - `/testcases`: The Test Case Management Module.
   - `/issues`: Interactive HTML5 Drag-and-Drop Kanban issue tracker.
@@ -202,6 +204,30 @@ The server follows an MVC (Model-View-Controller) derived pattern, exposing REST
 - `handleAddRequirement`: Creates requirement with validation
 - `handleDeleteRequirement`: Removes requirement and updates RTM
 - Priority filtering and statistics computation
+
+### Idea-to-BRD Module
+
+**Purpose:** Convert rough software ideas into structured Business Requirement Documents (BRDs) that can feed downstream requirements, traceability, and documentation.
+
+**Inputs/Outputs:**
+- **Inputs:** Idea title, raw idea, target users, business goals, constraints
+- **Outputs:** Generated BRD draft, saved project BRDs, and optional converted requirements
+
+**Internal Logic:**
+- The frontend collects idea context inside a project workspace
+- The backend calls Groq using `GROQ_API_KEY` and normalizes the response into BRD sections
+- BRDs are saved project-wise with ownership validation
+- Functional requirements from a BRD can be converted into existing project requirements
+
+**Interactions:**
+- Converts generated functional requirements into the Requirements module
+- Refreshes RTM after conversion so downstream traceability can continue
+- Adds saved BRDs to the Documentation module output
+
+**Key Functions:**
+- `generateBrdDraft`: Creates a BRD draft from raw idea context using Groq
+- `createBrd`: Saves reviewed BRD content to the project
+- `convertBrdRequirements`: Creates project requirements from BRD functional requirements
 
 ### Test Cases Module
 
@@ -342,6 +368,15 @@ All protected routes require an `Authorization` header containing the JWT: `Bear
   - Body: `{ title, priority }`
 - `DELETE /api/requirements/:reqId` - Deletes requirement
 
+### BRD APIs
+- `POST /api/brds/:projectId/generate` - Generates a BRD draft from raw idea context
+  - Body: `{ title, sourceIdea, targetUsers, businessGoals, constraints }`
+- `GET /api/brds/:projectId` - Lists saved BRDs for a project
+- `POST /api/brds/:projectId` - Saves a generated or edited BRD
+- `GET /api/brds/detail/:id` - Gets one BRD by ID
+- `DELETE /api/brds/:id` - Deletes a saved BRD
+- `POST /api/brds/:id/convert-requirements` - Converts BRD functional requirements into project requirements
+
 ### Test Case APIs
 - `GET /api/testcases/:projectId` - Lists project test cases
 - `POST /api/testcases/:projectId/:requirementId` - Creates test case
@@ -377,27 +412,33 @@ All protected routes require an `Authorization` header containing the JWT: `Bear
    - Create new project with name and description
    - Navigate to project workspace
 
-2. **Requirements Gathering:**
+2. **Idea-to-BRD Generation:**
+   - Open the Idea to BRD module
+   - Enter a rough project idea and optional context
+   - Generate and save a structured BRD
+   - Convert BRD functional requirements into project requirements when ready
+
+3. **Requirements Gathering:**
    - Add requirements with priorities (Must-Have, Should-Have, Nice-to-Have)
    - Example: "User must authenticate with email and password" (Must-Have)
 
-3. **Test Planning:**
+4. **Test Planning:**
    - For each requirement, create test cases
    - Example: Test login with valid/invalid credentials, check expected outcomes
 
-4. **Sequence Modeling:**
+5. **Sequence Modeling:**
    - Design system interactions using visual builder
    - Example: User login flow with actors (User, System, Database)
 
-5. **Issue Tracking:**
+6. **Issue Tracking:**
    - Add bugs/enhancements to Kanban board
    - Drag from "To Do" → "In Progress" → "Done"
 
-6. **Coverage Analysis:**
+7. **Coverage Analysis:**
    - Check RTM for untested requirements
    - Aim for 100% coverage before deployment
 
-7. **Documentation:**
+8. **Documentation:**
    - Generate comprehensive project report
    - Export as Markdown or PDF
 
@@ -462,6 +503,8 @@ curl http://localhost:5000/api/rtm/64f1a2b3c4d5e6f7g8h9i0j1 \
 PORT=5000
 MONGO_URI=mongodb://localhost:27017/initphase (or custom remote URI)
 JWT_SECRET=your_secure_random_string
+GROQ_API_KEY=your_groq_api_key
+GROQ_MODEL=llama-3.1-8b-instant
 ```
 
 ### Installation Steps
@@ -503,11 +546,11 @@ npm run build
 This yields optimized static files in the `/dist` directory, capable of being served rapidly via any standard static hosting methodology or reverse-proxied through the running Node.js server.
 
 ## Dummy Data
-The `dummy_data.md` file contains data to demonstrate how the active modules of the product are to be used in real world SW project cycles, including deep Somaiya Results testing metrics.
+The `dummy_data.md` file contains data to demonstrate how the active modules of the product are to be used in real world SW project cycles, including deep Somaiya Results testing metrics. The `idea_to_brd_samples.md` file contains reusable Idea-to-BRD inputs for testing Groq-backed BRD generation.
 
 ## Upcoming Features
 
-- [ ] Idea-to-BRD Conversion: Input raw ideas and convert them into structured Business Requirement Documents (BRD) within InitPhase.
+- [x] Idea-to-BRD Conversion: Input raw ideas and convert them into structured Business Requirement Documents (BRD) within InitPhase.
 - [ ] Automated User Stories: Transform BRD content into structured user stories and ready-to-use Jira tasks.
 - [ ] Jira Integration: Connect InitPhase directly to Jira using a CLI or API wrapper (via npx) for seamless data flow.
 - [ ] Professional Diagrams: Export sequence flows into professional diagrams using tools like Lucidchart (via MCP).
