@@ -21,6 +21,7 @@ InitPhase is an enterprise-grade SaaS project management workspace designed to f
 - **ODM:** Mongoose v9
 - **Authentication:** JSON Web Tokens (JWT)
 - **Security:** BcryptJS for password hashing, CORS enabled.
+- **LLM Provider:** Groq Chat Completions API for backend-only Idea-to-BRD generation
 - **Development:** Nodemon for hot reloading
 
 ## Project Architecture
@@ -70,6 +71,7 @@ initphase/
 │   │   ├── authController.js
 │   │   ├── projectController.js
 │   │   ├── requirementController.js
+│   │   ├── brdController.js
 │   │   ├── sequenceController.js
 │   │   ├── rtmController.js
 │   │   ├── issueController.js
@@ -80,6 +82,7 @@ initphase/
 │   ├── models/                 # Mongoose database schemas
 │   │   ├── Project.js
 │   │   ├── Requirement.js
+│   │   ├── Brd.js
 │   │   ├── SequenceFlow.js
 │   │   ├── Issue.js
 │   │   ├── TestCase.js
@@ -88,16 +91,20 @@ initphase/
 │   │   ├── authRoutes.js
 │   │   ├── projectRoutes.js
 │   │   ├── requirementRoutes.js
+│   │   ├── brdRoutes.js
 │   │   ├── sequenceRoutes.js
 │   │   ├── rtmRoutes.js
 │   │   ├── issueRoutes.js
 │   │   ├── documentationRoutes.js
 │   │   └── testCaseRoutes.js
+│   ├── services/               # External service integrations
+│   │   └── groqService.js       # Groq prompt, API call, JSON parsing, BRD normalization
 │   ├── .env                    # Secret environment configurations
 │   ├── package.json
 │   └── server.js               # Primary Express server entry point
 │
 ├── dummy_data.md               # Follow-along testing manual
+├── idea_to_brd_samples.md      # Idea-to-BRD sample inputs
 └── readme.md                   # Enterprise technical documentation
 ```
 
@@ -133,6 +140,7 @@ The server follows an MVC (Model-View-Controller) derived pattern, exposing REST
 - **Models (`/server/models`):** Mongoose schemas defining core structures (`User`, `Project`, `Requirement`, `TestCase`, `SequenceFlow`, `Issue`).
 - **Controllers (`/server/controllers`):** Advanced business logic handling CRUD capabilities across namespaces.
 - **Routes (`/server/routes`):** Express routers mapping HTTP methods to corresponding controllers.
+- **Services (`/server/services`):** External integration wrappers, including the Groq BRD generation service.
 - **Middleware (`/server/middleware`):** Secures the application via `authMiddleware` JWT verification layers.
 
 ## Detailed Module Documentation
@@ -325,11 +333,12 @@ The server follows an MVC (Model-View-Controller) derived pattern, exposing REST
 **Purpose:** Automated generation of comprehensive project documentation.
 
 **Inputs/Outputs:**
-- **Inputs:** Aggregated project data (requirements, tests, RTM, sequences)
+- **Inputs:** Aggregated project data (BRDs, requirements, tests, RTM, sequences, issues)
 - **Outputs:** Markdown documentation with PDF export
 
 **Internal Logic:**
 - Combines data from all modules into structured report
+- Includes saved BRDs and generated functional requirements in exports
 - Markdown generation with sections for each module
 - PDF export using html2pdf.js
 
@@ -469,6 +478,7 @@ curl http://localhost:5000/api/rtm/64f1a2b3c4d5e6f7g8h9i0j1 \
 
 ### Security Assumptions
 - JWT secrets stored securely in environment variables
+- Groq API keys are stored only on the backend and never exposed to the React client
 - Passwords hashed with bcryptjs (salt rounds: default)
 - CORS enabled for cross-origin requests
 - User ownership enforced on all data operations
@@ -476,6 +486,8 @@ curl http://localhost:5000/api/rtm/64f1a2b3c4d5e6f7g8h9i0j1 \
 ### Data Model Assumptions
 - Single user per project (no team collaboration yet)
 - Requirements are project-scoped and immutable once created
+- BRDs are project-scoped and can be converted into normal project requirements
+- Converted BRD functional requirements map into the current `Requirement` shape using title and priority
 - Test cases linked 1:many to requirements
 - Issues are simple status-based (no complex workflows)
 
@@ -506,6 +518,8 @@ JWT_SECRET=your_secure_random_string
 GROQ_API_KEY=your_groq_api_key
 GROQ_MODEL=llama-3.1-8b-instant
 ```
+
+`GROQ_API_KEY` is required only for Idea-to-BRD generation. `GROQ_MODEL` is optional and defaults to `llama-3.1-8b-instant` if omitted.
 
 ### Installation Steps
 1. **Install Server Dependencies:**
@@ -545,6 +559,12 @@ npm run build
 ```
 This yields optimized static files in the `/dist` directory, capable of being served rapidly via any standard static hosting methodology or reverse-proxied through the running Node.js server.
 
+### Production Environment Notes
+
+- **Render backend:** Add `MONGO_URI`, `JWT_SECRET`, `GROQ_API_KEY`, and optionally `GROQ_MODEL` in the Render service environment variables.
+- **Vercel frontend:** Add `VITE_API_URL` pointing to the deployed Render backend URL. Do not add `GROQ_API_KEY` to Vercel.
+- The backend uses `process.env.PORT || 5000`, so it can run locally on port `5000` and bind correctly to Render's assigned port in production.
+
 ## Dummy Data
 The `dummy_data.md` file contains data to demonstrate how the active modules of the product are to be used in real world SW project cycles, including deep Somaiya Results testing metrics. The `idea_to_brd_samples.md` file contains reusable Idea-to-BRD inputs for testing Groq-backed BRD generation.
 
@@ -561,5 +581,3 @@ The `dummy_data.md` file contains data to demonstrate how the active modules of 
 - [ ] Webhooks System: Enable external tool connectivity via events like `requirement.created`, `testcase.failed`, and `project.updated`.
 - [x] Internal Issue Tracker: Built-in drag-and-drop alternative to Jira for task handling natively.
 - [ ] Lucidchart MCP Integration
-
-**The feature development process starts now!!!!**
