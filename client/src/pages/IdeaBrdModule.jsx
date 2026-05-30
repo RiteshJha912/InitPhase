@@ -1,11 +1,14 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import ModuleLayout from '../components/ModuleLayout';
 import SectionCard from '../components/SectionCard';
 import StatCard from '../components/StatCard';
 import EmptyState from '../components/EmptyState';
 import Button from '../components/Button';
-import { BrainCircuit, CheckCircle, FileText, Layers, LoaderCircle, Sparkles, Trash2, Wand2 } from 'lucide-react';
+import FlowCallout from '../components/FlowCallout';
+import LoadingState from '../components/LoadingState';
+import { useToast } from '../components/ToastProvider';
+import { ArrowRight, BrainCircuit, CheckCircle, FileText, Layers, LoaderCircle, Sparkles, Trash2, Wand2 } from 'lucide-react';
 
 const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -133,7 +136,9 @@ const BrdPreview = ({ brd }) => {
 };
 
 export default function IdeaBrdModule() {
-  const { projectId, fetchRequirements, fetchRtm } = useOutletContext();
+  const { projectId, fetchBrds: fetchWorkspaceBrds, fetchRequirements, fetchRtm } = useOutletContext();
+  const navigate = useNavigate();
+  const toast = useToast();
   const [form, setForm] = useState(defaultForm);
   const [brds, setBrds] = useState([]);
   const [draft, setDraft] = useState(null);
@@ -189,8 +194,10 @@ export default function IdeaBrdModule() {
 
       setDraft(data);
       setMessage('BRD draft generated. Review it, then save it to this project.');
+      toast.success('BRD draft generated. Review it, then save it to this project.');
     } catch (err) {
       setError(err.message);
+      toast.error(err.message);
     } finally {
       setLoading(false);
     }
@@ -221,8 +228,11 @@ export default function IdeaBrdModule() {
       setForm(defaultForm);
       setMessage('BRD saved to this project.');
       fetchBrds();
+      fetchWorkspaceBrds?.(token);
+      toast.success('BRD saved. Convert it when you are ready to seed requirements.');
     } catch (err) {
       setError(err.message);
+      toast.error(err.message);
     } finally {
       setSaving(false);
     }
@@ -245,8 +255,11 @@ export default function IdeaBrdModule() {
 
       setMessage('BRD deleted.');
       fetchBrds();
+      fetchWorkspaceBrds?.(token);
+      toast.info('BRD deleted.');
     } catch (err) {
       setError(err.message);
+      toast.error(err.message);
     }
   };
 
@@ -267,10 +280,13 @@ export default function IdeaBrdModule() {
 
       setMessage(`${data.requirements.length} requirements created from the BRD.`);
       fetchBrds();
+      fetchWorkspaceBrds?.(token);
       fetchRequirements(token);
       fetchRtm(token);
+      toast.success(`${data.requirements.length} requirements created from the BRD.`);
     } catch (err) {
       setError(err.message);
+      toast.error(err.message);
     }
   };
 
@@ -286,6 +302,10 @@ export default function IdeaBrdModule() {
       title="Idea to BRD"
       description="Turn an early product idea into a structured Business Requirement Document that can feed requirements, traceability, and project documentation."
       connectionText={"- Enter a rough product idea and optional business context.\n- InitPhase sends the request to Groq from the backend so your API key is never exposed in the browser.\n- Save generated BRDs to the project, then convert functional requirements into the existing Requirements module when ready."}
+      flowStep="2 of 8"
+      dependsOn="Project idea"
+      feedsInto="Requirements and Documentation"
+      statusBadge={brds.length > 0 ? `${brds.length} saved` : null}
       stats={
         <>
           <StatCard title="Saved BRDs" value={brds.length} color="var(--accent-color)" icon={FileText} />
@@ -294,6 +314,16 @@ export default function IdeaBrdModule() {
         </>
       }
     >
+      {stats.convertedCount > 0 && (
+        <FlowCallout
+          tone="success"
+          title="BRD requirements are in the workspace"
+          message="Review the converted requirements, tune their priority, and continue into testing."
+          actionLabel="Review Requirements"
+          onAction={() => navigate('../requirements')}
+        />
+      )}
+
       {(message || error) && (
         <div style={{
           padding: '14px 16px',
@@ -351,7 +381,7 @@ export default function IdeaBrdModule() {
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
             <Button type="submit" variant="primary" disabled={loading}>
               {loading ? <LoaderCircle size={18} style={{ animation: 'spin 1.5s linear infinite' }} /> : <Wand2 size={18} />}
-              {loading ? 'Generating BRD...' : 'Generate BRD'}
+              {loading ? 'Structuring your BRD...' : 'Generate BRD'}
             </Button>
           </div>
         </form>
@@ -367,13 +397,18 @@ export default function IdeaBrdModule() {
             </Button>
           }
         >
+          {loading && <LoadingState compact title="Structuring your BRD draft" message="Reading the idea, shaping sections, and checking risks..." />}
           <BrdPreview brd={draft} />
         </SectionCard>
       )}
 
       <SectionCard title="Saved BRDs">
         {brds.length === 0 ? (
-          <EmptyState message="No BRDs saved yet. Generate and save your first BRD above." iconName="file-text" />
+          <EmptyState
+            title="Start from the idea"
+            message="No BRDs saved yet. Generate and save your first BRD above, then convert its functional requirements into the project."
+            iconName="file-text"
+          />
         ) : (
           <div style={{ display: 'grid', gap: '18px' }}>
             {brds.map((brd) => (

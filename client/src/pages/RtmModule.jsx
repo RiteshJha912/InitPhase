@@ -1,12 +1,14 @@
-import { useOutletContext } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import ModuleLayout from '../components/ModuleLayout';
 import SectionCard from '../components/SectionCard';
 import DataTable from '../components/DataTable';
 import EmptyState from '../components/EmptyState';
+import FlowCallout from '../components/FlowCallout';
 import { CheckCircle2, XCircle, AlertTriangle } from 'lucide-react';
 
 export default function RtmModule() {
   const { rtmData, coveragePct } = useOutletContext();
+  const navigate = useNavigate();
 
   const isCompleteCoverage = coveragePct === 100;
   
@@ -27,7 +29,29 @@ export default function RtmModule() {
       title="Traceability Matrix"
       description="See the big picture - which requirements have tests, which are passing, and which still need attention. Your goal is 100% coverage."
       connectionText={"• The Traceability Matrix automatically connects your Requirements with your Test Cases.\n• It shows you a clear table: each requirement and how many tests are linked to it.\n• A 'covered' requirement means it has at least one test case written for it.\n• Your goal is 100% coverage - meaning every single requirement has been tested.\n• Requirements highlighted in yellow have no tests yet. Red means some tests are failing.\n• This is essentially your project's health report before deployment."}
+      flowStep="7 of 8"
+      dependsOn="Requirements and Tests"
+      feedsInto="Documentation"
+      statusBadge={isCompleteCoverage ? 'Coverage locked' : `${coveragePct}% covered`}
     >
+      {isCompleteCoverage && rtmData.length > 0 ? (
+        <FlowCallout
+          tone="success"
+          title="Coverage locked"
+          message="Every requirement has at least one test. This project is ready for a cleaner handoff."
+          actionLabel="Prepare Docs"
+          onAction={() => navigate('../documentation')}
+        />
+      ) : rtmData.length > 0 ? (
+        <FlowCallout
+          tone="warning"
+          title="Coverage is still open"
+          message={`${untestables} requirement${untestables === 1 ? '' : 's'} need tests before the handoff feels complete.`}
+          actionLabel="Add Tests"
+          onAction={() => navigate('../testcases')}
+        />
+      ) : null}
+
       <div className="stat-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 1fr) 2fr', gap: '32px' }}>
         
         {/* Core Coverage Metric */}
@@ -77,8 +101,11 @@ export default function RtmModule() {
       <SectionCard title="Requirement-Test Mapping">
         {rtmData.length === 0 ? (
           <EmptyState 
+            title="No traceability data yet"
             message="No data to show yet. Add some requirements first, then create test cases for them." 
-            iconName="layers" 
+            iconName="layers"
+            actionLabel="Add Requirements"
+            onAction={() => navigate('../requirements')}
           />
         ) : (
           <DataTable 

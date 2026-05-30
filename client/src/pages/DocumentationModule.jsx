@@ -3,7 +3,10 @@ import { useOutletContext } from 'react-router-dom';
 import ModuleLayout from '../components/ModuleLayout';
 import SectionCard from '../components/SectionCard';
 import Button from '../components/Button';
-import { FileText, Download, LoaderCircle } from 'lucide-react';
+import LoadingState from '../components/LoadingState';
+import FlowCallout from '../components/FlowCallout';
+import { useToast } from '../components/ToastProvider';
+import { AlertTriangle, CheckCircle2, FileText, Download, XCircle } from 'lucide-react';
 import html2pdf from 'html2pdf.js';
 
 const renderPDFVisualDiagram = (steps) => {
@@ -218,7 +221,8 @@ const renderPDFVisualDiagram = (steps) => {
 };
 
 export default function DocumentationModule() {
-  const { projectId } = useOutletContext();
+  const { projectId, brds = [], requirements = [], testCases = [], sequenceFlows = [], issues = [], coveragePct = 0 } = useOutletContext();
+  const toast = useToast();
   const [docData, setDocData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -378,6 +382,7 @@ export default function DocumentationModule() {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+    toast.success('Hand-off packet assembled as Markdown.');
   };
 
   const handleExportPDF = () => {
@@ -390,14 +395,13 @@ export default function DocumentationModule() {
       jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
     html2pdf().set(opt).from(element).save();
+    toast.success('Hand-off packet assembled as PDF.');
   };
 
   if (loading) {
     return (
       <ModuleLayout title="Documentation" description="Generating structured project documentation..." stats={null}>
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '100px 0' }}>
-          <LoaderCircle size={48} className="animate-spin" style={{ animation: 'spin 1.5s linear infinite', color: 'var(--accent-color)' }} />
-        </div>
+        <LoadingState compact title="Preparing project documentation" message="Combining BRDs, requirements, tests, flows, and issues..." />
       </ModuleLayout>
     );
   }
@@ -413,14 +417,64 @@ export default function DocumentationModule() {
   }
 
   const markdownPreview = generateMarkdown();
+  const criticalOpenIssues = issues.filter((issue) => issue.priority === 'Critical' && issue.status !== 'Resolved' && issue.status !== 'Closed').length;
+  const readinessItems = [
+    { label: 'BRD included', ready: brds.length > 0 },
+    { label: 'Requirements captured', ready: requirements.length > 0 },
+    { label: 'Tests included', ready: testCases.length > 0 },
+    { label: `Coverage ${coveragePct}%`, ready: coveragePct === 100 && requirements.length > 0 },
+    { label: 'No critical blockers', ready: criticalOpenIssues === 0 },
+    { label: 'Sequence flows included', ready: sequenceFlows.length > 0 },
+  ];
+  const readyCount = readinessItems.filter((item) => item.ready).length;
 
   return (
     <ModuleLayout
       title="Documentation Generator"
       description="Automatically aggregate Project details, Requirements, Test Cases, Traceability, and Sequence Flows into a single structured document."
       connectionText={"• Combine discrete data from all your project modules.\n• Get a unified Markdown report perfect for READMEs or handing off to external teams.\n• Use the browser's standard print (Ctrl/Cmd + P) to export directly as a PDF."}
+      flowStep="8 of 8"
+      dependsOn="All workspace modules"
+      feedsInto="Project handoff"
+      statusBadge={`${readyCount}/${readinessItems.length} ready`}
       stats={null}
     >
+      {coveragePct === 100 && criticalOpenIssues === 0 && requirements.length > 0 ? (
+        <FlowCallout
+          tone="success"
+          title="Documentation is ready"
+          message="Coverage is complete and no critical blockers are open. Hand-off packet assembled."
+        />
+      ) : (
+        <FlowCallout
+          tone="warning"
+          title="Documentation can export, but the handoff is not fully ready"
+          message="Use the checklist below to close coverage and blocker gaps before sharing the report."
+          icon={AlertTriangle}
+        />
+      )}
+
+      <SectionCard title="Readiness Checklist">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px' }}>
+          {readinessItems.map((item) => (
+            <div key={item.label} style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              padding: '14px',
+              borderRadius: 'var(--radius-sm)',
+              border: `1px solid ${item.ready ? 'rgba(16, 185, 129, 0.4)' : 'var(--border-color)'}`,
+              backgroundColor: item.ready ? 'var(--success-bg)' : 'var(--bg-surface)',
+              color: item.ready ? 'var(--success)' : 'var(--text-secondary)',
+              fontWeight: 700,
+            }}>
+              {item.ready ? <CheckCircle2 size={18} /> : <XCircle size={18} />}
+              {item.label}
+            </div>
+          ))}
+        </div>
+      </SectionCard>
+
       <SectionCard 
         title="Generated Document Preview"
         actions={

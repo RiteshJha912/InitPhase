@@ -64,7 +64,7 @@ export default function Dashboard() {
       const data = await res.json();
       
       if (res.ok) {
-        navigate(`/projects/${data._id}/requirements`);
+        navigate(`/projects/${data._id}/idea-brd`);
       } else {
         setError(data.message || 'Error creating project');
       }

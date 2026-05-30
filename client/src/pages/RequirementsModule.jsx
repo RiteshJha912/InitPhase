@@ -1,15 +1,18 @@
 import { useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import ModuleLayout from '../components/ModuleLayout';
 import StatCard from '../components/StatCard';
 import SectionCard from '../components/SectionCard';
-import DataTable from '../components/DataTable';
 import EmptyState from '../components/EmptyState';
 import Button from '../components/Button';
-import { Layers, ListTodo, AlertCircle, CheckCircle, Plus, Trash2 } from 'lucide-react';
+import FlowCallout from '../components/FlowCallout';
+import { useToast } from '../components/ToastProvider';
+import { ArrowRight, Layers, ListTodo, AlertCircle, CheckCircle, Plus, Trash2 } from 'lucide-react';
 
 export default function RequirementsModule() {
-  const { projectId, requirements, fetchRequirements, fetchRtm } = useOutletContext();
+  const { projectId, requirements, testCases, fetchRequirements, fetchRtm } = useOutletContext();
+  const navigate = useNavigate();
+  const toast = useToast();
   const [reqTitle, setReqTitle] = useState('');
   const [reqPriority, setReqPriority] = useState('Should-Have');
   const [filterPriority, setFilterPriority] = useState('All');
@@ -31,9 +34,11 @@ export default function RequirementsModule() {
         setReqPriority('Should-Have');
         fetchRequirements(token);
         fetchRtm(token);
+        toast.success('Requirement added. Ready to attach a test when you are.');
       }
     } catch (err) {
       console.error(err);
+      toast.error('Could not add the requirement.');
     }
   };
 
@@ -47,9 +52,11 @@ export default function RequirementsModule() {
       if (res.ok) {
         fetchRequirements(token);
         fetchRtm(token);
+        toast.info('Requirement removed and coverage refreshed.');
       }
     } catch (err) {
       console.error(err);
+      toast.error('Could not delete the requirement.');
     }
   };
 
@@ -69,6 +76,10 @@ export default function RequirementsModule() {
       title="Requirements"
       description="Define what your software needs to do before you start building. List every feature, rule, or behavior your system must support."
       connectionText={"• Requirements are the foundation of your project - they describe WHAT your system should do.\n• Each requirement can be prioritized: Must-Have (essential), Should-Have (important), or Nice-to-Have (bonus).\n• Once you add requirements here, you can create test cases for them in the Test Cases module.\n• The Traceability Matrix will then show you which requirements have been tested and which haven't.\n• Think of requirements as a checklist of promises your software must keep."}
+      flowStep="3 of 8"
+      dependsOn="BRD or manual input"
+      feedsInto="Test Cases and RTM"
+      statusBadge={totalReqs > 0 ? `${totalReqs} captured` : null}
       stats={
         <>
           <StatCard title="Total Needs" value={totalReqs} color="var(--accent-color)" icon={Layers} />
@@ -78,6 +89,16 @@ export default function RequirementsModule() {
         </>
       }
     >
+      {totalReqs > 0 && testCases.length === 0 && (
+        <FlowCallout
+          tone="warning"
+          title="Requirements are ready for verification"
+          message="You have requirements but no test cases yet. Creating tests now will light up the Traceability Matrix."
+          actionLabel="Create Test Cases"
+          onAction={() => navigate('../testcases')}
+        />
+      )}
+
       <SectionCard title="Add a New Requirement">
         <form onSubmit={handleAddRequirement} className="mobile-flex-col" style={{ display: 'flex', gap: '16px', alignItems: 'stretch', flexWrap: 'wrap' }}>
           <input 
@@ -154,8 +175,12 @@ export default function RequirementsModule() {
 
         {filteredRequirements.length === 0 ? (
           <EmptyState 
+            title={requirements.length === 0 ? 'Start the requirement trail' : 'No matching requirements'}
             message={requirements.length === 0 ? "No requirements added yet. Use the form above to add your first requirement." : "No requirements match the selected filter."} 
-            iconName="layers" 
+            iconName="requirement"
+            actionLabel={requirements.length === 0 ? 'Use Idea to BRD' : undefined}
+            actionIcon={ArrowRight}
+            onAction={requirements.length === 0 ? () => navigate('../idea-brd') : undefined}
           />
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>

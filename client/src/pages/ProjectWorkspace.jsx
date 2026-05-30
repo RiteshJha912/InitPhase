@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, NavLink, Outlet, Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, ListTodo, FlaskConical, Network, LogOut, LoaderCircle, Menu, X, GitMerge, FileText, Ticket, Sparkles, SearchCode } from 'lucide-react';
+import { CheckCircle2, Circle, FileText, FlaskConical, GitMerge, LayoutDashboard, ListTodo, LogOut, Menu, Network, SearchCode, Sparkles, Ticket, X } from 'lucide-react';
 import Button from '../components/Button';
+import LoadingState from '../components/LoadingState';
 
 export default function ProjectWorkspace() {
   const { id } = useParams();
@@ -28,6 +29,7 @@ export default function ProjectWorkspace() {
   const [coveragePct, setCoveragePct] = useState(0);
   const [sequenceFlows, setSequenceFlows] = useState([]);
   const [issues, setIssues] = useState([]);
+  const [brds, setBrds] = useState([]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -41,6 +43,7 @@ export default function ProjectWorkspace() {
     fetchRtm(token);
     fetchSequenceFlows(token);
     fetchIssues(token);
+    fetchBrds(token);
   }, [id, navigate]);
 
   const fetchProject = async (token) => {
@@ -130,6 +133,20 @@ export default function ProjectWorkspace() {
     }
   };
 
+  const fetchBrds = async (token) => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/brds/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setBrds(data);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   if (error) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', backgroundColor: 'var(--bg-base)' }}>
@@ -140,13 +157,33 @@ export default function ProjectWorkspace() {
   }
 
   if (!project) {
-    return (
-      <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: 'var(--bg-base)', color: 'var(--text-secondary)' }}>
-        <LoaderCircle size={48} className="animate-spin" style={{ animation: 'spin 1.5s linear infinite' }} />
-        <p style={{ marginTop: '16px', fontFamily: 'var(--font-heading)' }}>Connecting to Workspace Core...</p>
-      </div>
-    );
+    return <LoadingState title="Connecting to Workspace Core" message="Warming up the project flow..." />;
   }
+
+  const openIssues = issues.filter((issue) => issue.status === 'Open').length;
+  const criticalIssues = issues.filter((issue) => issue.priority === 'Critical' && issue.status !== 'Resolved' && issue.status !== 'Closed').length;
+  const lifecycleSteps = [
+    { key: 'overview', label: 'Overview', complete: true },
+    { key: 'idea-brd', label: 'BRD', complete: brds.length > 0 },
+    { key: 'requirements', label: 'Requirements', complete: requirements.length > 0 },
+    { key: 'sequence', label: 'Flows', complete: sequenceFlows.length > 0 },
+    { key: 'testcases', label: 'Tests', complete: testCases.length > 0 },
+    { key: 'issues', label: 'Issues', complete: openIssues === 0 && criticalIssues === 0 },
+    { key: 'rtm', label: 'Coverage', complete: coveragePct === 100 && requirements.length > 0 },
+    { key: 'documentation', label: 'Docs', complete: requirements.length > 0 && coveragePct === 100 },
+  ];
+  const completedSteps = lifecycleSteps.filter((step) => step.complete).length;
+  const healthLabel = criticalIssues > 0
+    ? `${criticalIssues} critical blocker${criticalIssues === 1 ? '' : 's'}`
+    : coveragePct === 100 && requirements.length > 0
+      ? 'Ready for docs'
+      : `${coveragePct}% covered`;
+
+  const Badge = ({ complete }) => (
+    <span style={{ marginLeft: 'auto', color: complete ? 'var(--success)' : 'var(--text-tertiary)', display: 'inline-flex' }}>
+      {complete ? <CheckCircle2 size={15} /> : <Circle size={13} />}
+    </span>
+  );
 
   const navLinkStyle = ({ isActive }) => ({
     display: 'flex',
@@ -188,8 +225,8 @@ export default function ProjectWorkspace() {
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <div className="hide-on-mobile" style={{ fontWeight: '500', color: 'var(--text-secondary)', fontSize: '0.95rem', padding: '6px 16px', backgroundColor: 'var(--bg-card)', borderRadius: '9999px', border: '1px solid var(--border-color)' }}>
-            Active
+          <div className="hide-on-mobile" style={{ fontWeight: '700', color: criticalIssues > 0 ? 'var(--danger)' : coveragePct === 100 && requirements.length > 0 ? 'var(--success)' : 'var(--warning)', fontSize: '0.95rem', padding: '6px 16px', backgroundColor: 'var(--bg-card)', borderRadius: '9999px', border: '1px solid var(--border-color)' }}>
+            {healthLabel}
           </div>
           <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard')}>
             <LogOut size={16} /> <span className="hide-on-mobile">Back to Projects</span>
@@ -222,22 +259,53 @@ export default function ProjectWorkspace() {
             Workspace Modules
           </div>
           
-          <NavLink to="requirements" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><ListTodo size={20} className="module-icon" /> Requirements</NavLink>
-          <NavLink to="idea-brd" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><Sparkles size={20} className="module-icon" /> Idea to BRD</NavLink>
+          <NavLink to="overview" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><LayoutDashboard size={20} className="module-icon" /> Dashboard <Badge complete /></NavLink>
+          <NavLink to="idea-brd" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><Sparkles size={20} className="module-icon" /> Idea to BRD <Badge complete={brds.length > 0} /></NavLink>
+          <NavLink to="requirements" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><ListTodo size={20} className="module-icon" /> Requirements <Badge complete={requirements.length > 0} /></NavLink>
+          <NavLink to="sequence" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><GitMerge size={20} className="module-icon" /> Sequence Flow <Badge complete={sequenceFlows.length > 0} /></NavLink>
+          <NavLink to="testcases" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><FlaskConical size={20} className="module-icon" /> Test Execution <Badge complete={testCases.length > 0} /></NavLink>
+          <NavLink to="issues" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><Ticket size={20} className="module-icon" /> Issues <Badge complete={openIssues === 0 && criticalIssues === 0} /></NavLink>
+          <NavLink to="rtm" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><Network size={20} className="module-icon" /> Analytics Matrix <Badge complete={coveragePct === 100 && requirements.length > 0} /></NavLink>
           <NavLink to="change-impact" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><SearchCode size={20} className="module-icon" /> Change Impact</NavLink>
-          <NavLink to="sequence" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><GitMerge size={20} className="module-icon" /> Sequence Flow</NavLink>
-          <NavLink to="testcases" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><FlaskConical size={20} className="module-icon" /> Test Execution</NavLink>
-          <NavLink to="issues" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><Ticket size={20} className="module-icon" /> Issues</NavLink>
-          <NavLink to="overview" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><LayoutDashboard size={20} className="module-icon" /> Dashboard</NavLink>
-          <NavLink to="rtm" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><Network size={20} className="module-icon" /> Analytics Matrix</NavLink>
-          <NavLink to="documentation" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><FileText size={20} className="module-icon" /> Documentation</NavLink>
+          <NavLink to="documentation" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><FileText size={20} className="module-icon" /> Documentation <Badge complete={requirements.length > 0 && coveragePct === 100} /></NavLink>
         </aside>
 
         {/* Main Content Area */}
         <main style={{ flex: 1, overflowY: 'auto', backgroundColor: 'var(--bg-base)' }}>
+          <div className="workspace-flow-strip" style={{ padding: '14px 24px', borderBottom: '1px solid var(--border-color)', backgroundColor: 'var(--bg-surface)', display: 'flex', alignItems: 'center', gap: '16px', overflowX: 'auto' }}>
+            <div style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap' }}>
+              Flow {completedSteps}/{lifecycleSteps.length}
+            </div>
+            {lifecycleSteps.map((step, index) => (
+              <button
+                key={step.key}
+                type="button"
+                onClick={() => navigate(step.key)}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '7px 10px',
+                  borderRadius: '999px',
+                  border: `1px solid ${step.complete ? 'rgba(16, 185, 129, 0.45)' : 'var(--border-color)'}`,
+                  backgroundColor: step.complete ? 'var(--success-bg)' : 'var(--bg-card)',
+                  color: step.complete ? 'var(--success)' : 'var(--text-secondary)',
+                  fontWeight: 700,
+                  fontSize: '0.82rem',
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {step.complete ? <CheckCircle2 size={14} /> : <Circle size={12} />}
+                {index + 1}. {step.label}
+              </button>
+            ))}
+          </div>
           <Outlet context={{ 
             projectId: id, 
             project, 
+            brds,
+            fetchBrds,
             requirements, 
             fetchRequirements, 
             testCases, 

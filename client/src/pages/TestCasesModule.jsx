@@ -1,12 +1,14 @@
 import { useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import ModuleLayout from '../components/ModuleLayout';
 import StatCard from '../components/StatCard';
 import SectionCard from '../components/SectionCard';
 import DataTable from '../components/DataTable';
 import EmptyState from '../components/EmptyState';
 import Button from '../components/Button';
-import { FlaskConical, CheckCircle2, XCircle, Clock, Save, ShieldCheck, ChevronDown, ChevronUp } from 'lucide-react';
+import FlowCallout from '../components/FlowCallout';
+import { useToast } from '../components/ToastProvider';
+import { FlaskConical, CheckCircle2, XCircle, Clock, Save, ShieldCheck, ChevronDown, ChevronUp, ArrowRight, ListPlus } from 'lucide-react';
 
 const TestCaseRow = ({ tc, handleUpdateTestStatus }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -75,6 +77,8 @@ const TestCaseRow = ({ tc, handleUpdateTestStatus }) => {
 
 export default function TestCasesModule() {
   const { projectId, requirements, testCases, fetchTestCases, fetchRtm } = useOutletContext();
+  const navigate = useNavigate();
+  const toast = useToast();
   
   const [testName, setTestName] = useState('');
   const [testSteps, setTestSteps] = useState('');
@@ -107,9 +111,11 @@ export default function TestCasesModule() {
         setTestStatus('Pending');
         fetchTestCases(token);
         fetchRtm(token);
+        toast.success('Test case added. The matrix has fresh coverage data.');
       }
     } catch (err) {
       console.error(err);
+      toast.error('Could not add the test case.');
     }
   };
 
@@ -127,9 +133,11 @@ export default function TestCasesModule() {
       if (res.ok) {
         fetchTestCases(token);
         fetchRtm(token);
+        toast.info(`Test marked ${newStatus}. Coverage refreshed.`);
       }
     } catch (err) {
       console.error(err);
+      toast.error('Could not update the test status.');
     }
   };
 
@@ -153,6 +161,10 @@ export default function TestCasesModule() {
       title="Test Cases"
       description="Write test cases to verify that each requirement actually works as expected. Link every test to a requirement so nothing gets missed."
       connectionText={"• Test cases prove that your software does what it's supposed to do.\n• Each test case is linked to a specific requirement from the Requirements module.\n• You describe the steps to perform and the expected result - like a recipe to verify functionality.\n• Mark tests as Pass, Fail, or Pending as you execute them.\n• The Traceability Matrix uses this data to show your overall project coverage.\n• A requirement without any test case means that feature has not been verified yet."}
+      flowStep="5 of 8"
+      dependsOn="Requirements"
+      feedsInto="RTM and Issues"
+      statusBadge={totalTests > 0 ? `${coverageRatio}% covered` : null}
       stats={
         <>
           <StatCard title="Total Tests" value={totalTests} color="var(--accent-color)" icon={FlaskConical} />
@@ -162,6 +174,26 @@ export default function TestCasesModule() {
         </>
       }
     >
+      {requirements.length === 0 && (
+        <FlowCallout
+          tone="warning"
+          title="Tests need requirements first"
+          message="Add or convert requirements before creating execution checks."
+          actionLabel="Add Requirements"
+          onAction={() => navigate('../requirements')}
+          icon={ListPlus}
+        />
+      )}
+      {requirements.length > 0 && coverageRatio < 100 && (
+        <FlowCallout
+          tone="warning"
+          title="Some requirements still need tests"
+          message={`${totalReqs - coveredReqsCount} requirement${totalReqs - coveredReqsCount === 1 ? '' : 's'} are not covered yet.`}
+          actionLabel="Review Matrix"
+          onAction={() => navigate('../rtm')}
+        />
+      )}
+
       <div style={{ 
         padding: '24px 32px', 
         backgroundColor: 'var(--bg-surface)', 
@@ -267,8 +299,12 @@ export default function TestCasesModule() {
       <SectionCard title="All Test Cases">
         {testCases.length === 0 ? (
           <EmptyState 
-            message="No test cases created yet. Use the form above to create your first test case." 
-            iconName="check" 
+            title={requirements.length === 0 ? 'Requirements come first' : 'No tests written yet'}
+            message={requirements.length === 0 ? 'Create requirements first, then each test can link back to a real product promise.' : 'No test cases created yet. Use the form above to create your first test case.'}
+            iconName="test"
+            actionLabel={requirements.length === 0 ? 'Add Requirements' : 'Review RTM'}
+            actionIcon={requirements.length === 0 ? ListPlus : ArrowRight}
+            onAction={requirements.length === 0 ? () => navigate('../requirements') : () => navigate('../rtm')}
           />
         ) : (
           <DataTable 

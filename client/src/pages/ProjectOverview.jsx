@@ -3,7 +3,8 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, BarChart, Bar, XAxis
 import StatCard from '../components/StatCard';
 import SectionCard from '../components/SectionCard';
 import Button from '../components/Button';
-import { ListTodo, FlaskConical, Network, Ticket, AlertCircle, GitMerge } from 'lucide-react';
+import FlowCallout from '../components/FlowCallout';
+import { ListTodo, FlaskConical, Network, Ticket, AlertCircle, GitMerge, Sparkles, FileText } from 'lucide-react';
 
 const COLORS = {
   'Must-Have': '#ef4444', 
@@ -19,7 +20,7 @@ const COLORS = {
 };
 
 export default function ProjectOverview() {
-  const { project, requirements, testCases, coveragePct, sequenceFlows, issues } = useOutletContext();
+  const { project, brds = [], requirements, testCases, coveragePct, sequenceFlows, issues } = useOutletContext();
   const navigate = useNavigate();
 
   // Data mapping for charts
@@ -43,6 +44,17 @@ export default function ProjectOverview() {
 
   const openIssuesCount = (issues || []).filter(i => i.status === 'Open').length;
   const criticalIssuesCount = (issues || []).filter(i => i.priority === 'Critical' && i.status !== 'Resolved' && i.status !== 'Closed').length;
+  const nextAction = brds.length === 0
+    ? { title: 'Start with Idea to BRD', message: 'Capture the product intent first, then convert functional requirements into the workspace.', label: 'Generate BRD', route: '../idea-brd', icon: Sparkles }
+    : requirements.length === 0
+      ? { title: 'Convert or add requirements', message: 'Your BRD is saved. Seed the requirements module so testing and traceability can begin.', label: 'Open Requirements', route: '../requirements', icon: ListTodo }
+      : testCases.length === 0
+        ? { title: 'Create verification coverage', message: 'Requirements are ready. Add test cases so RTM can measure the handoff quality.', label: 'Create Tests', route: '../testcases', icon: FlaskConical }
+        : coveragePct < 100
+          ? { title: 'Close RTM coverage gaps', message: 'Some requirements still do not have tests. Review the matrix before exporting docs.', label: 'Review Matrix', route: '../rtm', icon: Network }
+          : criticalIssuesCount > 0
+            ? { title: 'Resolve critical blockers', message: 'Coverage is strong, but critical issues should be cleared before handoff.', label: 'Open Issues', route: '../issues', icon: Ticket }
+            : { title: 'Ready for documentation', message: 'Coverage is complete and no critical blockers are open. Hand-off packet assembled.', label: 'Prepare Docs', route: '../documentation', icon: FileText };
 
   return (
     <div style={{ padding: '40px', maxWidth: '1200px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '32px' }} className="animate-fade-in module-container">
@@ -72,6 +84,15 @@ export default function ProjectOverview() {
           </div>
         </div>
       )}
+
+      <FlowCallout
+        tone={nextAction.route === '../documentation' ? 'success' : 'warning'}
+        title={nextAction.title}
+        message={nextAction.message}
+        actionLabel={nextAction.label}
+        onAction={() => navigate(nextAction.route)}
+        icon={nextAction.icon}
+      />
 
       <div className="stat-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '24px' }}>
         <SectionCard title="Requirements Distribution">

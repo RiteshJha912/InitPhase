@@ -3,6 +3,9 @@ import { useOutletContext } from 'react-router-dom';
 import ModuleLayout from '../components/ModuleLayout';
 import SectionCard from '../components/SectionCard';
 import Button from '../components/Button';
+import EmptyState from '../components/EmptyState';
+import FlowCallout from '../components/FlowCallout';
+import { useToast } from '../components/ToastProvider';
 import { GitMerge, Plus, Trash2 } from 'lucide-react';
 
 const VisualDiagram = ({ steps }) => {
@@ -240,6 +243,7 @@ const VisualDiagram = ({ steps }) => {
 
 export default function SequenceFlowModule() {
   const { projectId, sequenceFlows = [], fetchSequenceFlows } = useOutletContext();
+  const toast = useToast();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [rawSteps, setRawSteps] = useState('');
@@ -304,9 +308,11 @@ export default function SequenceFlowModule() {
         setRawSteps('');
         setVisualSteps([{ sender: '', receiver: '', message: '' }]);
         fetchSequenceFlows(token);
+        toast.success('Sequence flow saved. It will appear in documentation.');
       }
     } catch (err) {
       console.error(err);
+      toast.error('Could not save the sequence flow.');
     }
   };
 
@@ -319,9 +325,11 @@ export default function SequenceFlowModule() {
       });
       if (res.ok) {
         fetchSequenceFlows(token);
+        toast.info('Sequence flow deleted.');
       }
     } catch (err) {
       console.error(err);
+      toast.error('Could not delete the sequence flow.');
     }
   };
 
@@ -330,8 +338,20 @@ export default function SequenceFlowModule() {
       title="Sequence Flow Builder"
       description="Design system interactions using simple text-based UML. See requests and responses visualize logically."
       connectionText={"• Define the actors and systems involved in an interaction.\n• Write steps line by line using -> for requests.\n• The generator will automatically convert responses into dashed arrows (-->) and format the UML for you."}
+      flowStep="4 of 8"
+      dependsOn="Requirements and user journeys"
+      feedsInto="Documentation"
+      statusBadge={sequenceFlows.length > 0 ? `${sequenceFlows.length} flow${sequenceFlows.length === 1 ? '' : 's'}` : null}
       stats={null}
     >
+      {sequenceFlows.length > 0 && (
+        <FlowCallout
+          tone="success"
+          title="Interaction flows are documented"
+          message="These diagrams will travel into the final project documentation."
+        />
+      )}
+
       <SectionCard title="Generate New Sequence Flow">
         <form onSubmit={handleGenerateAndSave} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
@@ -433,11 +453,11 @@ export default function SequenceFlowModule() {
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', marginTop: '32px' }}>
         {sequenceFlows.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '48px 24px', backgroundColor: 'var(--bg-card)', borderRadius: 'var(--radius-md)', border: '1px dashed var(--border-color)' }}>
-            <GitMerge size={48} style={{ color: 'var(--text-tertiary)', margin: '0 auto 16px auto', opacity: 0.5 }} />
-            <h3 style={{ fontSize: '1.25rem', color: 'var(--text-secondary)', marginBottom: '8px', fontFamily: 'var(--font-heading)' }}>No sequence flows yet</h3>
-            <p style={{ color: 'var(--text-tertiary)' }}>Use the form above to generate your first text-based UML sequence flow.</p>
-          </div>
+          <EmptyState
+            title="No sequence flows yet"
+            message="Use the form above to generate your first text-based UML sequence flow."
+            iconName="sequence"
+          />
         ) : (
           sequenceFlows.map(seq => (
             <SectionCard 
@@ -470,7 +490,7 @@ export default function SequenceFlowModule() {
                     size="sm" 
                     onClick={() => {
                       navigator.clipboard.writeText(seq.steps.join('\n'));
-                      // Optional: Add a brief flash/toast effect here
+                      toast.success('Sequence copied to clipboard.');
                     }}
                     style={{ fontSize: '0.8rem', padding: '4px 8px' }}
                   >

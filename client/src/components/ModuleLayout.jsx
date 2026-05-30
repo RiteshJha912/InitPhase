@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Info, ChevronDown, ChevronUp } from 'lucide-react';
 
-export default function ModuleLayout({ title, description, connectionText, stats, children }) {
+export default function ModuleLayout({ title, description, connectionText, stats, children, flowStep, dependsOn, feedsInto, statusBadge }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -43,6 +43,15 @@ export default function ModuleLayout({ title, description, connectionText, stats
         <p style={{ margin: 0, fontSize: '1.15rem', color: 'var(--text-secondary)', maxWidth: '900px', lineHeight: '1.6' }}>
           {description}
         </p>
+
+        {(flowStep || dependsOn || feedsInto || statusBadge) && (
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '18px' }}>
+            {flowStep && <span style={pillStyle}>Step {flowStep}</span>}
+            {dependsOn && <span style={pillStyle}>Uses {dependsOn}</span>}
+            {feedsInto && <span style={pillStyle}>Feeds {feedsInto}</span>}
+            {statusBadge && <span style={{ ...pillStyle, color: 'var(--success)', borderColor: 'rgba(16, 185, 129, 0.45)', backgroundColor: 'var(--success-bg)' }}>{statusBadge}</span>}
+          </div>
+        )}
 
         {/* Collapsible Overview Panel */}
         {connectionText && (
@@ -100,3 +109,17 @@ export default function ModuleLayout({ title, description, connectionText, stats
     </div>
   );
 }
+
+const pillStyle = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  padding: '6px 10px',
+  borderRadius: '999px',
+  border: '1px solid var(--border-color)',
+  backgroundColor: 'var(--bg-card)',
+  color: 'var(--text-secondary)',
+  fontSize: '0.78rem',
+  fontWeight: 800,
+  textTransform: 'uppercase',
+  letterSpacing: '0.04em',
+};

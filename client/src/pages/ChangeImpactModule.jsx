@@ -5,6 +5,8 @@ import SectionCard from '../components/SectionCard';
 import StatCard from '../components/StatCard';
 import EmptyState from '../components/EmptyState';
 import Button from '../components/Button';
+import LoadingState from '../components/LoadingState';
+import { useToast } from '../components/ToastProvider';
 import { BrainCircuit, DollarSign, FileCode, GitBranch, LoaderCircle, SearchCode, Trash2 } from 'lucide-react';
 
 const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000';
@@ -191,6 +193,7 @@ const ImpactPreview = ({ analysis }) => {
 
 export default function ChangeImpactModule() {
   const { projectId } = useOutletContext();
+  const toast = useToast();
   const [workspace, setWorkspace] = useState(null);
   const [repositoryUrl, setRepositoryUrl] = useState('');
   const [changeRequest, setChangeRequest] = useState('');
@@ -261,8 +264,10 @@ export default function ChangeImpactModule() {
 
       setWorkspace(data);
       setMessage('Repository summary saved to this project.');
+      toast.success('Repository summary saved to this project.');
     } catch (err) {
       setError(err.message);
+      toast.error(err.message);
     } finally {
       setAnalyzingRepo(false);
     }
@@ -290,8 +295,10 @@ export default function ChangeImpactModule() {
 
       setDraft(data);
       setMessage('Impact analysis draft generated. Review it, then save it to this project.');
+      toast.success('Impact analysis draft generated.');
     } catch (err) {
       setError(err.message);
+      toast.error(err.message);
     } finally {
       setGenerating(false);
     }
@@ -321,8 +328,10 @@ export default function ChangeImpactModule() {
       setDraft(null);
       setChangeRequest('');
       setMessage('Impact analysis saved to this project.');
+      toast.success('Impact analysis saved to this project.');
     } catch (err) {
       setError(err.message);
+      toast.error(err.message);
     } finally {
       setSaving(false);
     }
@@ -344,8 +353,10 @@ export default function ChangeImpactModule() {
 
       setMessage('Impact analysis deleted.');
       fetchWorkspace();
+      toast.info('Impact analysis deleted.');
     } catch (err) {
       setError(err.message);
+      toast.error(err.message);
     }
   };
 
@@ -356,6 +367,10 @@ export default function ChangeImpactModule() {
       title="Change Impact Analysis"
       description="Analyze a public GitHub repository at a high level, then estimate which application areas are likely affected by a proposed change."
       connectionText={"- Enter a public GitHub repository URL.\n- InitPhase fetches only important files such as README, package.json, routes, controllers, models, and major frontend pages.\n- Groq creates a stored repository summary, then uses it with your change request to generate a lightweight impact analysis."}
+      flowStep="Optional"
+      dependsOn="Repository context"
+      feedsInto="Issues and Documentation"
+      statusBadge={stats.analyses > 0 ? `${stats.analyses} saved` : null}
       stats={
         <>
           <StatCard title="Important Files" value={stats.files} color="var(--accent-color)" icon={FileCode} />
@@ -383,13 +398,13 @@ export default function ChangeImpactModule() {
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
             <Button type="submit" variant="primary" disabled={analyzingRepo}>
               {analyzingRepo ? <LoaderCircle size={18} style={{ animation: 'spin 1.5s linear infinite' }} /> : <SearchCode size={18} />}
-              {analyzingRepo ? 'Analyzing Repository...' : 'Analyze Repository'}
+              {analyzingRepo ? 'Reading repository shape...' : 'Analyze Repository'}
             </Button>
           </div>
         </form>
 
         {loadingWorkspace && (
-          <p style={{ margin: '18px 0 0 0', color: 'var(--text-tertiary)' }}>Loading saved repository context...</p>
+          <LoadingState compact title="Loading repository context" message="Reading the saved code snapshot..." />
         )}
 
         {hasRepositorySummary && (
@@ -444,7 +459,7 @@ export default function ChangeImpactModule() {
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
             <Button type="submit" variant="primary" disabled={!hasRepositorySummary || generating}>
               {generating ? <LoaderCircle size={18} style={{ animation: 'spin 1.5s linear infinite' }} /> : <BrainCircuit size={18} />}
-              {generating ? 'Generating Impact...' : 'Generate Impact Analysis'}
+              {generating ? 'Mapping likely impact...' : 'Generate Impact Analysis'}
             </Button>
           </div>
         </form>
@@ -466,7 +481,11 @@ export default function ChangeImpactModule() {
 
       <SectionCard title="Saved Analyses">
         {!workspace?.analyses?.length ? (
-          <EmptyState message="No impact analyses saved yet. Analyze a repository, enter a change request, and save the result here." iconName="file" />
+          <EmptyState
+            title="No impact analyses yet"
+            message="Analyze a repository, enter a change request, and save the result here."
+            iconName="file"
+          />
         ) : (
           <div style={{ display: 'grid', gap: '18px' }}>
             {[...workspace.analyses].reverse().map((analysis) => (

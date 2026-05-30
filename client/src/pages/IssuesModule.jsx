@@ -1,14 +1,19 @@
 import { useState, useEffect } from 'react';
-import { useOutletContext } from 'react-router-dom';
-import { Ticket, AlertCircle, CheckCircle2, Clock, Trash2 } from 'lucide-react';
+import { useNavigate, useOutletContext } from 'react-router-dom';
+import { Ticket, AlertCircle, CheckCircle2, Clock, Trash2, Plus, ShieldCheck } from 'lucide-react';
 import ModuleLayout from '../components/ModuleLayout';
 import SectionCard from '../components/SectionCard';
 import StatCard from '../components/StatCard';
-import DataTable from '../components/DataTable';
 import Button from '../components/Button';
+import EmptyState from '../components/EmptyState';
+import FlowCallout from '../components/FlowCallout';
+import LoadingState from '../components/LoadingState';
+import { useToast } from '../components/ToastProvider';
 
 export default function IssuesModule() {
-  const { projectId } = useOutletContext();
+  const { projectId, issues: workspaceIssues = [], fetchIssues: refreshWorkspaceIssues, coveragePct } = useOutletContext();
+  const navigate = useNavigate();
+  const toast = useToast();
   const [issues, setIssues] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -49,6 +54,13 @@ export default function IssuesModule() {
     }
   }, [projectId]);
 
+  useEffect(() => {
+    if (workspaceIssues.length > 0) {
+      setIssues(workspaceIssues);
+      setLoading(false);
+    }
+  }, [workspaceIssues]);
+
   const handleCreateIssue = async (e) => {
     e.preventDefault();
     try {
@@ -64,11 +76,14 @@ export default function IssuesModule() {
       if (res.ok) {
         const newIssue = await res.json();
         setIssues([newIssue, ...issues]);
+        refreshWorkspaceIssues?.(token);
         setShowForm(false);
         setFormData({ title: '', description: '', priority: 'Medium', status: 'Open', type: 'Task', assignedTo: '' });
+        toast.success('Issue created and added to the project board.');
       }
     } catch (err) {
       console.error(err);
+      toast.error('Could not create the issue.');
     }
   };
 
@@ -85,9 +100,12 @@ export default function IssuesModule() {
       });
       if (res.ok) {
         fetchIssues();
+        refreshWorkspaceIssues?.(token);
+        toast.info(`Moved issue to ${newStatus}.`);
       }
     } catch (err) {
       console.error(err);
+      toast.error('Could not update the issue.');
     }
   };
 
@@ -101,9 +119,12 @@ export default function IssuesModule() {
       });
       if (res.ok) {
         setIssues(issues.filter(i => i._id !== issueId));
+        refreshWorkspaceIssues?.(token);
+        toast.info('Issue deleted.');
       }
     } catch (err) {
       console.error(err);
+      toast.error('Could not delete the issue.');
     }
   };
 
@@ -182,12 +203,28 @@ export default function IssuesModule() {
       title="Internal Issue Tracker"
       description="A lightweight task and bug tracker integrated directly into InitPhase to manage project deliverables."
       connectionText="Issues are linked directly to your current project. Use this module to track tasks, bugs, and enhancements without leaving your workspace."
+      flowStep="6 of 8"
+      dependsOn="Tests, risks, and delivery tasks"
+      feedsInto="Overview and Documentation"
+      statusBadge={openCount === 0 ? 'No open blockers' : `${openCount} open`}
       stats={stats}
     >
+      {openCount === 0 && issues.length > 0 && (
+        <FlowCallout
+          tone="success"
+          title="No open issues"
+          message="No critical blockers. That is a good kind of quiet."
+          actionLabel={coveragePct === 100 ? 'Prepare Docs' : 'Review Coverage'}
+          onAction={() => navigate(coveragePct === 100 ? '../documentation' : '../rtm')}
+          icon={ShieldCheck}
+        />
+      )}
+
       <SectionCard 
         title="Issue Registry"
         actions={
           <Button onClick={() => setShowForm(!showForm)}>
+            {!showForm && <Plus size={16} />}
             {showForm ? 'Cancel' : 'Create Issue'}
           </Button>
         }
@@ -235,7 +272,18 @@ export default function IssuesModule() {
           )}
 
           {loading ? (
-            <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>Loading issues...</div>
+            <LoadingState compact title="Loading issue board" message="Checking blockers and follow-up work..." />
+          ) : error ? (
+            <div style={{ padding: '18px', backgroundColor: 'var(--danger-bg)', color: 'var(--danger)', border: '1px solid var(--danger)', borderRadius: 'var(--radius-md)' }}>{error}</div>
+          ) : issues.length === 0 ? (
+            <EmptyState
+              title="No issues yet"
+              message="Track bugs, delivery tasks, or follow-ups here once testing or review starts surfacing work."
+              iconName="ticket"
+              actionLabel="Create Issue"
+              actionIcon={Plus}
+              onAction={() => setShowForm(true)}
+            />
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px', alignItems: 'start' }}>
               {/* Open Column */}
