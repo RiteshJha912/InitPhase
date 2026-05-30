@@ -18,6 +18,7 @@ const SequenceFlowModule = lazy(() => import('./pages/SequenceFlowModule'));
 const DocumentationModule = lazy(() => import('./pages/DocumentationModule'));
 const IssuesModule = lazy(() => import('./pages/IssuesModule'));
 const IdeaBrdModule = lazy(() => import('./pages/IdeaBrdModule'));
+const ChangeImpactModule = lazy(() => import('./pages/ChangeImpactModule'));
 function LoadingFallback() {
   return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: 'var(--bg-base)', color: 'var(--text-secondary)' }}>
@@ -87,6 +88,7 @@ function App() {
           <Route path="rtm" element={<RtmModule />} />
           <Route path="sequence" element={<SequenceFlowModule />} />
           <Route path="idea-brd" element={<IdeaBrdModule />} />
+          <Route path="change-impact" element={<ChangeImpactModule />} />
           <Route path="documentation" element={<DocumentationModule />} />
           <Route path="issues" element={<IssuesModule />} />
         </Route>

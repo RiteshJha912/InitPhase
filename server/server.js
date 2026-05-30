@@ -28,6 +28,7 @@ app.use("/api/rtm", require("./routes/rtmRoutes"));
 app.use("/api/sequence", require("./routes/sequenceRoutes"));
 app.use("/api/issues", require("./routes/issueRoutes"));
 app.use("/api/brds", require("./routes/brdRoutes"));
+app.use("/api/change-impact", require("./routes/changeImpactRoutes"));
 
 app.get("/api/health", (req, res) => {
   res.status(200).json({ success: true, message: "Backend Connected Successfully" });
