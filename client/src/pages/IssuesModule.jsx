@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import { Ticket, AlertCircle, CheckCircle2, Clock, Trash2, Plus, ShieldCheck } from 'lucide-react';
 import ModuleLayout from '../components/ModuleLayout';
@@ -8,7 +8,7 @@ import Button from '../components/Button';
 import EmptyState from '../components/EmptyState';
 import FlowCallout from '../components/FlowCallout';
 import LoadingState from '../components/LoadingState';
-import { useToast } from '../components/ToastProvider';
+import { useToast } from '../components/useToast';
 
 export default function IssuesModule() {
   const { projectId, issues: workspaceIssues = [], fetchIssues: refreshWorkspaceIssues, coveragePct } = useOutletContext();
@@ -29,7 +29,7 @@ export default function IssuesModule() {
     assignedTo: ''
   });
 
-  const fetchIssues = async () => {
+  const fetchIssues = useCallback(async () => {
     try {
       const token = localStorage.getItem('token');
       const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/issues/${projectId}`, {
@@ -41,18 +41,18 @@ export default function IssuesModule() {
       } else {
         setError('Failed to fetch issues');
       }
-    } catch (err) {
+    } catch {
       setError('Server Error');
     } finally {
       setLoading(false);
     }
-  };
+  }, [projectId]);
 
   useEffect(() => {
     if (projectId) {
       fetchIssues();
     }
-  }, [projectId]);
+  }, [projectId, fetchIssues]);
 
   useEffect(() => {
     if (workspaceIssues.length > 0) {
@@ -147,19 +147,6 @@ export default function IssuesModule() {
       case 'Low': return { color: 'var(--text-tertiary)' };
       default: return {};
     }
-  };
-
-  const getStatusBadge = (status) => {
-    let bg = 'var(--bg-card-hover)', color = 'var(--text-secondary)';
-    if (status === 'Open') { bg = 'rgba(239, 68, 68, 0.1)'; color = 'var(--danger)'; }
-    if (status === 'In Progress') { bg = 'rgba(56, 187, 248, 0.1)'; color = 'var(--info)'; }
-    if (status === 'Resolved' || status === 'Closed') { bg = 'rgba(34, 197, 94, 0.1)'; color = 'var(--success)'; }
-
-    return (
-      <span style={{ padding: '4px 12px', borderRadius: '9999px', backgroundColor: bg, color, fontSize: '0.75rem', fontWeight: 'bold' }}>
-        {status}
-      </span>
-    );
   };
 
   const IssueCard = ({ issue }) => (

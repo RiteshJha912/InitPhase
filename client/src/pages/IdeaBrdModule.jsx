@@ -7,7 +7,7 @@ import EmptyState from '../components/EmptyState';
 import Button from '../components/Button';
 import FlowCallout from '../components/FlowCallout';
 import LoadingState from '../components/LoadingState';
-import { useToast } from '../components/ToastProvider';
+import { useToast } from '../components/useToast';
 import { ArrowRight, BrainCircuit, CheckCircle, FileText, Layers, LoaderCircle, Sparkles, Trash2, Wand2 } from 'lucide-react';
 
 const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000';

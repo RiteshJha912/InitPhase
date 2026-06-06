@@ -6,7 +6,7 @@ import StatCard from '../components/StatCard';
 import EmptyState from '../components/EmptyState';
 import Button from '../components/Button';
 import LoadingState from '../components/LoadingState';
-import { useToast } from '../components/ToastProvider';
+import { useToast } from '../components/useToast';
 import { BrainCircuit, DollarSign, FileCode, GitBranch, LoaderCircle, SearchCode, Trash2 } from 'lucide-react';
 
 const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000';

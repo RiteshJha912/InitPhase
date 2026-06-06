@@ -18,16 +18,7 @@ export default function Dashboard() {
   const [editName, setEditName] = useState('');
   const [editDescription, setEditDescription] = useState('');
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      navigate('/login');
-      return;
-    }
-    fetchProjects(token);
-  }, [navigate]);
-
-  const fetchProjects = async (token) => {
+  async function fetchProjects(token) {
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/projects`, {
         headers: { Authorization: `Bearer ${token}` }
@@ -39,7 +30,16 @@ export default function Dashboard() {
     } catch (err) {
       console.error('Error fetching projects:', err);
     }
-  };
+  }
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+    void Promise.resolve().then(() => fetchProjects(token));
+  }, [navigate]);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -68,7 +68,7 @@ export default function Dashboard() {
       } else {
         setError(data.message || 'Error creating project');
       }
-    } catch (err) {
+    } catch {
       setError('Error connecting to server');
     }
   };

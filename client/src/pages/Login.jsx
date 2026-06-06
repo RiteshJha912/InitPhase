@@ -31,7 +31,7 @@ export default function Login() {
       } else {
         setError(data.message || 'Invalid email or password.');
       }
-    } catch (err) {
+    } catch {
       setError('Could not connect to server. Please try again.');
     } finally {
       setLoading(false);

@@ -4,6 +4,14 @@ import { CheckCircle2, Circle, FileText, FlaskConical, GitMerge, LayoutDashboard
 import Button from '../components/Button';
 import LoadingState from '../components/LoadingState';
 
+function CompletionBadge({ complete }) {
+  return (
+    <span style={{ marginLeft: 'auto', color: complete ? 'var(--success)' : 'var(--text-tertiary)', display: 'inline-flex' }}>
+      {complete ? <CheckCircle2 size={15} /> : <Circle size={13} />}
+    </span>
+  );
+}
+
 export default function ProjectWorkspace() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -14,12 +22,13 @@ export default function ProjectWorkspace() {
 
   // Close mobile menu and scroll content to top on route change
   useEffect(() => {
-    setIsMobileMenuOpen(false);
-    // Specifically target the main content area in this layout
-    const mainContent = document.querySelector('main');
-    if (mainContent) {
-      mainContent.scrollTo({ top: 0, behavior: 'instant' });
-    }
+    void Promise.resolve().then(() => {
+      setIsMobileMenuOpen(false);
+      const mainContent = document.querySelector('main');
+      if (mainContent) {
+        mainContent.scrollTo({ top: 0, behavior: 'instant' });
+      }
+    });
   }, [location.pathname]);
   
   // Data states
@@ -31,22 +40,7 @@ export default function ProjectWorkspace() {
   const [issues, setIssues] = useState([]);
   const [brds, setBrds] = useState([]);
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      navigate('/login');
-      return;
-    }
-    fetchProject(token);
-    fetchRequirements(token);
-    fetchTestCases(token);
-    fetchRtm(token);
-    fetchSequenceFlows(token);
-    fetchIssues(token);
-    fetchBrds(token);
-  }, [id, navigate]);
-
-  const fetchProject = async (token) => {
+  async function fetchProject(token) {
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/projects/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
@@ -57,12 +51,12 @@ export default function ProjectWorkspace() {
       } else {
         setError('Failed to load project or unauthorized.');
       }
-    } catch (err) {
+    } catch {
       setError('Error connecting to server.');
     }
-  };
+  }
 
-  const fetchRtm = async (token) => {
+  async function fetchRtm(token) {
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/rtm/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
@@ -75,9 +69,9 @@ export default function ProjectWorkspace() {
     } catch (err) {
       console.error(err);
     }
-  };
+  }
 
-  const fetchRequirements = async (token) => {
+  async function fetchRequirements(token) {
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/requirements/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
@@ -89,9 +83,9 @@ export default function ProjectWorkspace() {
     } catch (err) {
       console.error(err);
     }
-  };
+  }
 
-  const fetchTestCases = async (token) => {
+  async function fetchTestCases(token) {
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/testcases/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
@@ -103,9 +97,9 @@ export default function ProjectWorkspace() {
     } catch (err) {
       console.error(err);
     }
-  };
+  }
 
-  const fetchSequenceFlows = async (token) => {
+  async function fetchSequenceFlows(token) {
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/sequence/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
@@ -117,9 +111,9 @@ export default function ProjectWorkspace() {
     } catch (err) {
       console.error(err);
     }
-  };
+  }
 
-  const fetchIssues = async (token) => {
+  async function fetchIssues(token) {
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/issues/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
@@ -131,9 +125,9 @@ export default function ProjectWorkspace() {
     } catch (err) {
       console.error(err);
     }
-  };
+  }
 
-  const fetchBrds = async (token) => {
+  async function fetchBrds(token) {
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/brds/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
@@ -145,7 +139,24 @@ export default function ProjectWorkspace() {
     } catch (err) {
       console.error(err);
     }
-  };
+  }
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+    void Promise.resolve().then(() => {
+      fetchProject(token);
+      fetchRequirements(token);
+      fetchTestCases(token);
+      fetchRtm(token);
+      fetchSequenceFlows(token);
+      fetchIssues(token);
+      fetchBrds(token);
+    });
+  }, [id, navigate]);
 
   if (error) {
     return (
@@ -178,12 +189,6 @@ export default function ProjectWorkspace() {
     : coveragePct === 100 && requirements.length > 0
       ? 'Ready for docs'
       : `${coveragePct}% covered`;
-
-  const Badge = ({ complete }) => (
-    <span style={{ marginLeft: 'auto', color: complete ? 'var(--success)' : 'var(--text-tertiary)', display: 'inline-flex' }}>
-      {complete ? <CheckCircle2 size={15} /> : <Circle size={13} />}
-    </span>
-  );
 
   const navLinkStyle = ({ isActive }) => ({
     display: 'flex',
@@ -259,15 +264,15 @@ export default function ProjectWorkspace() {
             Workspace Modules
           </div>
           
-          <NavLink to="overview" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><LayoutDashboard size={20} className="module-icon" /> Dashboard <Badge complete /></NavLink>
-          <NavLink to="idea-brd" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><Sparkles size={20} className="module-icon" /> Idea to BRD <Badge complete={brds.length > 0} /></NavLink>
-          <NavLink to="requirements" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><ListTodo size={20} className="module-icon" /> Requirements <Badge complete={requirements.length > 0} /></NavLink>
-          <NavLink to="sequence" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><GitMerge size={20} className="module-icon" /> Sequence Flow <Badge complete={sequenceFlows.length > 0} /></NavLink>
-          <NavLink to="testcases" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><FlaskConical size={20} className="module-icon" /> Test Execution <Badge complete={testCases.length > 0} /></NavLink>
-          <NavLink to="issues" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><Ticket size={20} className="module-icon" /> Issues <Badge complete={openIssues === 0 && criticalIssues === 0} /></NavLink>
-          <NavLink to="rtm" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><Network size={20} className="module-icon" /> Analytics Matrix <Badge complete={coveragePct === 100 && requirements.length > 0} /></NavLink>
+          <NavLink to="overview" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><LayoutDashboard size={20} className="module-icon" /> Dashboard <CompletionBadge complete /></NavLink>
+          <NavLink to="idea-brd" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><Sparkles size={20} className="module-icon" /> Idea to BRD <CompletionBadge complete={brds.length > 0} /></NavLink>
+          <NavLink to="requirements" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><ListTodo size={20} className="module-icon" /> Requirements <CompletionBadge complete={requirements.length > 0} /></NavLink>
+          <NavLink to="sequence" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><GitMerge size={20} className="module-icon" /> Sequence Flow <CompletionBadge complete={sequenceFlows.length > 0} /></NavLink>
+          <NavLink to="testcases" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><FlaskConical size={20} className="module-icon" /> Test Execution <CompletionBadge complete={testCases.length > 0} /></NavLink>
+          <NavLink to="issues" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><Ticket size={20} className="module-icon" /> Issues <CompletionBadge complete={openIssues === 0 && criticalIssues === 0} /></NavLink>
+          <NavLink to="rtm" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><Network size={20} className="module-icon" /> Analytics Matrix <CompletionBadge complete={coveragePct === 100 && requirements.length > 0} /></NavLink>
           <NavLink to="change-impact" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><SearchCode size={20} className="module-icon" /> Change Impact</NavLink>
-          <NavLink to="documentation" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><FileText size={20} className="module-icon" /> Documentation <Badge complete={requirements.length > 0 && coveragePct === 100} /></NavLink>
+          <NavLink to="documentation" className={({ isActive }) => `nav-link-item ${isActive ? 'active' : ''}`} style={navLinkStyle}><FileText size={20} className="module-icon" /> Documentation <CompletionBadge complete={requirements.length > 0 && coveragePct === 100} /></NavLink>
         </aside>
 
         {/* Main Content Area */}

@@ -5,8 +5,8 @@ import SectionCard from '../components/SectionCard';
 import Button from '../components/Button';
 import EmptyState from '../components/EmptyState';
 import FlowCallout from '../components/FlowCallout';
-import { useToast } from '../components/ToastProvider';
-import { GitMerge, Plus, Trash2 } from 'lucide-react';
+import { useToast } from '../components/useToast';
+import { Plus, Trash2 } from 'lucide-react';
 
 const VisualDiagram = ({ steps }) => {
   const containerRef = useRef(null);

@@ -32,7 +32,7 @@ export default function Register() {
       } else {
         setError(data.message || 'Registration failed. Please try again.');
       }
-    } catch (err) {
+    } catch {
       setError('Could not connect to server. Please try again.');
     } finally {
       setLoading(false);
@@ -50,10 +50,6 @@ export default function Register() {
     boxSizing: 'border-box',
     transition: 'all 0.2s ease',
     outline: 'none',
-  };
-
-  const labelStyle = {
-    display: 'none', // We'll use placeholders as labels for a cleaner look like the image
   };
 
   return (

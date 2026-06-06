@@ -7,7 +7,7 @@ import DataTable from '../components/DataTable';
 import EmptyState from '../components/EmptyState';
 import Button from '../components/Button';
 import FlowCallout from '../components/FlowCallout';
-import { useToast } from '../components/ToastProvider';
+import { useToast } from '../components/useToast';
 import { FlaskConical, CheckCircle2, XCircle, Clock, Save, ShieldCheck, ChevronDown, ChevronUp, ArrowRight, ListPlus } from 'lucide-react';
 
 const TestCaseRow = ({ tc, handleUpdateTestStatus }) => {

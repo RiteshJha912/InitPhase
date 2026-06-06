@@ -1,15 +1,6 @@
 import { LoaderCircle } from 'lucide-react';
 
-const messages = [
-  'Aligning project signals...',
-  'Tracing the next dependency...',
-  'Preparing the workspace...',
-  'Sharpening the handoff...',
-];
-
 export default function LoadingState({ title = 'Loading workspace', message, compact = false }) {
-  const fallbackMessage = messages[Math.floor(Date.now() / 2000) % messages.length];
-
   return (
     <div style={{
       minHeight: compact ? '180px' : '100vh',
@@ -36,7 +27,7 @@ export default function LoadingState({ title = 'Loading workspace', message, com
         </div>
         <div>
           <h3 style={{ margin: '0 0 4px 0', color: 'var(--text-primary)', fontSize: compact ? '1rem' : '1.15rem' }}>{title}</h3>
-          <p style={{ margin: 0, color: 'var(--text-tertiary)' }}>{message || fallbackMessage}</p>
+          <p style={{ margin: 0, color: 'var(--text-tertiary)' }}>{message || 'Aligning project signals...'}</p>
         </div>
       </div>
     </div>

@@ -6,7 +6,7 @@ import SectionCard from '../components/SectionCard';
 import EmptyState from '../components/EmptyState';
 import Button from '../components/Button';
 import FlowCallout from '../components/FlowCallout';
-import { useToast } from '../components/ToastProvider';
+import { useToast } from '../components/useToast';
 import { ArrowRight, Layers, ListTodo, AlertCircle, CheckCircle, Plus, Trash2 } from 'lucide-react';
 
 export default function RequirementsModule() {

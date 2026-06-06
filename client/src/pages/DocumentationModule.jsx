@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import ModuleLayout from '../components/ModuleLayout';
 import SectionCard from '../components/SectionCard';
 import Button from '../components/Button';
 import LoadingState from '../components/LoadingState';
 import FlowCallout from '../components/FlowCallout';
-import { useToast } from '../components/ToastProvider';
+import { useToast } from '../components/useToast';
 import { AlertTriangle, CheckCircle2, FileText, Download, XCircle } from 'lucide-react';
 import html2pdf from 'html2pdf.js';
 
@@ -227,11 +227,7 @@ export default function DocumentationModule() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    fetchDocumentation();
-  }, [projectId]);
-
-  const fetchDocumentation = async () => {
+  const fetchDocumentation = useCallback(async () => {
     const token = localStorage.getItem('token');
     try {
       setLoading(true);
@@ -250,7 +246,11 @@ export default function DocumentationModule() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [projectId]);
+
+  useEffect(() => {
+    fetchDocumentation();
+  }, [fetchDocumentation]);
 
   const generateMarkdown = () => {
     if (!docData) return '';
