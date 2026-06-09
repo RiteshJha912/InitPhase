@@ -54,7 +54,7 @@ const TestCaseRow = ({ tc, handleUpdateTestStatus }) => {
       {isExpanded && (
         <tr style={{ borderBottom: '1px solid var(--border-color)', backgroundColor: 'var(--bg-base)' }}>
           <td colSpan={3} style={{ padding: '0' }}>
-            <div className="animate-fade-in" style={{ padding: '20px 24px 24px 48px', display: 'flex', gap: '40px', flexWrap: 'wrap' }}>
+            <div className="animate-fade-in mobile-test-details" style={{ padding: '20px 24px 24px 48px', gap: '40px' }}>
               <div style={{ flex: 1, minWidth: '300px' }}>
                 <h5 style={{ margin: '0 0 12px 0', color: 'var(--text-secondary)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Steps to Perform</h5>
                 <div style={{ padding: '16px', backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', color: 'var(--text-primary)', whiteSpace: 'pre-wrap', fontFamily: 'monospace', fontSize: '0.9rem' }}>
@@ -194,7 +194,7 @@ export default function TestCasesModule() {
         />
       )}
 
-      <div style={{ 
+      <div className="responsive-metric mobile-flex-col" style={{ 
         padding: '24px 32px', 
         backgroundColor: 'var(--bg-surface)', 
         borderRadius: 'var(--radius-md)', 
@@ -214,14 +214,14 @@ export default function TestCasesModule() {
             <p style={{ margin: 0, fontSize: '0.95rem', color: 'var(--text-secondary)' }}>How many requirements have at least one test case</p>
           </div>
         </div>
-        <div style={{ fontSize: '2rem', fontWeight: '800', fontFamily: 'var(--font-heading)' }}>
+        <div style={{ fontSize: '2rem', fontWeight: '800', fontFamily: 'var(--font-heading)', textAlign: 'right' }}>
           <span style={{ color: coverageRatio === 100 ? 'var(--success)' : coverageRatio === 0 ? 'var(--danger)' : 'var(--warning)' }}>{coverageRatio}%</span>
           <span style={{ fontSize: '1rem', color: 'var(--text-tertiary)', fontWeight: '600', marginLeft: '8px' }}>({coveredReqsCount} / {totalReqs})</span>
         </div>
       </div>
 
       <SectionCard title="Create a Test Case">
-        <form onSubmit={handleAddTestCase} className="stat-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+        <form onSubmit={handleAddTestCase} className="responsive-split" style={{ gap: '20px' }}>
           <div style={{ gridColumn: '1 / -1' }}>
             <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: 'var(--text-secondary)', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Select a Requirement to Test</label>
             <select 

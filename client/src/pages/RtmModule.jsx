@@ -52,14 +52,14 @@ export default function RtmModule() {
         />
       ) : null}
 
-      <div className="stat-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 1fr) 2fr', gap: '32px' }}>
+      <div className="responsive-split" style={{ gridTemplateColumns: 'minmax(300px, 1fr) 2fr', gap: '32px' }}>
         
         {/* Core Coverage Metric */}
         <div style={{ padding: '32px', backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-md)', textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
           <h3 style={{ margin: '0 0 24px 0', fontSize: '1rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: '700' }}>Overall Coverage</h3>
           
           <div style={{ position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '32px' }}>
-            <div style={{ fontSize: '5rem', fontWeight: '800', fontFamily: 'var(--font-heading)', lineHeight: 1, color: isCompleteCoverage ? 'var(--success)' : coveragePct === 0 ? 'var(--danger)' : 'var(--warning)', textShadow: `0 0 20px ${isCompleteCoverage ? 'rgba(16, 185, 129, 0.2)' : 'rgba(245, 158, 11, 0.2)'}` }}>
+            <div className="mobile-metric-value" style={{ fontSize: '5rem', fontWeight: '800', fontFamily: 'var(--font-heading)', lineHeight: 1, color: isCompleteCoverage ? 'var(--success)' : coveragePct === 0 ? 'var(--danger)' : 'var(--warning)', textShadow: `0 0 20px ${isCompleteCoverage ? 'rgba(16, 185, 129, 0.2)' : 'rgba(245, 158, 11, 0.2)'}` }}>
               {coveragePct}<span style={{ fontSize: '2.5rem' }}>%</span>
             </div>
           </div>
@@ -75,7 +75,7 @@ export default function RtmModule() {
         {/* Supplementary Analytical Readouts */}
         <div style={{ display: 'grid', gridTemplateRows: '1fr 1fr', gap: '24px' }}>
           
-          <div style={{ padding: '24px', backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)', display: 'flex', alignItems: 'center', gap: '24px' }}>
+          <div className="mobile-metric-row" style={{ padding: '24px', backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)', display: 'flex', alignItems: 'center', gap: '24px' }}>
             <div style={{ padding: '16px', backgroundColor: 'var(--warning-bg)', borderRadius: '50%' }}>
               <AlertTriangle size={32} color="var(--warning)" />
             </div>
@@ -85,7 +85,7 @@ export default function RtmModule() {
             </div>
           </div>
           
-          <div style={{ padding: '24px', backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)', display: 'flex', alignItems: 'center', gap: '24px' }}>
+          <div className="mobile-metric-row" style={{ padding: '24px', backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)', display: 'flex', alignItems: 'center', gap: '24px' }}>
             <div style={{ padding: '16px', backgroundColor: 'var(--danger-bg)', borderRadius: '50%' }}>
               <XCircle size={32} color="var(--danger)" />
             </div>

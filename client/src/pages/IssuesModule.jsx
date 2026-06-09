@@ -219,7 +219,7 @@ export default function IssuesModule() {
         <>
           {showForm && (
             <form onSubmit={handleCreateIssue} style={{ display: 'flex', flexDirection: 'column', gap: '20px', padding: '24px', backgroundColor: 'var(--bg-card)', borderRadius: 'var(--radius-lg)', marginBottom: '32px', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-sm)' }}>
-              <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
+              <div className="mobile-form-row" style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
                 <div style={{ flex: '1 1 300px' }}>
                   <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '0.8rem', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Issue Title *</label>
                   <input type="text" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} required style={{ width: '100%', padding: '10px 14px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-strong)', backgroundColor: 'var(--bg-base)', color: 'var(--text-primary)', outline: 'none', transition: 'border-color 0.2s' }} />
@@ -229,7 +229,7 @@ export default function IssuesModule() {
                   <input type="text" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} style={{ width: '100%', padding: '10px 14px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-strong)', backgroundColor: 'var(--bg-base)', color: 'var(--text-primary)', outline: 'none', transition: 'border-color 0.2s' }} />
                 </div>
               </div>
-              <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
+              <div className="mobile-form-row" style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
                 <div style={{ flex: 1 }}>
                   <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '0.8rem', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Type</label>
                   <select value={formData.type} onChange={e => setFormData({...formData, type: e.target.value})} style={{ width: '100%', padding: '10px 14px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-strong)', backgroundColor: 'var(--bg-base)', color: 'var(--text-primary)', outline: 'none', cursor: 'pointer' }}>
@@ -272,7 +272,8 @@ export default function IssuesModule() {
               onAction={() => setShowForm(true)}
             />
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px', alignItems: 'start' }}>
+            <div className="mobile-kanban-scroll">
+            <div className="mobile-kanban-grid" style={{ gap: '24px', alignItems: 'start' }}>
               {/* Open Column */}
               <div 
                 onDragOver={(e) => e.preventDefault()}
@@ -323,6 +324,7 @@ export default function IssuesModule() {
                 {issues.filter(i => i.status === 'Resolved' || i.status === 'Closed').length === 0 ? <p style={{ color: 'var(--text-tertiary)', fontSize: '0.9rem', textAlign: 'center', marginTop: '32px' }}>Drop here</p> : null}
                 {issues.filter(i => i.status === 'Resolved' || i.status === 'Closed').map(issue => <IssueCard key={issue._id} issue={issue} />)}
               </div>
+            </div>
             </div>
           )}
         </>

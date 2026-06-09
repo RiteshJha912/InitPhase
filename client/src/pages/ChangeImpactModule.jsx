@@ -111,7 +111,7 @@ const CostAnalysis = ({ costAnalysis }) => {
         <Pill color="var(--success)">{formatUsd(cost.min)} - {formatUsd(cost.max)}</Pill>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}>
+      <div className="responsive-auto-grid" style={{ '--grid-min': '180px', gap: '12px' }}>
         <div>
           <span style={{ display: 'block', color: 'var(--text-tertiary)', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '6px' }}>Estimated Hours</span>
           <strong style={{ color: 'var(--text-primary)', fontSize: '1.15rem' }}>{hours.min || 0} - {hours.max || 0} hrs</strong>
@@ -122,7 +122,7 @@ const CostAnalysis = ({ costAnalysis }) => {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '18px' }}>
+      <div className="responsive-auto-grid" style={{ gap: '18px' }}>
         <div>
           <h5 style={{ margin: '0 0 8px 0', color: 'var(--text-primary)', fontSize: '0.95rem' }}>Cost Drivers</h5>
           <List items={costAnalysis.costDrivers} />
@@ -155,7 +155,7 @@ const ImpactPreview = ({ analysis }) => {
         <Pill color={complexityColor}>{analysis.complexity || 'Medium'} Complexity</Pill>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '18px' }}>
+      <div className="responsive-auto-grid" style={{ gap: '18px' }}>
         <div>
           <h4 style={{ margin: '0 0 8px 0', color: 'var(--text-primary)' }}>Affected Modules</h4>
           <List items={analysis.affectedModules} />
@@ -414,7 +414,7 @@ export default function ChangeImpactModule() {
               <p style={{ margin: 0, color: 'var(--text-secondary)', lineHeight: 1.7 }}>{workspace.summary.overview}</p>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '18px' }}>
+            <div className="responsive-auto-grid" style={{ gap: '18px' }}>
               <div>
                 <h4 style={{ margin: '0 0 8px 0', color: 'var(--text-primary)' }}>Tech Stack</h4>
                 <List items={workspace.summary.techStack} />
@@ -427,7 +427,7 @@ export default function ChangeImpactModule() {
 
             <div>
               <h4 style={{ margin: '0 0 12px 0', color: 'var(--text-primary)' }}>Fetched Files</h4>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '10px' }}>
+              <div className="responsive-auto-grid" style={{ '--grid-min': '260px', gap: '10px' }}>
                 {workspace.summary.notableFiles?.map((file) => (
                   <div key={file.path} style={{ backgroundColor: 'var(--bg-base)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-sm)', padding: '12px' }}>
                     <strong style={{ display: 'block', color: 'var(--text-primary)', marginBottom: '4px', overflowWrap: 'anywhere' }}>{file.path}</strong>

@@ -75,7 +75,7 @@ const BrdPreview = ({ brd }) => {
         </div>
       ))}
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '18px' }}>
+      <div className="responsive-auto-grid" style={{ gap: '18px' }}>
         <div>
           <h4 style={{ margin: '0 0 8px 0', color: 'var(--text-primary)' }}>Business Objectives</h4>
           <SectionList items={sections.businessObjectives} />
@@ -113,7 +113,7 @@ const BrdPreview = ({ brd }) => {
         )}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '18px' }}>
+      <div className="responsive-auto-grid" style={{ gap: '18px' }}>
         <div>
           <h4 style={{ margin: '0 0 8px 0', color: 'var(--text-primary)' }}>Non-Functional Requirements</h4>
           <SectionList items={sections.nonFunctionalRequirements} />
@@ -363,7 +363,7 @@ export default function IdeaBrdModule() {
             />
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '18px' }}>
+          <div className="responsive-auto-grid" style={{ gap: '18px' }}>
             <div>
               <label style={labelStyle}>Target Users</label>
               <textarea value={form.targetUsers} onChange={(e) => updateField('targetUsers', e.target.value)} rows={3} style={{ ...inputStyle, resize: 'vertical' }} />

@@ -398,13 +398,13 @@ export default function SequenceFlowModule() {
           {useVisualBuilder ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', backgroundColor: 'var(--bg-card)', padding: '16px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)' }}>
               {visualSteps.map((vStep, index) => (
-                <div key={index} style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+                <div key={index} className="mobile-sequence-step">
                   <span style={{ color: 'var(--text-tertiary)', fontSize: '0.8rem', width: '20px' }}>{index + 1}.</span>
                   <input type="text" placeholder="Sender (e.g. User)" value={vStep.sender} onChange={(e) => updateVisualStep(index, 'sender', e.target.value)} style={{ flex: 1, minWidth: '100px', padding: '8px 12px', backgroundColor: 'var(--bg-base)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-sm)', color: 'var(--text-primary)' }} />
-                  <span style={{ color: 'var(--text-tertiary)' }}>→</span>
+                  <span className="sequence-arrow" style={{ color: 'var(--text-tertiary)' }}>→</span>
                   <input type="text" placeholder="Receiver (e.g. System)" value={vStep.receiver} onChange={(e) => updateVisualStep(index, 'receiver', e.target.value)} style={{ flex: 1, minWidth: '100px', padding: '8px 12px', backgroundColor: 'var(--bg-base)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-sm)', color: 'var(--text-primary)' }} />
                   <input type="text" placeholder="Message (e.g. Login Request)" value={vStep.message} onChange={(e) => updateVisualStep(index, 'message', e.target.value)} style={{ flex: 2, minWidth: '150px', padding: '8px 12px', backgroundColor: 'var(--bg-base)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-sm)', color: 'var(--text-primary)' }} />
-                  <Button variant="ghost" size="sm" type="button" onClick={() => removeVisualStep(index)} style={{ padding: '8px', color: 'var(--danger)' }}><Trash2 size={16} /></Button>
+                  <Button className="sequence-remove" variant="ghost" size="sm" type="button" onClick={() => removeVisualStep(index)} style={{ padding: '8px', color: 'var(--danger)' }}><Trash2 size={16} /></Button>
                 </div>
               ))}
               <Button variant="secondary" size="sm" type="button" onClick={addVisualStep} style={{ alignSelf: 'flex-start', marginTop: '8px' }}><Plus size={16} /> Add Step</Button>

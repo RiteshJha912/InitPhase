@@ -183,7 +183,7 @@ export default function RequirementsModule() {
             onAction={requirements.length === 0 ? () => navigate('../idea-brd') : undefined}
           />
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
+          <div className="mobile-card-grid" style={{ gap: '20px' }}>
             {filteredRequirements.map(req => (
               <div 
                 key={req._id}

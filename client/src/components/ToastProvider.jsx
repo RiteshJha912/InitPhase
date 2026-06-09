@@ -31,7 +31,7 @@ export function ToastProvider({ children }) {
   return (
     <ToastContext.Provider value={value}>
       {children}
-      <div style={{
+      <div className="toast-stack" style={{
         position: 'fixed',
         right: '20px',
         bottom: '20px',

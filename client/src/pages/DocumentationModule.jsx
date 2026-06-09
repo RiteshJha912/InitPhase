@@ -455,7 +455,7 @@ export default function DocumentationModule() {
       )}
 
       <SectionCard title="Readiness Checklist">
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px' }}>
+        <div className="responsive-auto-grid" style={{ '--grid-min': '220px', gap: '12px' }}>
           {readinessItems.map((item) => (
             <div key={item.label} style={{
               display: 'flex',
@@ -478,7 +478,7 @@ export default function DocumentationModule() {
       <SectionCard 
         title="Generated Document Preview"
         actions={
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          <div className="responsive-actions" style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
             <Button variant="secondary" size="sm" onClick={handleExportPDF}>
               <Download size={16} /> Download PDF Report
             </Button>
@@ -489,7 +489,7 @@ export default function DocumentationModule() {
         }
       >
         <div 
-          className="print-container"
+          className="print-container mobile-document-preview"
           style={{ 
             backgroundColor: '#1E1E1E', 
             color: '#D4D4D4', 
