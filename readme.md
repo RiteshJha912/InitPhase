@@ -1,6 +1,6 @@
 # InitPhase
 
-InitPhase is an enterprise-grade SaaS project management workspace designed to facilitate the systematic analysis, planning, and traceability of software requirements, testing, and issue pipelines throughout the development lifecycle.
+InitPhase is an enterprise-grade SaaS project management workspace designed to facilitate the systematic analysis, planning, and traceability of software requirements, testing and issue pipelines throughout the development lifecycle.
 
 ## Tech Stack Overview
 
